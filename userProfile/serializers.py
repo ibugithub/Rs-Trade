@@ -18,5 +18,5 @@ class UserProfileSerializer(serializers.ModelSerializer):
     
     def get_profile_picture(self, obj):
         if obj.profile_picture:
-            return f"https://res.cloudinary.com/{os.environ.get("CLOUDINARY_CLOUD_NAME")}/{obj.profile_picture}"
+            return f'https://res.cloudinary.com/{os.environ.get("CLOUDINARY_CLOUD_NAME")}/{obj.profile_picture}'
         return None
