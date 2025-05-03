@@ -9,14 +9,13 @@ https://docs.djangoproject.com/en/5.1/topics/settings/
 For the full list of settings and their values, see
 https://docs.djangoproject.com/en/5.1/ref/settings/
 """
-from pathlib import Path
+from datetime import timedelta
 import os
+from pathlib import Path
+from dotenv import load_dotenv, dotenv_values
 BASE_DIR = Path(__file__).resolve().parent.parent
-from dotenv import load_dotenv
-from dotenv import dotenv_values
 load_dotenv()
 env_vars = dotenv_values('.env')
-from datetime import timedelta
 
 
 # Quick-start development settings - unsuitable for production
@@ -171,3 +170,16 @@ CLOUDINARY_STORAGE = {
 }
 
 DEFAULT_FILE_STORAGE = 'cloudinary_storage.storage.MediaCloudinaryStorage'
+
+# Swagger settings
+SWAGGER_SETTINGS = {
+    'SECURITY_DEFINITIONS': {
+        'Bearer': {
+            'type': 'apiKey',
+            'name': 'Authorization',
+            'in': 'header'
+        }
+    },
+    'USE_SESSION_AUTH': False,
+    'JSON_EDITOR': True,
+}
