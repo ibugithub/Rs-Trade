@@ -1,6 +1,6 @@
 # Environment and secrets
 .env
-
+.RsTradeEnv
 
 *.sqlite3
 media/
