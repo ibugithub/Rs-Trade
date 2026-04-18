@@ -57,12 +57,7 @@ class SignInView(APIView):
         'refreshToken': str(refresh),
         'accessToken': str(refresh.access_token),
       }, status=status.HTTP_200_OK)
-    errors = serializer.errors
-    first_error = None
-    for field, error_list in errors.items():
-      first_error = error_list[0].__str__()
-      break
-    return Response({"error": first_error}, status=status.HTTP_400_BAD_REQUEST) 
+    return Response(serializer.errors, status=status.HTTP_400_BAD_REQUEST)
   
 class ListUserView(generics.ListAPIView):
   queryset = User.objects.all()
