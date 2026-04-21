@@ -34,6 +34,10 @@ SchemaView = get_schema_view(
    permission_classes=[permissions.AllowAny],
 )
 
+admin.site.site_header = 'Rs Trade Admin'
+admin.site.site_title = 'Rs Trade Admin'
+admin.site.index_title = 'Operations Dashboard'
+
 urlpatterns = [
     path('admin/', admin.site.urls),
     path('api/users/', include('users.urls')),

@@ -1,0 +1,246 @@
+:root {
+  --primary: #0f766e;
+  --secondary: #202124;
+  --accent: #d97706;
+  --primary-fg: #ffffff;
+  --body-bg: #f6f8fb;
+  --body-fg: #202124;
+  --body-quiet-color: #5f6368;
+  --border-color: #d8dee4;
+  --link-fg: #0f766e;
+  --link-hover-color: #115e59;
+  --header-color: #ffffff;
+  --header-branding-color: #ffffff;
+  --header-bg: #202124;
+  --breadcrumbs-bg: #0f766e;
+  --breadcrumbs-fg: #e8f7f5;
+  --button-bg: #0f766e;
+  --button-hover-bg: #115e59;
+  --default-button-bg: #d97706;
+  --default-button-hover-bg: #b45309;
+  --delete-button-bg: #b91c1c;
+  --delete-button-hover-bg: #991b1b;
+}
+
+body {
+  background:
+    linear-gradient(180deg, #eef7f6 0, #f6f8fb 280px),
+    #f6f8fb;
+  color: var(--body-fg);
+}
+
+#header {
+  min-height: 72px;
+  padding: 0 32px;
+  box-shadow: 0 10px 30px rgba(32, 33, 36, 0.14);
+}
+
+.rs-admin-brand {
+  align-items: center;
+  color: #ffffff;
+  display: inline-flex;
+  gap: 12px;
+  line-height: 1.1;
+  text-decoration: none;
+}
+
+.rs-admin-brand:link,
+.rs-admin-brand:visited,
+.rs-admin-brand:hover {
+  color: #ffffff;
+}
+
+.rs-admin-brand__mark {
+  align-items: center;
+  background: #d97706;
+  border: 1px solid rgba(255, 255, 255, 0.35);
+  border-radius: 8px;
+  color: #ffffff;
+  display: inline-flex;
+  font-size: 18px;
+  font-weight: 800;
+  height: 42px;
+  justify-content: center;
+  letter-spacing: 0;
+  width: 42px;
+}
+
+.rs-admin-brand__text {
+  display: grid;
+  gap: 3px;
+}
+
+.rs-admin-brand__text strong {
+  font-size: 20px;
+  font-weight: 800;
+}
+
+.rs-admin-brand__text small {
+  color: #c9d1d9;
+  font-size: 12px;
+  font-weight: 600;
+  text-transform: uppercase;
+}
+
+#user-tools {
+  font-size: 13px;
+  letter-spacing: 0;
+}
+
+#user-tools a {
+  border-bottom: 1px solid rgba(255, 255, 255, 0.45);
+  color: #ffffff;
+}
+
+div.breadcrumbs {
+  border: 0;
+  padding: 14px 32px;
+}
+
+#content {
+  padding: 32px;
+}
+
+#content h1 {
+  color: #202124;
+  font-size: 28px;
+  font-weight: 800;
+  margin: 0 0 24px;
+}
+
+.dashboard #content {
+  max-width: 1180px;
+}
+
+.dashboard #content-main,
+#content-main {
+  width: 100%;
+}
+
+.module {
+  background: #ffffff;
+  border: 1px solid var(--border-color);
+  border-radius: 8px;
+  box-shadow: 0 16px 40px rgba(32, 33, 36, 0.08);
+  margin-bottom: 24px;
+  overflow: hidden;
+}
+
+.module caption,
+.inline-group h2 {
+  background: #202124;
+  color: #ffffff;
+  font-size: 14px;
+  font-weight: 800;
+  letter-spacing: 0;
+  padding: 14px 18px;
+  text-transform: none;
+}
+
+.module table {
+  border-collapse: collapse;
+}
+
+table thead th,
+.module th,
+.module td {
+  border-bottom: 1px solid #edf0f3;
+  padding: 14px 18px;
+}
+
+.module tr:last-child th,
+.module tr:last-child td {
+  border-bottom: 0;
+}
+
+.module th a,
+.module td a {
+  font-weight: 700;
+}
+
+.object-tools a,
+.object-tools a:link,
+.object-tools a:visited,
+input[type="submit"],
+button,
+.button {
+  border-radius: 8px;
+  font-weight: 700;
+}
+
+input,
+textarea,
+select,
+.vTextField {
+  border-color: #c9d1d9;
+  border-radius: 8px;
+}
+
+input:focus,
+textarea:focus,
+select:focus,
+.vTextField:focus {
+  border-color: #0f766e;
+  box-shadow: 0 0 0 3px rgba(15, 118, 110, 0.14);
+  outline: none;
+}
+
+#changelist {
+  background: #ffffff;
+  border: 1px solid var(--border-color);
+  border-radius: 8px;
+  box-shadow: 0 16px 40px rgba(32, 33, 36, 0.08);
+  overflow: hidden;
+}
+
+#changelist-filter {
+  border-left: 1px solid var(--border-color);
+}
+
+#changelist-filter h2 {
+  background: #202124;
+  color: #ffffff;
+}
+
+#toolbar,
+#changelist .actions {
+  background: #f8fafc;
+  border-bottom: 1px solid var(--border-color);
+}
+
+.login #container {
+  border: 1px solid var(--border-color);
+  border-radius: 8px;
+  box-shadow: 0 24px 70px rgba(32, 33, 36, 0.16);
+  overflow: hidden;
+}
+
+.login #header {
+  justify-content: center;
+  padding: 24px;
+}
+
+.login #content {
+  padding: 32px;
+}
+
+.submit-row {
+  border-radius: 8px;
+}
+
+@media (max-width: 767px) {
+  #header,
+  div.breadcrumbs,
+  #content {
+    padding-left: 18px;
+    padding-right: 18px;
+  }
+
+  #header {
+    align-items: flex-start;
+    gap: 12px;
+    min-height: auto;
+    padding-bottom: 18px;
+    padding-top: 18px;
+  }
+}

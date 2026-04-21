@@ -47,3 +47,4 @@ ui/next-env.d.ts
 # Local tooling
 .codex
 .codex/
+.vscode/

@@ -1,0 +1,21 @@
+{% extends "admin/base.html" %}
+{% load static i18n %}
+
+{% block title %}{{ title }} | Rs Trade Admin{% endblock %}
+
+{% block extrastyle %}
+{{ block.super }}
+<link rel="stylesheet" href="{% static 'admin/css/custom_admin.css' %}">
+{% endblock %}
+
+{% block branding %}
+<a id="site-name" class="rs-admin-brand" href="{% url 'admin:index' %}">
+    <span class="rs-admin-brand__mark">RS</span>
+    <span class="rs-admin-brand__text">
+        <strong>Rs Trade</strong>
+        <small>Admin console</small>
+    </span>
+</a>
+{% endblock %}
+
+{% block nav-global %}{% endblock %}
