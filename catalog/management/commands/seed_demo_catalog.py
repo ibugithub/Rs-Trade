@@ -42,11 +42,25 @@ DEMO_CATALOG = {
         'Team Sports',
         'Outdoor Clothing',
     ],
+    'Books & Stationery': [
+        'Fiction Books',
+        'Business Books',
+        'School Supplies',
+        'Office Supplies',
+        'Art Supplies',
+    ],
+    'Automotive': [
+        'Car Accessories',
+        'Motorbike Accessories',
+        'Car Electronics',
+        'Cleaning Supplies',
+        'Tools & Equipment',
+    ],
 }
 
 
 class Command(BaseCommand):
-    help = 'Create demo catalog data with 5 categories, 25 subcategories, and 125 products.'
+    help = 'Create demo catalog data with 7 categories, 35 subcategories, and 175 products.'
 
     def handle(self, *args, **options):
         created_categories = 0
