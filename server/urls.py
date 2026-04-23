@@ -19,6 +19,7 @@ from django.urls import include, path, re_path
 from drf_yasg import openapi
 from drf_yasg.views import get_schema_view
 from rest_framework import permissions
+from .admin_site import configure_admin_site
 from .frontend import serve_next_frontend
 
 SchemaView = get_schema_view(
@@ -37,6 +38,7 @@ SchemaView = get_schema_view(
 admin.site.site_header = 'Rs Trade Admin'
 admin.site.site_title = 'Rs Trade Admin'
 admin.site.index_title = 'Operations Dashboard'
+configure_admin_site(admin.site)
 
 urlpatterns = [
     path('admin/', admin.site.urls),
