@@ -82,7 +82,8 @@ export const MidCategory2 = () => {
   // Sample kitchen appliances data
   const kitchenAppliances = [
     {
-      image: "/images/microwave.jpg",
+      id: "product13",
+      image: "/images/0.9 Cubic Feet Capacity 900 Watts Kitchen Essentials.jpg",
       title: "0.9 Cubic Feet Capacity 900 Watts Kitchen Essentials for the Countertop Stainless Steel",
       rating: 5,
       originalPrice: "599.00",
@@ -90,7 +91,8 @@ export const MidCategory2 = () => {
       onSale: true
     },
     {
-      image: "/images/microwave.jpg",
+      id: "product14",
+      image: "/images/Microwave Oven with Smart Sensor.jpg",
       title: "Microwave Oven with Smart Sensor Easy Clean Interior ECO Mode 1.2 Cu Ft Stainless Steel",
       rating: 4,
       originalPrice: "529.00",
@@ -98,14 +100,16 @@ export const MidCategory2 = () => {
       onSale: true
     },
     {
-      image: "/images/microwave.jpg",
+      id: "product15",
+      image: "/images/Double Door Mini Fridge with Freezer.jpg",
       title: "Double Door Mini Fridge with Freezer for Office or Dorm with Adjustable Remove Glass Shelves",
       rating: 4,
       price: "479.00",
       onSale: false
     },
     {
-      image: "/images/microwave.jpg",
+      id: "product16",
+      image: "/images/2 Door Apartment Size Refrigerator with Freezer.jpg",
       title: "36\" Side-by-Side Refrigerator and Freezer with 25 Cubic Ft. Total Capacity, Black",
       rating: 5,
       originalPrice: "799.00",
@@ -117,14 +121,16 @@ export const MidCategory2 = () => {
   // Sample refrigerator data
   const refrigerators = [
     {
-      image: "/images/refregarator.jpg",
+      id: "product17",
+      image: "/images/Double Door Mini Fridge with Freezer.jpg",
       title: "Double Door Mini Fridge with Freezer for Office or Dorm with Adjustable Remove Glass Shelves",
       rating: 4,
       price: "479.00",
       onSale: false
     },
     {
-      image: "/images/refregarator.jpg",
+      id: "product18",
+      image: "/images/2 Door Apartment Size Refrigerator with Freezer.jpg",
       title: "36\" Side-by-Side Refrigerator and Freezer with 25 Cubic Ft. Total Capacity, Black",
       rating: 4,
       originalPrice: "799.00",
@@ -132,7 +138,8 @@ export const MidCategory2 = () => {
       onSale: true
     },
     {
-      image: "/images/refregarator.jpg",
+      id: "product19",
+      image: "/images/Mini Fridge with Freezer for Bedroom.jpg",
       title: "Mini Fridge with Freezer for Bedroom Office or Dorm with Adjustable Remove Glass Shelves Compact Refrigerator",
       rating: 5,
       originalPrice: "499.00",
@@ -140,7 +147,8 @@ export const MidCategory2 = () => {
       onSale: true
     },
     {
-      image: "/images/refregarator.jpg",
+      id: "product20",
+      image: "/images/2 Door Apartment Size Refrigerator.jpg",
       title: "2 Door Apartment Size Refrigerator with Freezer, 7.2 cu ft, Platinum Series, Stainless Steel",
       rating: 5,
       originalPrice: "899.00",

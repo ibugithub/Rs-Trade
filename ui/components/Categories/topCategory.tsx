@@ -29,7 +29,7 @@ export const TopCategory = () => {
     {
       id: 'product2',
       name: 'Smart Speaker with Alexa Voice Control Built-in Compact Size with Incredible Sound for Any Room',
-      image: "/images/trimmer.png",
+      image: "/images/Smart Speaker with Alexa Voice.jpg",
       originalPrice: 249.00,
       salePrice: 219.00,
       rating: ratings.product2,
@@ -37,7 +37,7 @@ export const TopCategory = () => {
     {
       id: 'product3',
       name: 'Home Speaker 500: Smart Bluetooth Speaker with Alexa Voice Control Built-In, White',
-      image: "/images/trimmer.png",
+      image: "/images/Smart Bluetooth Speaker with Alexa Voice.jpg",
       originalPrice: 229.00,
       salePrice: 209.00,
       rating: ratings.product3,
@@ -45,7 +45,7 @@ export const TopCategory = () => {
     {
       id: 'product4',
       name: 'Note 10 Pro 128GB 6GB RAM Factory Unlocked (GSM ONLY) International Model',
-      image: "/images/trimmer.png",
+      image: "/images/Note 10 Pro 128GB 6GB RAM.jpg",
       originalPrice: 699.00,
       salePrice: 659.00,
       rating: ratings.product4,
@@ -53,7 +53,7 @@ export const TopCategory = () => {
     {
       id: 'product5',
       name: '5G Unlocked Smartphone,12GB RAM+256GB Storage120Hz Fluid Display Hasselblad Quad Camera 65W Ultra Fast Charge 50W Wireless Charge',
-      image: "/images/trimmer.png",
+      image: "/images/5G Unlocked Smartphone,12GB RAM+256GB Storage.jpg",
       originalPrice: 1299.00,
       salePrice: 1199.00,
       rating: ratings.product5,
@@ -61,7 +61,7 @@ export const TopCategory = () => {
     {
       id: 'product6',
       name: '5G Factory Unlocked Android Cell Phone 128GB Pro-Grade Camera 30X Space Zoom Night Mode, Space Grey',
-      image: "/images/trimmer.png",
+      image: "/images/5G Unlocked Smartphone,12GB RAM+256GB Storage.jpg",
       originalPrice: 1099.00,
       salePrice: 999.00,
       rating: ratings.product6,
@@ -69,7 +69,7 @@ export const TopCategory = () => {
     {
       id: 'product7',
       name: '13 Ultrabook Gaming Laptop: Intel Core i7-1165G7 4 Core, NVIDIA GeForce GTX 1650 Ti Max-Q, 13.3" 1080p 120Hz, 16GB RAM, 512GB SSD, CNC Aluminum, Chroma RGB, Thunderbolt 4',
-      image: "/images/trimmer.png",
+      image: "/images/3 Ultrabook Gaming Laptop.jpg",
       originalPrice: 1499.00,
       salePrice: 1399.00,
       rating: ratings.product7,
@@ -77,7 +77,7 @@ export const TopCategory = () => {
     {
       id: 'product8',
       name: '15.6" FHD Display Laptop – Intel i7 – Intel HD Graphics 6000, Webcam, WiFi, Bluetooth, HDMI, Windows 11,Grey',
-      image: "/images/trimmer.png",
+      image: "/images/Pc_laptop.jpg",
       originalPrice: 1029.00,
       salePrice: 999.00,
       rating: ratings.product8,

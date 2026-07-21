@@ -86,21 +86,24 @@ export const BottomCategory = () => {
   // Sample PC & Laptop data
   const pcLaptops = [
     {
-      image: "/images/laptop.jpg",
+      id: "product21",
+      image: "/images/Pc_laptop.jpg",
       title: "14\" FHD Ultrabook (400 nits) with 10th Gen Intel i7-10510U Processor up to 4.90 GHz, 1 TB PCIe SSD, 16GB RAM, and Windows 11 Pro",
       rating: 5,
       price: "1,099.00",
       onSale: false
     },
     {
-      image: "/images/laptop.jpg",
+      id: "product22",
+      image: "/images/13 Ultrabook Gaming Laptop.jpg",
       title: "15.6\" Rugged Ultrabook – 4K UHD – 3840 x 2160 – Intel Core i7 11th Gen i7-11957 2.90 GHz – 32 GB RAM – 1 TB SSD – Carbon Gray",
       rating: 4,
       price: "799.00",
       onSale: false
     },
     {
-      image: "/images/laptop.jpg",
+      id: "product23",
+      image: "/images/3 Ultrabook Gaming Laptop.jpg",
       title: "13 Ultrabook Gaming Laptop: Intel Core i7-11657 4 Core, NVIDIA GeForce GTX 1650 Ti Max-Q, 13.3\" 1080p 120Hz, 16GB RAM, 512GB SSD, CNC Aluminum, Chroma RGB, Thunderbolt 4",
       rating: 4,
       originalPrice: "1,499.00",
@@ -108,7 +111,8 @@ export const BottomCategory = () => {
       onSale: true
     },
     {
-      image: "/images/laptop.jpg",
+      id: "product24",
+      image: "/images/Pc_laptop.jpg",
       title: "15.6\" FHD Display Laptop – Intel i7 – Intel HD Graphics 6000 , Webcam, WiFi, Bluetooth, HDMI, Windows 11,Grey",
       rating: 5,
       originalPrice: "1,029.00",
@@ -120,28 +124,32 @@ export const BottomCategory = () => {
   // Sample Gadget data
   const gadgets = [
     {
-      image: "/images/camera.jpg",
+      id: "product25",
+      image: "/images/Mirrorless Vlogging Camera Polaroid.jpg",
       title: "Mirrorless Vlogging Camera Polaroid Kit with EF-M 15-45mm Lens, Black",
       rating: 4,
       price: "599.00",
       onSale: false
     },
     {
-      image: "/images/camera.jpg",
+      id: "product26",
+      image: "/images/4K Digital Camera, 12-32mm and 45.jpg",
       title: "4K Digital Camera, 12-32mm and 45-150mm Lens Bundle, 16 Megapixel Kit, 5 Axis In-Body Dual Image Stabilization, Black",
       rating: 5,
       price: "799.00",
       onSale: false
     },
     {
-      image: "/images/camera.jpg",
+      id: "product27",
+      image: "/images/gadgets.jpg",
       title: "Android Tablet 10.5\" LCD Screen 64GB Storage Long-Lasting Battery Kids Content Smart Switch Expandable Memory",
       rating: 5,
       price: "599.00",
       onSale: true
     },
     {
-      image: "/images/camera.jpg",
+      id: "product28",
+      image: "/images/Note 10 Pro 128GB 6GB RAM.jpg",
       title: "Note 10 Pro 128GB 6GB RAM Factory Unlocked (GSM ONLY) International Model",
       rating: 5,
       originalPrice: "699.00",

@@ -11,7 +11,7 @@ const categories = [
         title: "Max 5.1 Home Theater",
         price: "$620.00",
         oldPrice: null,
-        image: "/images/trimmer.png",
+        image: "/images/Max 5.1 Home Theater.jpg",
         isOnSale: false,
       },
       {
@@ -19,7 +19,7 @@ const categories = [
         title: "V-Series 5.1 Home Theater",
         price: "$499.00",
         oldPrice: "$799.00",
-        image: "/images/trimmer.png",
+        image: "/images/V-Series 5.1 Home Theater.jpg",
         isOnSale: true,
       },
       {
@@ -27,7 +27,7 @@ const categories = [
         title: "OLED C4 Series 55” 4K TV",
         price: "$1,249.00",
         oldPrice: null,
-        image: "/images/trimmer.png",
+        image: "/images/OLED C4 Series 55” 4K TV.jpg",
         isOnSale: false,
       },
       {
@@ -35,7 +35,7 @@ const categories = [
         title: "X90J 65 Inch TV 4K",
         price: "$1,329.00",
         oldPrice: "$1,499.00",
-        image: "/images/trimmer.png",
+        image: "/images/Audio.jpg",
         isOnSale: true,
       },
     ],
@@ -49,7 +49,7 @@ const categories = [
         title: "Multigroomer Grooming Kit",
         price: "$44.00",
         oldPrice: "$60.00",
-        image: "/images/trimmer.png",
+        image: "/images/Multigroomer Grooming Kit.jpg",
         isOnSale: true,
       },
       {
@@ -57,7 +57,7 @@ const categories = [
         title: "Compact Pulsator Washer",
         price: "$259.00",
         oldPrice: "$319.00",
-        image: "/images/trimmer.png",
+        image: "/images/Compact Pulsator Washer.jpg",
         isOnSale: false,
       },
       {
@@ -65,7 +65,7 @@ const categories = [
         title: "Full-Auto Compact Washer",
         price: "$270.00",
         oldPrice: "$309.00",
-        image: "/images/trimmer.png",
+        image: "/images/Full-Auto Compact Washer.jpg",
         isOnSale: true,
       },
       {
@@ -73,7 +73,7 @@ const categories = [
         title: "Small Space Dryer",
         price: "$349.00",
         oldPrice: null,
-        image: "/images/trimmer.png",
+        image: "/images/Small Space Dryer.jpg",
         isOnSale: false,
       },
     ],
@@ -87,7 +87,7 @@ const categories = [
         title: "AC 5000 BTU for Small Rooms",
         price: "$139.00",
         oldPrice: "$159.00",
-        image: "/images/trimmer.png",
+        image: "/images/AC 5000 BTU for Small Rooms.jpg",
         isOnSale: true,
       },
       {
@@ -95,7 +95,7 @@ const categories = [
         title: "Dual Hose Portable AC",
         price: "$184.00",
         oldPrice: null,
-        image: "/images/trimmer.png",
+        image: "/images/Dual Hose Portable AC.jpg",
         isOnSale: false,
       },
       {
@@ -103,7 +103,7 @@ const categories = [
         title: "Star 5,000 BTU AC w/ Wi-Fi",
         price: "$199.00",
         oldPrice: null,
-        image: "/images/trimmer.png",
+        image: "/images/star 5,000 btu ac with_ wi-fi.jpg",
         isOnSale: false,
       },
       {
@@ -111,7 +111,7 @@ const categories = [
         title: "BTU Window AC w/ Remote",
         price: "$179.00",
         oldPrice: null,
-        image: "/images/trimmer.png",
+        image: "/images/btu window ac with_remote.jpg",
         isOnSale: false,
       },
     ],
