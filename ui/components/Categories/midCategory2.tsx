@@ -82,7 +82,7 @@ export const MidCategory2 = () => {
   // Sample kitchen appliances data
   const kitchenAppliances = [
     {
-      id: "product13",
+      id: "product21",
       image: "/images/0.9 Cubic Feet Capacity 900 Watts Kitchen Essentials.jpg",
       title: "0.9 Cubic Feet Capacity 900 Watts Kitchen Essentials for the Countertop Stainless Steel",
       rating: 5,
@@ -91,7 +91,7 @@ export const MidCategory2 = () => {
       onSale: true
     },
     {
-      id: "product14",
+      id: "product22",
       image: "/images/Microwave Oven with Smart Sensor.jpg",
       title: "Microwave Oven with Smart Sensor Easy Clean Interior ECO Mode 1.2 Cu Ft Stainless Steel",
       rating: 4,
@@ -100,7 +100,7 @@ export const MidCategory2 = () => {
       onSale: true
     },
     {
-      id: "product15",
+      id: "product23",
       image: "/images/Double Door Mini Fridge with Freezer.jpg",
       title: "Double Door Mini Fridge with Freezer for Office or Dorm with Adjustable Remove Glass Shelves",
       rating: 4,
@@ -108,7 +108,7 @@ export const MidCategory2 = () => {
       onSale: false
     },
     {
-      id: "product16",
+      id: "product24",
       image: "/images/2 Door Apartment Size Refrigerator with Freezer.jpg",
       title: "36\" Side-by-Side Refrigerator and Freezer with 25 Cubic Ft. Total Capacity, Black",
       rating: 5,
@@ -121,7 +121,7 @@ export const MidCategory2 = () => {
   // Sample refrigerator data
   const refrigerators = [
     {
-      id: "product17",
+      id: "product25",
       image: "/images/Double Door Mini Fridge with Freezer.jpg",
       title: "Double Door Mini Fridge with Freezer for Office or Dorm with Adjustable Remove Glass Shelves",
       rating: 4,
@@ -129,7 +129,7 @@ export const MidCategory2 = () => {
       onSale: false
     },
     {
-      id: "product18",
+      id: "product26",
       image: "/images/2 Door Apartment Size Refrigerator with Freezer.jpg",
       title: "36\" Side-by-Side Refrigerator and Freezer with 25 Cubic Ft. Total Capacity, Black",
       rating: 4,
@@ -138,7 +138,7 @@ export const MidCategory2 = () => {
       onSale: true
     },
     {
-      id: "product19",
+      id: "product27",
       image: "/images/Mini Fridge with Freezer for Bedroom.jpg",
       title: "Mini Fridge with Freezer for Bedroom Office or Dorm with Adjustable Remove Glass Shelves Compact Refrigerator",
       rating: 5,
@@ -147,7 +147,7 @@ export const MidCategory2 = () => {
       onSale: true
     },
     {
-      id: "product20",
+      id: "product28",
       image: "/images/2 Door Apartment Size Refrigerator.jpg",
       title: "2 Door Apartment Size Refrigerator with Freezer, 7.2 cu ft, Platinum Series, Stainless Steel",
       rating: 5,
