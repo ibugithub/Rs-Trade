@@ -84,27 +84,46 @@ export const NavBar = () => {
             <div className="flex cursor-pointer items-center hover:text-blue-100"
               onClick={() => setAllProductClicked((prev) => !prev)}
             >
-              All products <span className="ml-1">▼</span>
+              RS Store <span className="ml-1">▼</span>
             </div>
           </div>
-          <Link href="/home-appliances" className="hover:text-blue-100">
-            Home appliances
+
+          <Link href="/home" className="hover:text-blue-100">
+            Home
           </Link>
-          <Link href="/audio-video" className="hover:text-blue-100">
-            Audio & video
+
+          <Link href="/rs-sourcing" className="hover:text-blue-100">
+            RS Sourcing
           </Link>
-          <Link href="/refrigerator" className="hover:text-blue-100">
-            Refrigerator
+
+          <Link href="/rs-import" className="hover:text-blue-100">
+            RS Import
           </Link>
-          <Link href="/new-arrivals" className="hover:text-blue-100">
-            New arrivals
+
+          <Link href="/about-us" className="hover:text-blue-100">
+            About Us
           </Link>
-          <Link href="/todays-deal" className="hover:text-blue-100">
-            Today&apos;s deal
+
+          <Link href="/services" className="hover:text-blue-100">
+            Services
           </Link>
-          <Link href="/gift-cards" className="hover:text-blue-100">
-            Gift cards
+
+          <Link href="/how-it-works" className="hover:text-blue-100">
+            How it works
           </Link>
+
+          <Link href="/projects" className="hover:text-blue-100">
+            Projects
+          </Link>
+
+          <Link href="/blog" className="hover:text-blue-100">
+            Blog
+          </Link>
+
+          <Link href="/contact-us" className="hover:text-blue-100">
+            Contact
+          </Link>
+
         </div>
 
         {/* Mobile menu */}
@@ -125,25 +144,43 @@ export const NavBar = () => {
             </div>
 
             <Link href="/products" className="block text-white hover:bg-blue-700 px-3 py-2 rounded-md">
-              All products
+              RS Store
             </Link>
-            <Link href="/home-appliances" className="block text-white hover:bg-blue-700 px-3 py-2 rounded-md">
-              Home appliances
+
+            <Link href="/home" className="block text-white hover:bg-blue-700 px-3 py-2 rounded-md">
+              Home
             </Link>
-            <Link href="/audio-video" className="block text-white hover:bg-blue-700 px-3 py-2 rounded-md">
-              Audio & video
+
+            <Link href="/rs-sourcing" className="block text-white hover:bg-blue-700 px-3 py-2 rounded-md">
+              RS Sourcing
             </Link>
-            <Link href="/refrigerator" className="block text-white hover:bg-blue-700 px-3 py-2 rounded-md">
-              Refrigerator
+
+            <Link href="/rs-import" className="block text-white hover:bg-blue-700 px-3 py-2 rounded-md">
+              RS Import
             </Link>
-            <Link href="/new-arrivals" className="block text-white hover:bg-blue-700 px-3 py-2 rounded-md">
-              New arrivals
+
+            <Link href="/about-us" className="block text-white hover:bg-blue-700 px-3 py-2 rounded-md">
+              About Us
             </Link>
-            <Link href="/todays-deal" className="block text-white hover:bg-blue-700 px-3 py-2 rounded-md">
-              Today&apos;s deal
+
+            <Link href="/services" className="block text-white hover:bg-blue-700 px-3 py-2 rounded-md">
+              Services
             </Link>
-            <Link href="/gift-cards" className="block text-white hover:bg-blue-700 px-3 py-2 rounded-md">
-              Gift cards
+
+            <Link href="/how-it-works" className="block text-white hover:bg-blue-700 px-3 py-2 rounded-md">
+              How it works
+            </Link>
+
+            <Link href="/projects" className="block text-white hover:bg-blue-700 px-3 py-2 rounded-md">
+              Projects
+            </Link>
+
+            <Link href="/blog" className="block text-white hover:bg-blue-700 px-3 py-2 rounded-md">
+              Blog
+            </Link>
+            
+            <Link href="/contact-us" className="block text-white hover:bg-blue-700 px-3 py-2 rounded-md">
+              Contact
             </Link>
           </div>
         )}
