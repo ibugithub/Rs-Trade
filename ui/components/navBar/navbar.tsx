@@ -88,10 +88,6 @@ export const NavBar = () => {
             </div>
           </div>
 
-          <Link href="/home" className="hover:text-blue-100">
-            Home
-          </Link>
-
           <Link href="/rs-sourcing" className="hover:text-blue-100">
             RS Sourcing
           </Link>
@@ -102,14 +98,6 @@ export const NavBar = () => {
 
           <Link href="/about-us" className="hover:text-blue-100">
             About Us
-          </Link>
-
-          <Link href="/services" className="hover:text-blue-100">
-            Services
-          </Link>
-
-          <Link href="/how-it-works" className="hover:text-blue-100">
-            How it works
           </Link>
 
           <Link href="/projects" className="hover:text-blue-100">
@@ -147,10 +135,6 @@ export const NavBar = () => {
               RS Store
             </Link>
 
-            <Link href="/home" className="block text-white hover:bg-blue-700 px-3 py-2 rounded-md">
-              Home
-            </Link>
-
             <Link href="/rs-sourcing" className="block text-white hover:bg-blue-700 px-3 py-2 rounded-md">
               RS Sourcing
             </Link>
@@ -161,14 +145,6 @@ export const NavBar = () => {
 
             <Link href="/about-us" className="block text-white hover:bg-blue-700 px-3 py-2 rounded-md">
               About Us
-            </Link>
-
-            <Link href="/services" className="block text-white hover:bg-blue-700 px-3 py-2 rounded-md">
-              Services
-            </Link>
-
-            <Link href="/how-it-works" className="block text-white hover:bg-blue-700 px-3 py-2 rounded-md">
-              How it works
             </Link>
 
             <Link href="/projects" className="block text-white hover:bg-blue-700 px-3 py-2 rounded-md">

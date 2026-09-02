@@ -225,23 +225,6 @@ export const SideBar = ({ isOpen, onClose }) => {
         'Accessories',
         'Sheet Music'
       ]
-    },
-    {
-      id: 'gift',
-      name: 'Gift Cards',
-      icon: <Gift className="w-5 h-5" />,
-      subcategories: [
-        'Gift Cards',
-        'Restaurant Gift Cards',
-        'Retail Gift Cards',
-        'Entertainment Gift Cards',
-        'Travel Gift Cards',
-        'Gaming Gift Cards',
-        'Subscription Gift Cards',
-        'Digital Gift Cards',
-        'Physical Gift Cards',
-        'Corporate Gift Cards'
-      ]
     }
   ];
 
@@ -307,17 +290,6 @@ export const SideBar = ({ isOpen, onClose }) => {
                 )}
               </div>
             ))}
-          </div>
-        </div>
-
-        {/* Programs & Features */}
-        <div className="border-b border-gray-200">
-          <div className="p-4 font-bold text-gray-900">Programs & Features</div>
-          <div className="pb-4">
-            <div className="px-4 py-2 text-gray-700 hover:bg-gray-50 cursor-pointer">Gift Cards</div>
-            <div className="px-4 py-2 text-gray-700 hover:bg-gray-50 cursor-pointer">Shop By Interest</div>
-            <div className="px-4 py-2 text-gray-700 hover:bg-gray-50 cursor-pointer">RsTrade Live</div>
-            <div className="px-4 py-2 text-gray-700 hover:bg-gray-50 cursor-pointer">International Shopping</div>
           </div>
         </div>
 
