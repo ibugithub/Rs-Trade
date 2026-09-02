@@ -28,7 +28,7 @@ export const NavBar = () => {
               <div className="w-8 h-8 bg-yellow-300 rounded-full flex items-center justify-center mr-1">
                 <span className="text-blue-500 font-bold">Rs</span>
               </div>
-              <span className="text-white text-xl font-bold">Trade</span>
+              <span className="text-white text-xl font-bold">Trade International</span>
             </Link>
           </div>
 
