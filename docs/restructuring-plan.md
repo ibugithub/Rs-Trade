@@ -82,7 +82,7 @@ RS Trade International
             & Refund Terms                         [section]
 ```
 
-Main navigation: **Home / About Us / Services / Ready Stock / Our Work / Contact / Request a Quote**.
+Main navigation: **Home / Services / Ready Stock / Our Work / About Us / Contact / Request a Quote**. The Services dropdown contains only the four individual services; no overview link.
 
 Footer links include FAQ, Privacy Policy, Terms and contact details. The sitemap contains 14 fixed public pages, plus individual product and project pages. Policies is a grouping, not an additional page. Evidence sections will appear when genuine content is available. Orders are confirmed through WhatsApp or phone without online payment or mandatory registration.
 
@@ -154,7 +154,7 @@ All journeys should work on mobile without requiring registration.
 
 About Us topics can be sections on one page. Factory visits and inspections can initially be sections or filters within Our Work. Final routes must account for existing URLs and redirects.
 
-Desktop navigation: **Home / About / Services / Ready Stock / Our Work / Contact / Request a Quote**.
+Desktop navigation: **Home / Services / Ready Stock / Our Work / About Us / Contact / Request a Quote**. Mobile uses the same order.
 
 Footer: FAQ, policies, company/contact details and relevant page links. Mobile navigation should make quotation requests and WhatsApp easy to reach.
 

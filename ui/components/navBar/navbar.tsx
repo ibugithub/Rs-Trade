@@ -14,9 +14,9 @@ const services = [
 
 const links = [
   { label: 'Home', href: '/' },
-  { label: 'About Us', href: '/about' },
   { label: 'Ready Stock', href: '/ready-stock' },
   { label: 'Our Work', href: '/our-work' },
+  { label: 'About Us', href: '/about' },
   { label: 'Contact', href: '/contact' },
 ];
 
@@ -78,14 +78,14 @@ export const NavBar = () => {
         </Link>
 
         <nav aria-label="Main navigation" className="hidden items-center gap-1 lg:flex">
-          {links.slice(0, 2).map(renderLink)}
+          {links.slice(0, 1).map(renderLink)}
           <div className="relative">
             <button ref={servicesButtonRef} type="button" aria-expanded={servicesOpen} aria-controls="desktop-services" onClick={() => setServicesOpen(!servicesOpen)} className={`${linkStyle('/services')} flex items-center gap-1`}>
               Services <ChevronDown size={16} aria-hidden="true" className={`transition-transform ${servicesOpen ? 'rotate-180' : ''}`} />
             </button>
             {servicesOpen && (
               <div id="desktop-services" className="absolute left-0 top-full mt-2 w-80 rounded-xl border border-gray-200 bg-white p-2 text-gray-800 shadow-xl">
-                {[{ label: 'All Services', href: '/services' }, ...services].map((item) => (
+                {services.map((item) => (
                   <Link key={item.href} href={item.href} onClick={close} aria-current={pathname === item.href ? 'page' : undefined} className={`block rounded-lg px-4 py-3 text-sm hover:bg-blue-50 focus-visible:outline focus-visible:outline-2 focus-visible:outline-blue-700 ${pathname === item.href ? 'bg-blue-50 font-semibold text-blue-700' : ''}`}>
                     {item.label}
                   </Link>
@@ -93,7 +93,7 @@ export const NavBar = () => {
               </div>
             )}
           </div>
-          {links.slice(2).map(renderLink)}
+          {links.slice(1).map(renderLink)}
         </nav>
 
         <div className="flex items-center gap-2">
@@ -109,16 +109,16 @@ export const NavBar = () => {
       {mobileOpen && (
         <nav id="mobile-navigation" aria-label="Mobile navigation" className="max-h-[calc(100dvh-4rem)] overflow-y-auto border-t border-blue-600 px-4 py-4 lg:hidden">
           <div className="mx-auto flex max-w-7xl flex-col gap-1">
-            {links.slice(0, 2).map(renderLink)}
+            {links.slice(0, 1).map(renderLink)}
             <button type="button" onClick={() => setServicesOpen(!servicesOpen)} aria-expanded={servicesOpen} aria-controls="mobile-services" className={`${linkStyle('/services')} flex min-h-11 items-center justify-between text-left`}>
               Services <ChevronDown size={18} aria-hidden="true" className={servicesOpen ? 'rotate-180' : ''} />
             </button>
             {servicesOpen && (
               <div id="mobile-services" className="ml-3 flex flex-col gap-1 border-l border-blue-400 pl-3">
-                {[{ label: 'All Services', href: '/services' }, ...services].map(renderLink)}
+                {services.map(renderLink)}
               </div>
             )}
-            {links.slice(2).map(renderLink)}
+            {links.slice(1).map(renderLink)}
           </div>
         </nav>
       )}
