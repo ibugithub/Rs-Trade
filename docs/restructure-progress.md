@@ -1,6 +1,6 @@
 ﻿# RS Trade International: restructuring progress
 
-Last updated: 2026-10-04 (Asia/Dhaka).
+Last updated: 2026-10-05 (Asia/Dhaka).
 
 Source plan: [Website restructuring plan](restructuring-plan.md).
 
@@ -14,9 +14,9 @@ This is the ongoing tracker for the full website restructuring. Planning decisio
 
 **Completed:** Business direction, service list, order approach, full door-to-door responsibility, restructuring roadmap and planned sitemap have been documented.
 
-**Next:** Review the four service pages on mobile and desktop, then continue the remaining initial pages. Build the quotation form and connect inquiries later; return to homepage refinement after the other initial pages.
+**Next:** Continue the static corporate pages and review their designs. Backend, inquiry submission, admin management and notifications are deferred until the owner requests them.
 
-**Implementation status:** Navigation, first homepage design and all four initial service pages are implemented. The old shopping homepage is at `/ready-stock`. Other corporate pages, quotation form, real product data and inquiry handling remain pending. Browser review and live integrations remain unverified.
+**Implementation status:** Navigation, homepage draft, four service pages and static quotation form are implemented. Service selection and preselection work locally; submissions are disabled. The inquiry backend was removed at the owner's request. Production database unchanged.
 
 ## Visual roadmap
 
@@ -90,9 +90,14 @@ Status vocabulary: **Not started / In progress / Waiting for input / Complete**.
 - [ ] Add MOQ, request-price mode and delivery information.
 - [ ] Review pricing/deal validation and product image support.
 - [ ] Implement inquiry storage with service/product context and source page.
+- [ ] Build inquiry storage/API in a future backend phase.
+- [ ] Apply inquiry migration to the configured database after confirming its environment.
+- [ ] Add product context when real Ready Stock inquiries are connected.
 - [ ] Implement server-side validation, spam protection and submission limits.
-- [ ] Add inquiry statuses and internal notes in admin.
+- [ ] Add inquiry statuses and staff notes in a future backend phase.
 - [ ] Configure inquiry email notifications and failure handling.
+- [ ] Build email notifications and retry handling in a future backend phase.
+- [ ] Verify real recipient/SMTP delivery after database setup.
 - [ ] Implement required company/project content administration.
 - [ ] Decide whether service copy and FAQs require editable admin records.
 - [ ] Configure staff permissions and verify backend/API behavior.
@@ -118,7 +123,8 @@ Status vocabulary: **Not started / In progress / Waiting for input / Complete**.
 - [ ] Implement product-aware WhatsApp links and phone actions.
 - [ ] Implement Our Work and individual project pages.
 - [ ] Implement FAQ and Contact pages.
-- [ ] Implement contextual quotation form, validation and submission feedback.
+- [x] Implement static quotation form with editable fields, service preselection and multiple-service selection; submission disabled.
+- [ ] Connect and verify quotation submissions when the backend phase is authorized.
 - [ ] Implement approved Privacy Policy and Terms pages.
 - [ ] Integrate genuine approved content; withhold unavailable evidence sections.
 - [ ] Remove cart/checkout from the primary journey after dependency review.
@@ -187,6 +193,8 @@ These items await business content or account access; they do not prevent indepe
 
 ## Next work queue
 
+Current scope: static frontend only. The quotation page previews service choices and fields; details are not sent or saved. Inquiry API, models, migration, admin and email additions were removed. Existing account/backend features remain intact. No production migration was applied.
+
 1. Review all four initial service pages; continue the remaining corporate pages.
 2. Collect company details, real contact information, products and photos using the pending-information table above.
 3. Decide how new product pages will be published and how old links will work.
@@ -207,14 +215,19 @@ For incomplete work, leave the box unchecked and record the current state or dep
 
 Current palette: blue for links/highlights, yellow for main actions, white/light gray for page surfaces and charcoal for text/footer. Red and green are used for meaningful error/success states. Shades are inspired by the supplied logo screenshot; they are not exact samples from the original logo. Existing logo artwork has not been replaced.
 
+Navigation follow-up (2026-10-05): restored Sign In beside the desktop quotation button and in the mobile menu. It links to the existing `/accounts/signin` page. TypeScript and navigation lint passed; authentication behavior was not changed.
+
 | Date (Asia/Dhaka) | Meaningful part | Result and checks |
 | --- | --- | --- |
 | 2026-10-04 | Website plan and progress tracking | Business model, services, full door-to-door handling, sitemap and task list recorded. Progress is maintained here. |
 | 2026-10-04 | Existing website review | Identified reusable admin/product storage, example shopping features and missing pages/inquiry handling. Useful findings and pending information are kept in this file. Live checks remain pending. |
-| 2026-10-04 | Navigation implementation | Main order: Home, Services, Ready Stock, Our Work, About Us, Contact; Request a Quote stays on the right. Dropdown contains only the four services; the overview link was removed at the owner's request. Desktop/mobile share this order. Added mobile menu and active-page styles; removed shopping controls. Desktop height is 90px; mobile is 64px, with matching page spacing. Initial production build passed; TypeScript and component lint passed for the arrangement update. Full browser review and destination pages remain pending. |
+| 2026-10-04 | Navigation implementation | Main order: Home, Services, Ready Stock, Projects, About Us, Contact; Request a Quote stays on the right. Dropdown contains only the four services; the overview link was removed at the owner's request. Desktop/mobile share this order. Added mobile menu and active-page styles; removed shopping controls. Desktop height is 90px; mobile is 64px, with matching page spacing. Initial production build passed; TypeScript and component lint passed for the arrangement update. Full browser review and destination pages remain pending. |
 | 2026-10-04 | Shopping content moved and first corporate homepage built | Previous home content preserved at `ui/app/ready-stock/page.tsx`. New `ui/app/page.tsx` presents services, process, QC, import support, FAQ and inquiry links. TypeScript, changed-page ESLint and production export passed, including `/ready-stock`. Browser review, real product data, evidence, service pages and quotation handling remain pending. |
 | 2026-10-04 | Shared website colors | Added centralized blue, yellow and neutral shades; white header, light QC/contact sections, charcoal footer, yellow primary inquiry/account actions. Replaced orange shopping accents and account gradients. TypeScript, homepage/navigation/theme lint and production export passed. A final input-background correction was made after the build; visual review remains pending. |
 | 2026-10-04 | Initial China Product Sourcing page | Built `/services/china-product-sourcing` with the agreed sections, shared company footer, page title/description and service-specific quotation links. TypeScript, page/footer lint and production export passed. Quotation form and related service destinations are still pending; no negotiation/sample promises or fabricated evidence added. |
 | 2026-10-04 | Initial Supplier Verification page | Built `/services/supplier-verification` with supplier identity/business/capability information, four-step process, customer checklist, related services, FAQs and service-specific quotation links. Shared palette/footer and page title/description included. TypeScript, page lint and production export passed. Browser review, quotation handling and final operational content remain pending. |
 | 2026-10-04 | Initial QC and Door-to-Door Import pages | Built `/services/quality-control` and `/services/door-to-door-import` with shared service layout, six-step processes, checklists, FAQs, related services, metadata and quotation links. All four service destinations now exist. TypeScript, changed-file lint and production export passed. Browser review, quotation handling, real evidence and final business terms remain pending. |
+| 2026-10-05 | Static quotation page | Built `/request-a-quote` with service preselection, multiple selections and editable fields. Submission is disabled with a clear notice. Backend additions were removed after the owner deferred backend work; no production database changes. TypeScript and changed-file lint passed for the static version. |
+
+
 

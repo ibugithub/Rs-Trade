@@ -1,6 +1,8 @@
-# RS Trade International website restructuring
+﻿# RS Trade International website restructuring
 
 ## Confirmed business direction
+
+Current implementation scope (2026-10-05): build static frontend pages first. Backend inquiry storage, submissions, notifications and admin additions are future work. The quotation form is a preview with submission disabled; existing account functionality remains in place.
 
 - Audience: wholesalers, importers, small businesses and individual buyers.
 - Main website language: English.
@@ -82,7 +84,7 @@ RS Trade International
             & Refund Terms                         [section]
 ```
 
-Main navigation: **Home / Services / Ready Stock / Our Work / About Us / Contact / Request a Quote**. The Services dropdown contains only the four individual services; no overview link.
+Main navigation: **Home / Services / Ready Stock / Projects / About Us / Contact / Request a Quote**. The Services dropdown contains only the four individual services; no overview link.
 
 Footer links include FAQ, Privacy Policy, Terms and contact details. The sitemap contains 14 fixed public pages, plus individual product and project pages. Policies is a grouping, not an additional page. Evidence sections will appear when genuine content is available. Orders are confirmed through WhatsApp or phone without online payment or mandatory registration.
 
@@ -154,7 +156,7 @@ All journeys should work on mobile without requiring registration.
 
 About Us topics can be sections on one page. Factory visits and inspections can initially be sections or filters within Our Work. Final routes must account for existing URLs and redirects.
 
-Desktop navigation: **Home / Services / Ready Stock / Our Work / About Us / Contact / Request a Quote**. Mobile uses the same order.
+Desktop navigation: **Home / Services / Ready Stock / Projects / About Us / Contact / Request a Quote**. Mobile uses the same order.
 
 Footer: FAQ, policies, company/contact details and relevant page links. Mobile navigation should make quotation requests and WhatsApp easy to reach.
 
@@ -200,6 +202,8 @@ Use actual inspection media and appropriate report examples. Final service terms
 Full door-to-door responsibilities are confirmed in the earlier section. Pricing inclusions, timelines, delivery coverage and product restrictions remain pending; do not publish unsupported guarantees.
 
 ### Other page content
+
+Navigation label update: the Our Work page appears as **Projects** in the menu. Its planned URL stays `/our-work`, and it still covers factory visits, inspections and completed projects.
 
 - **About Us:** approved company introduction, China presence, offices, team information where available and relevant trade license details.
 - **Our Work:** real factory visits, inspection media and completed projects. Project pages describe work performed and approved outcomes. Obtain permission before naming customers or publishing their feedback.
@@ -373,3 +377,4 @@ The present scope does not include online payments, a large marketplace, warehou
 ### Immediate next step
 
 Complete Phase 1: audit the existing project, finalize the sitemap and prepare the page-by-page content checklist. Then design the homepage and apply the agreed visual direction across the other pages.
+

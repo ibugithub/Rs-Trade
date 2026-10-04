@@ -15,7 +15,7 @@ const services = [
 const links = [
   { label: 'Home', href: '/' },
   { label: 'Ready Stock', href: '/ready-stock' },
-  { label: 'Our Work', href: '/our-work' },
+  { label: 'Projects', href: '/our-work' },
   { label: 'About Us', href: '/about' },
   { label: 'Contact', href: '/contact' },
 ];
@@ -97,6 +97,9 @@ export const NavBar = () => {
         </nav>
 
         <div className="flex items-center gap-2">
+          <Link href="/accounts/signin" onClick={close} aria-current={active('/accounts/signin') ? 'page' : undefined} className={`hidden lg:inline-flex ${linkStyle('/accounts/signin')}`}>
+            Sign In
+          </Link>
           <Link href="/request-a-quote" onClick={close} className="inline-flex min-h-11 items-center gap-1 rounded-lg bg-yellow-300 px-3 text-sm font-semibold text-gray-900 transition-colors hover:bg-yellow-500 focus-visible:outline focus-visible:outline-2 focus-visible:outline-offset-2 focus-visible:outline-blue-600 sm:px-4">
             Request a Quote <ArrowUpRight size={16} aria-hidden="true" className="hidden sm:block" />
           </Link>
@@ -119,6 +122,9 @@ export const NavBar = () => {
               </div>
             )}
             {links.slice(1).map(renderLink)}
+            <div className="mt-2 flex flex-col border-t border-gray-200 pt-2">
+              {renderLink({ label: 'Sign In', href: '/accounts/signin' })}
+            </div>
           </div>
         </nav>
       )}
