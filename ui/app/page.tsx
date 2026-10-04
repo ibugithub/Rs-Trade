@@ -14,7 +14,7 @@ import { Footer } from "@/components/footer/footer";
 
 export default function Page() {
   return (
-    <div className="mt-[7.5rem] bg-gray-100">
+    <div className="bg-gray-100">
       <Hero />
       <Categories />
       <TopBanner />

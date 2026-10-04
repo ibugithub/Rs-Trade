@@ -32,7 +32,7 @@ export default function RootLayout({
           <ReduxInitializer>
             <NavBar />
             <ToastContainer />
-            <div className="mt-16">
+            <div className="pt-16 lg:pt-[90px]">
               {children}
             </div>
           </ReduxInitializer>

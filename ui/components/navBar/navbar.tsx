@@ -1,156 +1,127 @@
-'use client';
+﻿'use client';
 
-import { useState } from 'react';
+import { useEffect, useRef, useState } from 'react';
 import Link from 'next/link';
-import { SideBar } from './sidebar';
-import { ProfileModal } from '../accounts/profileModal';
+import { usePathname } from 'next/navigation';
+import { ArrowUpRight, ChevronDown, Menu, X } from 'lucide-react';
+
+const services = [
+  { label: 'China Product Sourcing', href: '/services/china-product-sourcing' },
+  { label: 'Supplier Verification', href: '/services/supplier-verification' },
+  { label: 'Quality Control & Inspection', href: '/services/quality-control' },
+  { label: 'Shipping & Door-to-Door Import', href: '/services/door-to-door-import' },
+];
+
+const links = [
+  { label: 'Home', href: '/' },
+  { label: 'About Us', href: '/about' },
+  { label: 'Ready Stock', href: '/ready-stock' },
+  { label: 'Our Work', href: '/our-work' },
+  { label: 'Contact', href: '/contact' },
+];
 
 export const NavBar = () => {
-  const [isMenuOpen, setIsMenuOpen] = useState(false);
-  const [allProductClicked, setAllProductClicked] = useState(false);
+  const pathname = usePathname();
+  const [mobileOpen, setMobileOpen] = useState(false);
+  const [servicesOpen, setServicesOpen] = useState(false);
+  const headerRef = useRef<HTMLElement>(null);
+  const servicesButtonRef = useRef<HTMLButtonElement>(null);
+  const menuButtonRef = useRef<HTMLButtonElement>(null);
+  const active = (href: string) => href === '/' ? pathname === '/' : pathname === href || pathname.startsWith(`${href}/`);
+  const close = () => { setMobileOpen(false); setServicesOpen(false); };
+  const linkStyle = (href: string) => `rounded-lg px-3 py-2.5 text-sm font-medium transition-colors hover:bg-blue-800 focus-visible:outline focus-visible:outline-2 focus-visible:outline-offset-2 focus-visible:outline-yellow-300 ${active(href) ? 'bg-blue-800 text-yellow-300' : 'text-white'}`;
 
-  const handleAllProductClick = () => {
-    setAllProductClicked((prev) => !prev);
-  }
+  useEffect(() => {
+    setMobileOpen(false);
+    setServicesOpen(false);
+  }, [pathname]);
 
-  const handleCloseSidebar = () => {
-    setAllProductClicked(false);
-  };
+  useEffect(() => {
+    const onPointerDown = (event: PointerEvent) => {
+      if (!headerRef.current?.contains(event.target as Node)) close();
+    };
+    const onKeyDown = (event: KeyboardEvent) => {
+      if (event.key === 'Escape') {
+        if (mobileOpen) menuButtonRef.current?.focus();
+        else if (servicesOpen) servicesButtonRef.current?.focus();
+        close();
+      }
+    };
+    const onResize = () => close();
+    document.addEventListener('pointerdown', onPointerDown);
+    document.addEventListener('keydown', onKeyDown);
+    window.addEventListener('resize', onResize);
+    return () => {
+      document.removeEventListener('pointerdown', onPointerDown);
+      document.removeEventListener('keydown', onKeyDown);
+      window.removeEventListener('resize', onResize);
+    };
+  }, [mobileOpen, servicesOpen]);
+
+  const renderLink = (item: { label: string; href: string }) => (
+    <Link key={item.href} href={item.href} className={linkStyle(item.href)} aria-current={active(item.href) ? 'page' : undefined} onClick={close}>
+      {item.label}
+    </Link>
+  );
 
   return (
-    <nav className="fixed top-0 left-0 w-full bg-blue-500 z-50 pb-3 pt-2">
+    <header ref={headerRef} className="fixed inset-x-0 top-0 z-50 border-b border-blue-800 bg-blue-700 shadow-sm" onBlur={(event) => {
+      if (!event.currentTarget.contains(event.relatedTarget as Node | null)) close();
+    }}>
+      <div className="mx-auto flex h-16 max-w-7xl items-center justify-between gap-3 px-4 sm:px-6 lg:h-[90px] lg:px-8">
+        <Link href="/" onClick={close} aria-label="RS Trade International home" className="flex shrink-0 items-center gap-2 rounded-md focus-visible:outline focus-visible:outline-2 focus-visible:outline-yellow-300">
+          <span className="flex h-10 w-10 items-center justify-center rounded-full bg-yellow-300 text-lg font-bold text-blue-800">RS</span>
+          <span className="leading-tight text-white">
+            <span className="block text-lg font-bold">Trade</span>
+            <span className="block text-[10px] font-medium uppercase tracking-[0.16em] text-blue-100">International</span>
+          </span>
+        </Link>
 
-      <div className="max-w-7xl mx-auto px-4 sm:px-6 lg:px-8">
-        {/* Main navbar content */}
-        <div className="flex items-center justify-between h-16">
-          <div className="flex-shrink-0 flex items-center">
-            <Link href="/" className="flex items-center">
-              <div className="w-8 h-8 bg-yellow-300 rounded-full flex items-center justify-center mr-1">
-                <span className="text-blue-500 font-bold">Rs</span>
-              </div>
-              <span className="text-white text-xl font-bold">Trade</span>
-            </Link>
-          </div>
-
-          {/* Search Bar - always visible */}
-          <div className="hidden md:flex flex-1 justify-center mx-8">
-            <div className="relative w-full max-w-md">
-              <input
-                type="text"
-                placeholder="Search product ..."
-                className="w-full px-4 py-2 rounded-md focus:outline-none"
-              />
-              <button className="absolute right-0 top-0 h-full px-3 bg-gray-100 border-l rounded-r-md">
-                <svg xmlns="http://www.w3.org/2000/svg" className="h-5 w-5 text-gray-500" fill="none" viewBox="0 0 24 24" stroke="currentColor">
-                  <path strokeLinecap="round" strokeLinejoin="round" strokeWidth={2} d="M21 21l-6-6m2-5a7 7 0 11-14 0 7 7 0 0114 0z" />
-                </svg>
-              </button>
-            </div>
-          </div>
-
-          {/* Right side elements */}
-          <div className="flex items-center space-x-4">
-            {/* Shopping cart */}
-            <Link href="/cart" className="relative text-white">
-              <svg xmlns="http://www.w3.org/2000/svg" className="h-6 w-6" fill="none" viewBox="0 0 24 24" stroke="currentColor">
-                <path strokeLinecap="round" strokeLinejoin="round" strokeWidth={2} d="M3 3h2l.4 2M7 13h10l4-8H5.4M7 13L5.4 5M7 13l-2.293 2.293c-.63.63-.184 1.707.707 1.707H17m0 0a2 2 0 100 4 2 2 0 000-4zm-8 2a2 2 0 11-4 0 2 2 0 014 0z" />
-              </svg>
-              <span className="absolute -top-2 -right-2 bg-white text-blue-500 rounded-full w-5 h-5 flex items-center justify-center text-xs font-bold">
-                0
-              </span>
-            </Link>
-
-            <ProfileModal />
-         
-            {/* Mobile menu button */}
-            <button
-              className="md:hidden text-white hover:text-blue-100"
-              onClick={handleAllProductClick}
-            >
-              <svg className="h-6 w-6" fill="none" viewBox="0 0 24 24" stroke="currentColor">
-                {isMenuOpen ? (
-                  <path strokeLinecap="round" strokeLinejoin="round" strokeWidth={2} d="M6 18L18 6M6 6l12 12" />
-                ) : (
-                  <path strokeLinecap="round" strokeLinejoin="round" strokeWidth={2} d="M4 6h16M4 12h16M4 18h16" />
-                )}
-              </svg>
+        <nav aria-label="Main navigation" className="hidden items-center gap-1 lg:flex">
+          {links.slice(0, 2).map(renderLink)}
+          <div className="relative">
+            <button ref={servicesButtonRef} type="button" aria-expanded={servicesOpen} aria-controls="desktop-services" onClick={() => setServicesOpen(!servicesOpen)} className={`${linkStyle('/services')} flex items-center gap-1`}>
+              Services <ChevronDown size={16} aria-hidden="true" className={`transition-transform ${servicesOpen ? 'rotate-180' : ''}`} />
             </button>
+            {servicesOpen && (
+              <div id="desktop-services" className="absolute left-0 top-full mt-2 w-80 rounded-xl border border-gray-200 bg-white p-2 text-gray-800 shadow-xl">
+                {[{ label: 'All Services', href: '/services' }, ...services].map((item) => (
+                  <Link key={item.href} href={item.href} onClick={close} aria-current={pathname === item.href ? 'page' : undefined} className={`block rounded-lg px-4 py-3 text-sm hover:bg-blue-50 focus-visible:outline focus-visible:outline-2 focus-visible:outline-blue-700 ${pathname === item.href ? 'bg-blue-50 font-semibold text-blue-700' : ''}`}>
+                    {item.label}
+                  </Link>
+                ))}
+              </div>
+            )}
           </div>
+          {links.slice(2).map(renderLink)}
+        </nav>
+
+        <div className="flex items-center gap-2">
+          <Link href="/request-a-quote" onClick={close} className="inline-flex min-h-11 items-center gap-1 rounded-lg bg-yellow-300 px-3 text-sm font-semibold text-blue-950 transition-colors hover:bg-yellow-200 focus-visible:outline focus-visible:outline-2 focus-visible:outline-offset-2 focus-visible:outline-white sm:px-4">
+            Request a Quote <ArrowUpRight size={16} aria-hidden="true" className="hidden sm:block" />
+          </Link>
+          <button ref={menuButtonRef} type="button" onClick={() => { setMobileOpen(!mobileOpen); setServicesOpen(false); }} aria-label={mobileOpen ? 'Close navigation' : 'Open navigation'} aria-expanded={mobileOpen} aria-controls="mobile-navigation" className="flex h-11 w-11 items-center justify-center rounded-lg text-white hover:bg-blue-800 focus-visible:outline focus-visible:outline-2 focus-visible:outline-yellow-300 lg:hidden">
+            {mobileOpen ? <X aria-hidden="true" /> : <Menu aria-hidden="true" />}
+          </button>
         </div>
-
-        {/* Category links - desktop */}
-        <div className="hidden md:flex justify-start space-x-8 py-2 text-white">
-          <div className="relative group">
-            <div className="flex cursor-pointer items-center hover:text-blue-100"
-              onClick={() => setAllProductClicked((prev) => !prev)}
-            >
-              All products <span className="ml-1">▼</span>
-            </div>
-          </div>
-          <Link href="/home-appliances" className="hover:text-blue-100">
-            Home appliances
-          </Link>
-          <Link href="/audio-video" className="hover:text-blue-100">
-            Audio & video
-          </Link>
-          <Link href="/refrigerator" className="hover:text-blue-100">
-            Refrigerator
-          </Link>
-          <Link href="/new-arrivals" className="hover:text-blue-100">
-            New arrivals
-          </Link>
-          <Link href="/todays-deal" className="hover:text-blue-100">
-            Today&apos;s deal
-          </Link>
-          <Link href="/gift-cards" className="hover:text-blue-100">
-            Gift cards
-          </Link>
-        </div>
-
-        {/* Mobile menu */}
-        {isMenuOpen && (
-          <div className="md:hidden py-4 bg-blue-600 space-y-2 px-2">
-            {/* Mobile search bar */}
-            <div className="relative w-full mb-4">
-              <input
-                type="text"
-                placeholder="Search product ..."
-                className="w-full px-4 py-2 rounded-md focus:outline-none"
-              />
-              <button className="absolute right-0 top-0 h-full px-3 bg-gray-100 border-l rounded-r-md">
-                <svg xmlns="http://www.w3.org/2000/svg" className="h-5 w-5 text-gray-500" fill="none" viewBox="0 0 24 24" stroke="currentColor">
-                  <path strokeLinecap="round" strokeLinejoin="round" strokeWidth={2} d="M21 21l-6-6m2-5a7 7 0 11-14 0 7 7 0 0114 0z" />
-                </svg>
-              </button>
-            </div>
-
-            <Link href="/products" className="block text-white hover:bg-blue-700 px-3 py-2 rounded-md">
-              All products
-            </Link>
-            <Link href="/home-appliances" className="block text-white hover:bg-blue-700 px-3 py-2 rounded-md">
-              Home appliances
-            </Link>
-            <Link href="/audio-video" className="block text-white hover:bg-blue-700 px-3 py-2 rounded-md">
-              Audio & video
-            </Link>
-            <Link href="/refrigerator" className="block text-white hover:bg-blue-700 px-3 py-2 rounded-md">
-              Refrigerator
-            </Link>
-            <Link href="/new-arrivals" className="block text-white hover:bg-blue-700 px-3 py-2 rounded-md">
-              New arrivals
-            </Link>
-            <Link href="/todays-deal" className="block text-white hover:bg-blue-700 px-3 py-2 rounded-md">
-              Today&apos;s deal
-            </Link>
-            <Link href="/gift-cards" className="block text-white hover:bg-blue-700 px-3 py-2 rounded-md">
-              Gift cards
-            </Link>
-          </div>
-        )}
       </div>
 
-      <SideBar isOpen={allProductClicked} onClose={handleCloseSidebar} />
-  
-    </nav>
+      {mobileOpen && (
+        <nav id="mobile-navigation" aria-label="Mobile navigation" className="max-h-[calc(100dvh-4rem)] overflow-y-auto border-t border-blue-600 px-4 py-4 lg:hidden">
+          <div className="mx-auto flex max-w-7xl flex-col gap-1">
+            {links.slice(0, 2).map(renderLink)}
+            <button type="button" onClick={() => setServicesOpen(!servicesOpen)} aria-expanded={servicesOpen} aria-controls="mobile-services" className={`${linkStyle('/services')} flex min-h-11 items-center justify-between text-left`}>
+              Services <ChevronDown size={18} aria-hidden="true" className={servicesOpen ? 'rotate-180' : ''} />
+            </button>
+            {servicesOpen && (
+              <div id="mobile-services" className="ml-3 flex flex-col gap-1 border-l border-blue-400 pl-3">
+                {[{ label: 'All Services', href: '/services' }, ...services].map(renderLink)}
+              </div>
+            )}
+            {links.slice(2).map(renderLink)}
+          </div>
+        </nav>
+      )}
+    </header>
   );
 };
