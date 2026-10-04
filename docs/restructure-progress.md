@@ -10,13 +10,13 @@ This is the ongoing tracker for the full website restructuring. Planning decisio
 
 ## Current position
 
-**Current phase:** Service page implementation (Phase 4), with planning/design items still open.
+**Current phase:** Static corporate page implementation (Phase 4), with planning/design items still open.
 
 **Completed:** Business direction, service list, order approach, full door-to-door responsibility, restructuring roadmap and planned sitemap have been documented.
 
-**Next:** Continue the static corporate pages and review their designs. Backend, inquiry submission, admin management and notifications are deferred until the owner requests them.
+**Next:** Review Projects and add real factory photos, short stories and public video links when supplied. Continue About Us and Contact as static pages. Backend work remains deferred.
 
-**Implementation status:** Navigation, homepage draft, four service pages and static quotation form are implemented. Service selection and preselection work locally; submissions are disabled. The inquiry backend was removed at the owner's request. Production database unchanged.
+**Implementation status:** Navigation, homepage draft, four services, static quotation form and initial Projects page are implemented. Projects uses empty static content lists until real material is supplied. Quote submissions remain disabled. Backend work is deferred; production database unchanged.
 
 ## Visual roadmap
 
@@ -122,6 +122,9 @@ Status vocabulary: **Not started / In progress / Waiting for input / Complete**.
 - [ ] Implement Ready Stock listing and individual product pages.
 - [ ] Implement product-aware WhatsApp links and phone actions.
 - [ ] Implement Our Work and individual project pages.
+- [x] Build the initial Projects page at `/our-work` with category filters, expandable photo stories and external video links.
+- [ ] Add owner-supplied photos/stories and YouTube/Facebook URLs, then review populated cards on mobile/desktop.
+- [ ] Build separate project detail pages later if needed; stories currently expand inside the listing.
 - [ ] Implement FAQ and Contact pages.
 - [x] Implement static quotation form with editable fields, service preselection and multiple-service selection; submission disabled.
 - [ ] Connect and verify quotation submissions when the backend phase is authorized.
@@ -193,9 +196,11 @@ These items await business content or account access; they do not prevent indepe
 
 ## Next work queue
 
+Projects decisions: real factory photos are available from the owner but have not yet been added to the project. Show photos with stories, publish only details the owner chooses to share, use public YouTube/Facebook video links, and keep content static for now. `ui/content/projects.ts` stores stories and videos in their chosen display order; admin editing is future work. Empty states are displayed instead of invented project examples.
+
 Current scope: static frontend only. The quotation page previews service choices and fields; details are not sent or saved. Inquiry API, models, migration, admin and email additions were removed. Existing account/backend features remain intact. No production migration was applied.
 
-1. Review all four initial service pages; continue the remaining corporate pages.
+1. Review Projects and the four services; continue the remaining static corporate pages.
 2. Collect company details, real contact information, products and photos using the pending-information table above.
 3. Decide how new product pages will be published and how old links will work.
 
@@ -228,6 +233,7 @@ Navigation follow-up (2026-10-05): restored Sign In beside the desktop quotation
 | 2026-10-04 | Initial Supplier Verification page | Built `/services/supplier-verification` with supplier identity/business/capability information, four-step process, customer checklist, related services, FAQs and service-specific quotation links. Shared palette/footer and page title/description included. TypeScript, page lint and production export passed. Browser review, quotation handling and final operational content remain pending. |
 | 2026-10-04 | Initial QC and Door-to-Door Import pages | Built `/services/quality-control` and `/services/door-to-door-import` with shared service layout, six-step processes, checklists, FAQs, related services, metadata and quotation links. All four service destinations now exist. TypeScript, changed-file lint and production export passed. Browser review, quotation handling, real evidence and final business terms remain pending. |
 | 2026-10-05 | Static quotation page | Built `/request-a-quote` with service preselection, multiple selections and editable fields. Submission is disabled with a clear notice. Backend additions were removed after the owner deferred backend work; no production database changes. TypeScript and changed-file lint passed for the static version. |
+| 2026-10-05 | Initial static Projects page | Built `/our-work` with shared colors/footer, three project categories, filters, expandable photo stories and YouTube/Facebook link support. No fictional entries: real content is pending in `ui/content/projects.ts`. TypeScript, changed-file lint and production export passed. Populated gallery/browser review and actual media remain pending; no backend added. |
 
 
 
