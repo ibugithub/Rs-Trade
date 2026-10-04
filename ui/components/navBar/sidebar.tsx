@@ -1,4 +1,4 @@
-import React, { useState } from 'react';
+﻿import React, { useState } from 'react';
 import { ChevronRight, X, User, MapPin, Globe, Smartphone, Laptop, Camera, Gamepad2, Car, Home, Heart, Book, Shirt, Dumbbell, Baby, Gift, Utensils, Wrench, Palette, Music } from 'lucide-react';
 
 export const SideBar = ({ isOpen, onClose }) => {
@@ -47,7 +47,7 @@ export const SideBar = ({ isOpen, onClose }) => {
         'Kitchen & Dining',
         'Bedding & Bath',
         'Furniture',
-        'Home Décor',
+        'Home DÃ©cor',
         'Appliances',
         'Storage & Organization',
         'Cleaning Supplies',
@@ -294,7 +294,7 @@ export const SideBar = ({ isOpen, onClose }) => {
                 
                 {/* Subcategories */}
                 {activeCategory === category.id && (
-                  <div className="bg-gray-50 border-l-2 border-orange-500">
+                  <div className="bg-gray-50 border-l-2 border-blue-500">
                     {category.subcategories.map((subcategory, index) => (
                       <div 
                         key={index}
@@ -369,7 +369,7 @@ export const NavBar = () => {
                   className="flex cursor-pointer items-center text-white hover:text-blue-100"
                   onClick={handleAllProductsClick}
                 >
-                  All products <span className="ml-1">▼</span>
+                  All products <span className="ml-1">â–¼</span>
                 </div>
               </div>
             </div>

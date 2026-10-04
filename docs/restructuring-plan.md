@@ -256,6 +256,8 @@ Proposed professional email addresses: `info@rstradeinternational.com`, `sales@r
 
 ### Design and mobile requirements
 
+Current color direction: blue for brand links/highlights, yellow for main actions, white/light gray page backgrounds and charcoal text/footer. Keep red/green mainly for error/success states and the colorful logo. Use the same palette across corporate, stock and account pages. These shades are inspired by the owner's logo screenshot; original logo replacement and exact shade matching remain separate work.
+
 - Review the existing logo and brand colors before choosing the final visual direction.
 - Use consistent typography, buttons, spacing and colors.
 - Prioritize service explanations and contact actions over shopping promotions.

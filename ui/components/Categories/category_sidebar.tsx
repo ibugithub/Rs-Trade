@@ -1,4 +1,4 @@
-'use client'
+﻿'use client'
 
 import { useState } from 'react';
 import { Star, ChevronDown, ChevronUp } from 'lucide-react';
@@ -44,13 +44,13 @@ export const Sidebar = () => {
         
         {expandedSections.departments && (
           <ul className="space-y-2 pl-2">
-            <li className=" hover:text-orange-500 cursor-pointer">Electronics</li>
-            <li className=" hover:text-orange-500 cursor-pointer">Computers</li>
-            <li className=" hover:text-orange-500 cursor-pointer">Smart Home</li>
-            <li className=" hover:text-orange-500 cursor-pointer">Arts & Crafts</li>
-            <li className=" hover:text-orange-500 cursor-pointer">Automotive</li>
-            <li className=" hover:text-orange-500 cursor-pointer">Baby</li>
-            <li className=" hover:text-orange-500 cursor-pointer font-semibold">See All Departments</li>
+            <li className=" hover:text-blue-500 cursor-pointer">Electronics</li>
+            <li className=" hover:text-blue-500 cursor-pointer">Computers</li>
+            <li className=" hover:text-blue-500 cursor-pointer">Smart Home</li>
+            <li className=" hover:text-blue-500 cursor-pointer">Arts & Crafts</li>
+            <li className=" hover:text-blue-500 cursor-pointer">Automotive</li>
+            <li className=" hover:text-blue-500 cursor-pointer">Baby</li>
+            <li className=" hover:text-blue-500 cursor-pointer font-semibold">See All Departments</li>
           </ul>
         )}
       </div>
@@ -69,19 +69,19 @@ export const Sidebar = () => {
         
         {expandedSections.customerReviews && (
           <ul className="space-y-2 pl-2">
-            <li className="flex items-center hover:text-orange-500 cursor-pointer">
+            <li className="flex items-center hover:text-blue-500 cursor-pointer">
               <div className="flex">{renderStars(4)}</div>
               <span className="ml-2">& Up</span>
             </li>
-            <li className="flex items-center hover:text-orange-500 cursor-pointer">
+            <li className="flex items-center hover:text-blue-500 cursor-pointer">
               <div className="flex">{renderStars(3)}</div>
               <span className="ml-2">& Up</span>
             </li>
-            <li className="flex items-center hover:text-orange-500 cursor-pointer">
+            <li className="flex items-center hover:text-blue-500 cursor-pointer">
               <div className="flex">{renderStars(2)}</div>
               <span className="ml-2">& Up</span>
             </li>
-            <li className="flex items-center hover:text-orange-500 cursor-pointer">
+            <li className="flex items-center hover:text-blue-500 cursor-pointer">
               <div className="flex">{renderStars(1)}</div>
               <span className="ml-2">& Up</span>
             </li>
@@ -103,11 +103,11 @@ export const Sidebar = () => {
         
         {expandedSections.priceRange && (
           <ul className="space-y-2 pl-2">
-            <li className="hover:text-orange-500 cursor-pointer">Under $25</li>
-            <li className="hover:text-orange-500 cursor-pointer">$25 to $50</li>
-            <li className="hover:text-orange-500 cursor-pointer">$50 to $100</li>
-            <li className="hover:text-orange-500 cursor-pointer">$100 to $200</li>
-            <li className="hover:text-orange-500 cursor-pointer">$200 & Above</li>
+            <li className="hover:text-blue-500 cursor-pointer">Under $25</li>
+            <li className="hover:text-blue-500 cursor-pointer">$25 to $50</li>
+            <li className="hover:text-blue-500 cursor-pointer">$50 to $100</li>
+            <li className="hover:text-blue-500 cursor-pointer">$100 to $200</li>
+            <li className="hover:text-blue-500 cursor-pointer">$200 & Above</li>
             <li className="mt-3">
               <div className="flex items-center space-x-2">
                 <input type="text" placeholder="Min" className="w-16 h-8 border border-gray-300 px-2 text-xs" />
@@ -136,19 +136,19 @@ export const Sidebar = () => {
           <ul className="space-y-2 pl-2">
             <li className="flex items-center">
               <input type="checkbox" className="mr-2" />
-              <span className="hover:text-orange-500 cursor-pointer">Today&apos;s Deals</span>
+              <span className="hover:text-blue-500 cursor-pointer">Today&apos;s Deals</span>
             </li>
             <li className="flex items-center">
               <input type="checkbox" className="mr-2" />
-              <span className="hover:text-orange-500 cursor-pointer">Lightning Deals</span>
+              <span className="hover:text-blue-500 cursor-pointer">Lightning Deals</span>
             </li>
             <li className="flex items-center">
               <input type="checkbox" className="mr-2" />
-              <span className="hover:text-orange-500 cursor-pointer">Savings</span>
+              <span className="hover:text-blue-500 cursor-pointer">Savings</span>
             </li>
             <li className="flex items-center">
               <input type="checkbox" className="mr-2" />
-              <span className="hover:text-orange-500 cursor-pointer">Prime Deals</span>
+              <span className="hover:text-blue-500 cursor-pointer">Prime Deals</span>
             </li>
           </ul>
         )}
@@ -178,25 +178,25 @@ export const Sidebar = () => {
             <ul className="space-y-2 pl-2">
               <li className="flex items-center">
                 <input type="checkbox" className="mr-2" />
-                <span className="hover:text-orange-500 cursor-pointer">Apple</span>
+                <span className="hover:text-blue-500 cursor-pointer">Apple</span>
               </li>
               <li className="flex items-center">
                 <input type="checkbox" className="mr-2" />
-                <span className="hover:text-orange-500 cursor-pointer">Samsung</span>
+                <span className="hover:text-blue-500 cursor-pointer">Samsung</span>
               </li>
               <li className="flex items-center">
                 <input type="checkbox" className="mr-2" />
-                <span className="hover:text-orange-500 cursor-pointer">Logitech</span>
+                <span className="hover:text-blue-500 cursor-pointer">Logitech</span>
               </li>
               <li className="flex items-center">
                 <input type="checkbox" className="mr-2" />
-                <span className="hover:text-orange-500 cursor-pointer">Sony</span>
+                <span className="hover:text-blue-500 cursor-pointer">Sony</span>
               </li>
               <li className="flex items-center">
                 <input type="checkbox" className="mr-2" />
-                <span className="hover:text-orange-500 cursor-pointer">Microsoft</span>
+                <span className="hover:text-blue-500 cursor-pointer">Microsoft</span>
               </li>
-              <li className="text-blue-600 hover:text-orange-500 cursor-pointer mt-2">See more</li>
+              <li className="text-blue-600 hover:text-blue-500 cursor-pointer mt-2">See more</li>
             </ul>
           </>
         )}

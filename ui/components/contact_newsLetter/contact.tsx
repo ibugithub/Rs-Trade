@@ -1,4 +1,4 @@
-'use client';
+﻿'use client';
 import Image from 'next/image';
 import { useState } from 'react';
 
@@ -93,7 +93,7 @@ export const  Contact = () => {
                 />
                 <button 
                   onClick={handleSubmit}
-                  className="px-6 py-3 bg-gray-800 text-white font-medium hover:bg-gray-700 transition-colors"
+                  className="px-6 py-3 bg-yellow-300 text-gray-900 font-medium hover:bg-yellow-500 transition-colors"
                 >
                   Subscribe
                 </button>

@@ -1,4 +1,4 @@
-'use client';
+﻿'use client';
 
 import React, { useEffect } from 'react';
 import axios from 'axios';
@@ -27,7 +27,7 @@ const MicrosoftCallback = () => {
   }, [saveTokens]);
 
   return (
-    <div className="flex h-screen w-full items-center justify-center bg-gradient-to-r from-gray-900 to-gray-800 text-white">
+    <div className="flex h-screen w-full items-center justify-center bg-gray-50 text-gray-900">
       <div className="relative flex flex-col items-center p-6 bg-gray-900/80 border border-gray-700 shadow-lg rounded-xl backdrop-blur-lg">
         {/* Cyberpunk Loader */}
         <div className="relative w-16 h-16">

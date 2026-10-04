@@ -28,7 +28,7 @@ export default function Page() {
             <h1 className="max-w-xl text-4xl font-bold leading-tight tracking-tight sm:text-5xl lg:text-6xl">Source with confidence.<br /><span className="text-blue-700">Import with support.</span></h1>
             <p className="mt-6 max-w-lg text-lg leading-relaxed text-slate-600">From finding the right product to checking its quality and delivering it to your door. RS Trade International helps you manage the complete journey.</p>
             <div className="mt-8 flex flex-wrap gap-3">
-              <Link href="/request-a-quote" className={`${action} bg-blue-700 text-white hover:bg-blue-800`}>Request a Quote <ArrowRight size={18} aria-hidden="true" /></Link>
+              <Link href="/request-a-quote" className={`${action} bg-yellow-300 text-gray-900 hover:bg-yellow-500`}>Request a Quote <ArrowRight size={18} aria-hidden="true" /></Link>
               <Link href="/ready-stock" className={`${action} border border-blue-200 bg-white text-blue-800 hover:bg-blue-50`}>Browse Ready Stock</Link>
             </div>
             <p className="mt-6 text-sm text-slate-500">For businesses, importers, wholesalers and individual buyers.</p>
@@ -66,10 +66,10 @@ export default function Page() {
         </div>
       </section>
 
-      <section className="bg-slate-950 py-16 text-white sm:py-20">
+      <section className="bg-slate-50 py-16 text-slate-900 sm:py-20">
         <div className={`${container} grid gap-10 lg:grid-cols-2 lg:gap-20`}>
-          <div><p className="text-xs font-bold uppercase tracking-[0.2em] text-yellow-300">Quality before shipment</p><h2 className="mt-4 text-3xl font-bold tracking-tight sm:text-4xl">Know what is being shipped.</h2><p className="mt-5 max-w-lg leading-7 text-slate-300">Quality control is a dedicated service. We check products, quantities and packaging, and provide photo and video reports to support shipment decisions.</p><Link href="/services/quality-control" className="mt-7 inline-flex items-center gap-2 font-semibold text-yellow-300 hover:underline">Our QC process <ArrowRight size={18} aria-hidden="true" /></Link></div>
-          <ol className="grid gap-3 sm:grid-cols-2">{qcChecks.map((check, index) => <li key={check} className="flex items-center gap-3 rounded-xl border border-slate-700 bg-slate-900 p-4"><span className="text-xs font-bold text-yellow-300">0{index + 1}</span><span className="text-sm font-medium">{check}</span></li>)}</ol>
+          <div><p className="text-xs font-bold uppercase tracking-[0.2em] text-blue-700">Quality before shipment</p><h2 className="mt-4 text-3xl font-bold tracking-tight sm:text-4xl">Know what is being shipped.</h2><p className="mt-5 max-w-lg leading-7 text-slate-600">Quality control is a dedicated service. We check products, quantities and packaging, and provide photo and video reports to support shipment decisions.</p><Link href="/services/quality-control" className="mt-7 inline-flex items-center gap-2 font-semibold text-blue-700 hover:underline">Our QC process <ArrowRight size={18} aria-hidden="true" /></Link></div>
+          <ol className="grid gap-3 sm:grid-cols-2">{qcChecks.map((check, index) => <li key={check} className="flex items-center gap-3 rounded-xl border border-slate-200 bg-white p-4"><span className="text-xs font-bold text-blue-700">0{index + 1}</span><span className="text-sm font-medium">{check}</span></li>)}</ol>
         </div>
       </section>
 
@@ -82,9 +82,10 @@ export default function Page() {
 
       <section className={`${container} grid gap-8 py-16 sm:py-20 lg:grid-cols-[1fr_1.5fr] lg:gap-20`}><div><p className="text-xs font-bold uppercase tracking-[0.2em] text-blue-700">Before you get started</p><h2 className="mt-4 text-3xl font-bold tracking-tight">A few common questions.</h2></div><div className="divide-y divide-slate-200">{faqs.map(({ question, answer }) => <details key={question} className="group py-5 first:pt-0"><summary className="cursor-pointer text-lg font-semibold focus-visible:outline-blue-700">{question}</summary><p className="mt-3 max-w-2xl text-sm leading-7 text-slate-600">{answer}</p></details>)}</div></section>
 
-      <section className="bg-blue-700 text-white"><div className={`${container} flex flex-col justify-between gap-7 py-14 sm:flex-row sm:items-center`}><div><ClipboardCheck size={28} className="mb-4 text-yellow-300" aria-hidden="true" /><h2 className="text-3xl font-bold">Tell us what you need.</h2><p className="mt-3 max-w-xl leading-7 text-blue-100">Share your product, quantity and requirements. Let’s discuss the next steps for your sourcing or import.</p></div><Link href="/request-a-quote" className={`${action} shrink-0 bg-yellow-300 text-blue-950 hover:bg-yellow-200 focus-visible:outline-white`}>Request a Quote <ArrowRight size={18} aria-hidden="true" /></Link></div></section>
+      <section className="border-t border-gray-200 bg-blue-50 text-gray-900"><div className={`${container} flex flex-col justify-between gap-7 py-14 sm:flex-row sm:items-center`}><div><ClipboardCheck size={28} className="mb-4 text-blue-700" aria-hidden="true" /><h2 className="text-3xl font-bold">Tell us what you need.</h2><p className="mt-3 max-w-xl leading-7 text-gray-600">Share your product, quantity and requirements. Let’s discuss the next steps for your sourcing or import.</p></div><Link href="/request-a-quote" className={`${action} shrink-0 bg-yellow-300 text-blue-950 hover:bg-yellow-200 focus-visible:outline-blue-700`}>Request a Quote <ArrowRight size={18} aria-hidden="true" /></Link></div></section>
 
       <footer className="bg-slate-950 text-slate-300"><div className={`${container} flex flex-col justify-between gap-8 py-10 sm:flex-row`}><div><p className="text-lg font-bold text-white">RS Trade International</p><p className="mt-3 max-w-md text-sm leading-6">China product sourcing, supplier verification, quality control and door-to-door import support.</p></div><nav aria-label="Homepage footer" className="flex flex-wrap items-start gap-x-6 gap-y-3 text-sm"><Link href="/#services" className="hover:text-white">Our Services</Link><Link href="/ready-stock" className="hover:text-white">Ready Stock</Link><Link href="/request-a-quote" className="hover:text-white">Request a Quote</Link></nav></div></footer>
     </main>
   );
 }
+

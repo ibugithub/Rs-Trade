@@ -1,4 +1,4 @@
-'use client'
+﻿'use client'
 
 import { useRef, useState } from 'react';
 import { Star, Heart, Share2, Package, ChevronRight, ChevronDown } from 'lucide-react';
@@ -35,7 +35,7 @@ const products: Product[] = [
   { id: "product8", category: "Today's best deal", name: "15.6\" FHD Display Laptop - Intel i7 - Intel HD Graphics 6000, Webcam, WiFi, Bluetooth, HDMI, Windows 11,Grey", image: "/images/Pc_laptop.jpg", oldPrice: 1029, price: 999, rating: 4, reviewCount: 370 },
   { id: "product9", category: "Audio & Video", name: "Max 5.1 Home Theater", image: "/images/Max 5.1 Home Theater.jpg", price: 620, rating: 5, reviewCount: 316 },
   { id: "product10", category: "Audio & Video", name: "V-Series 5.1 Home Theater", image: "/images/V-Series 5.1 Home Theater.jpg", oldPrice: 799, price: 499, rating: 4, reviewCount: 294 },
-  { id: "product11", category: "Audio & Video", name: "OLED C4 Series 55” 4K TV", image: "/images/OLED C4 Series 55” 4K TV.jpg", price: 1249, rating: 5, reviewCount: 248 },
+  { id: "product11", category: "Audio & Video", name: "OLED C4 Series 55â€ 4K TV", image: "/images/OLED C4 Series 55â€ 4K TV.jpg", price: 1249, rating: 5, reviewCount: 248 },
   { id: "product12", category: "Audio & Video", name: "X90J 65 Inch TV 4K", image: "/images/Audio.jpg", oldPrice: 1499, price: 1329, rating: 5, reviewCount: 221 },
   { id: "product13", category: "Home appliances", name: "Multigroomer Grooming Kit", image: "/images/Multigroomer Grooming Kit.jpg", oldPrice: 60, price: 44, rating: 5, reviewCount: 206 },
   { id: "product14", category: "Home appliances", name: "Compact Pulsator Washer", image: "/images/Compact Pulsator Washer.jpg", oldPrice: 319, price: 259, rating: 5, reviewCount: 186 },
@@ -169,7 +169,7 @@ export const ProductDetails = ({ productId }: { productId: string }) => {
             </div>
 
             <div className="flex gap-2 overflow-x-auto py-2">
-              <div className="border-2 rounded cursor-pointer w-16 h-16 flex-shrink-0 border-orange-500">
+              <div className="border-2 rounded cursor-pointer w-16 h-16 flex-shrink-0 border-blue-500">
                 <Image
                   width={64}
                   height={64}
@@ -268,7 +268,7 @@ export const ProductDetails = ({ productId }: { productId: string }) => {
                 </button>
               </Link>
               <Link href="/checkout" className="block">
-                <button className="w-full bg-orange-500 hover:bg-orange-600 py-2 rounded-full text-sm font-medium transition">
+                <button className="w-full bg-yellow-300 hover:bg-yellow-500 py-2 rounded-full text-sm font-medium transition">
                   Buy Now
                 </button>
               </Link>
@@ -311,3 +311,4 @@ export const ProductDetails = ({ productId }: { productId: string }) => {
 };
 
 export default ProductDetails;
+

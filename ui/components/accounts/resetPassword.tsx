@@ -1,4 +1,4 @@
-'use client';
+﻿'use client';
 import { useState } from 'react';
 import axios from 'axios';
 import { useRouter } from 'next/navigation';
@@ -43,17 +43,17 @@ const ResetPassword = ({ token }: { token: string }) => {
   };
 
   return (
-    <div className="min-h-screen flex items-center justify-center bg-gradient-to-r from-gray-900 to-black">
-      <div className="w-full max-w-md p-8 space-y-6 bg-gray-900 bg-opacity-80 backdrop-blur-lg border border-blue-500 rounded-lg shadow-2xl">
-        <h2 className="text-2xl font-bold text-center text-white tracking-wider">
+    <div className="min-h-screen flex items-center justify-center bg-gray-50">
+      <div className="w-full max-w-md p-8 space-y-6 bg-white backdrop-blur-lg border border-gray-300 rounded-lg shadow-2xl">
+        <h2 className="text-2xl font-bold text-center text-gray-900 tracking-wider">
           Reset Password
         </h2>
-        <p className="text-center text-gray-300">
+        <p className="text-center text-gray-600">
           Enter your new password below.
         </p>
         <form className="mt-6 space-y-4" onSubmit={handleSubmit}>
           <div>
-            <label htmlFor="password" className="block text-sm font-medium text-white">
+            <label htmlFor="password" className="block text-sm font-medium text-gray-900">
               Password
             </label>
             <input
@@ -62,13 +62,13 @@ const ResetPassword = ({ token }: { token: string }) => {
               name="password"
               required
               placeholder="Enter your password"
-              className="w-full mt-1 px-4 py-2 border border-blue-500 bg-transparent rounded-lg focus:ring-2 focus:ring-blue-500 focus:outline-none text-white placeholder-blue-300"
+              className="w-full mt-1 px-4 py-2 border border-gray-300 bg-transparent rounded-lg focus:ring-2 focus:ring-blue-500 focus:outline-none text-gray-900 placeholder-gray-500"
               value={formData.password}
               onChange={handleChange}
             />
           </div>
           <div>
-            <label htmlFor="confirmPassword" className="block text-sm font-medium text-white">
+            <label htmlFor="confirmPassword" className="block text-sm font-medium text-gray-900">
               Confirm Password
             </label>
             <input
@@ -77,7 +77,7 @@ const ResetPassword = ({ token }: { token: string }) => {
               name="confirmPassword"
               required
               placeholder="Enter your password again"
-              className="w-full mt-1 px-4 py-2 border border-blue-500 bg-transparent rounded-lg focus:ring-2 focus:ring-blue-500 focus:outline-none text-white placeholder-blue-300"
+              className="w-full mt-1 px-4 py-2 border border-gray-300 bg-transparent rounded-lg focus:ring-2 focus:ring-blue-500 focus:outline-none text-gray-900 placeholder-gray-500"
               value={formData.confirmPassword}
               onChange={handleChange}
             />
@@ -85,13 +85,13 @@ const ResetPassword = ({ token }: { token: string }) => {
           {error && <div className="text-red-500 text-center">{error}</div>}
           <button
             type="submit"
-            className="w-full py-2 px-4 text-black bg-gradient-to-r from-blue-500 to-green-500 hover:from-blue-600 hover:to-green-600 focus:ring-2 focus:ring-blue-500 focus:ring-offset-1 rounded-full transition ease-in-out duration-300"
+            className="w-full py-2 px-4 text-black bg-yellow-300 hover:bg-yellow-500 focus:ring-2 focus:ring-blue-500 focus:ring-offset-1 rounded-full transition ease-in-out duration-300"
           >
             Reset Password
           </button>
         </form>
         <div className="text-center">
-          <a href="/accounts/signin" className="text-blue-400 hover:underline">
+          <a href="/accounts/signin" className="text-blue-700 hover:underline">
             Back to Login
           </a>
         </div>
@@ -101,3 +101,4 @@ const ResetPassword = ({ token }: { token: string }) => {
 };
 
 export default ResetPassword;
+

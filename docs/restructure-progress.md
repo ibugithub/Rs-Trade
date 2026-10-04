@@ -14,7 +14,7 @@ This is the ongoing tracker for the full website restructuring. Planning decisio
 
 **Completed:** Business direction, service list, order approach, full door-to-door responsibility, restructuring roadmap and planned sitemap have been documented.
 
-**Next:** Review the new homepage on mobile and desktop, refine its design, then build the service and quotation pages. Replace Ready Stock example data with approved products later.
+**Next:** Review the shared color palette, then plan and build China Product Sourcing first. Finish the remaining service pages one at a time; return to homepage refinement later.
 
 **Implementation status:** Navigation and the first corporate homepage design are implemented. The old shopping homepage is now at `/ready-stock`. Service/quotation pages, real product data and inquiry handling remain pending. Runtime integrations and deployment remain unverified.
 
@@ -23,7 +23,7 @@ This is the ongoing tracker for the full website restructuring. Planning decisio
 ```mermaid
 flowchart TD
     A[Business direction and sitemap documented] --> B[Phase 1: Audit and content planning - IN PROGRESS]
-    B --> C[Phase 2: Design - NOT STARTED]
+    B --> C[Phase 2: Design - IN PROGRESS]
     C --> D[Phase 3: Backend - NOT STARTED]
     D --> E[Phase 4: Frontend - IN PROGRESS]
     E --> F[Phase 5: Verification - NOT STARTED]
@@ -40,7 +40,7 @@ If the Markdown viewer does not render Mermaid, use the phase table and checklis
 | Phase | Status | Completion requirement |
 | --- | --- | --- |
 | 1. Audit and content planning | In progress | Audit, sitemap/content inventory and scope review complete |
-| 2. Design | Not started | Mobile/desktop layouts and visual direction agreed |
+| 2. Design | In progress | Mobile/desktop layouts and visual direction agreed |
 | 3. Backend | Not started | Product, content and inquiry flows implemented and verified |
 | 4. Frontend | In progress | Planned pages and customer journeys implemented |
 | 5. Verification | Not started | Relevant checks pass and material issues are resolved |
@@ -73,6 +73,8 @@ Status vocabulary: **Not started / In progress / Waiting for input / Complete**.
 ## Phase 2 - Design
 
 - [ ] Define shared typography, colors, spacing and buttons.
+- [x] Apply shared blue/yellow/neutral colors to the existing website; white navigation and yellow main inquiry actions.
+- [ ] Review colors visually on mobile and desktop.
 - [ ] Design desktop/mobile navigation and footer.
 - [ ] Design desktop/mobile homepage and its planned sections.
 - [ ] Design service overview and service detail template, including prominent QC.
@@ -182,7 +184,7 @@ These items await business content or account access; they do not prevent indepe
 
 ## Next work queue
 
-1. Review the new homepage and navigation on mobile and desktop; refine the design.
+1. Review shared colors; plan and build the China Product Sourcing page before the remaining services.
 2. Collect company details, real contact information, products and photos using the pending-information table above.
 3. Decide how new product pages will be published and how old links will work.
 
@@ -200,10 +202,13 @@ For incomplete work, leave the box unchecked and record the current state or dep
 
 ## Completed milestones
 
+Current palette: blue for links/highlights, yellow for main actions, white/light gray for page surfaces and charcoal for text/footer. Red and green are used for meaningful error/success states. Shades are inspired by the supplied logo screenshot; they are not exact samples from the original logo. Existing logo artwork has not been replaced.
+
 | Date (Asia/Dhaka) | Meaningful part | Result and checks |
 | --- | --- | --- |
 | 2026-10-04 | Website plan and progress tracking | Business model, services, full door-to-door handling, sitemap and task list recorded. Progress is maintained here. |
 | 2026-10-04 | Existing website review | Identified reusable admin/product storage, example shopping features and missing pages/inquiry handling. Useful findings and pending information are kept in this file. Live checks remain pending. |
 | 2026-10-04 | Navigation implementation | Main order: Home, Services, Ready Stock, Our Work, About Us, Contact; Request a Quote stays on the right. Dropdown contains only the four services; the overview link was removed at the owner's request. Desktop/mobile share this order. Added mobile menu and active-page styles; removed shopping controls. Desktop height is 90px; mobile is 64px, with matching page spacing. Initial production build passed; TypeScript and component lint passed for the arrangement update. Full browser review and destination pages remain pending. |
 | 2026-10-04 | Shopping content moved and first corporate homepage built | Previous home content preserved at `ui/app/ready-stock/page.tsx`. New `ui/app/page.tsx` presents services, process, QC, import support, FAQ and inquiry links. TypeScript, changed-page ESLint and production export passed, including `/ready-stock`. Browser review, real product data, evidence, service pages and quotation handling remain pending. |
+| 2026-10-04 | Shared website colors | Added centralized blue, yellow and neutral shades; white header, light QC/contact sections, charcoal footer, yellow primary inquiry/account actions. Replaced orange shopping accents and account gradients. TypeScript, homepage/navigation/theme lint and production export passed. A final input-background correction was made after the build; visual review remains pending. |
 

@@ -1,4 +1,4 @@
-'use client';
+﻿'use client';
 import React, { useState } from 'react';
 import { ChevronRight, ChevronDown, ChevronUp, MapPin, CreditCard, Shield, Truck, Star, Gift, Plus, Edit3, Check } from 'lucide-react';
 
@@ -107,7 +107,7 @@ export const Checkout = () => {
               <div className="p-6 border-b border-gray-200">
                 <div className="flex items-center justify-between">
                   <div className="flex items-center">
-                    <div className={`w-8 h-8 rounded-full flex items-center justify-center text-white font-bold ${currentStep >= 1 ? 'bg-orange-500' : 'bg-gray-400'}`}>
+                    <div className={`w-8 h-8 rounded-full flex items-center justify-center text-white font-bold ${currentStep >= 1 ? 'bg-blue-500' : 'bg-gray-400'}`}>
                       {currentStep > 1 ? <Check className="w-5 h-5" /> : '1'}
                     </div>
                     <h2 className="ml-3 text-xl font-bold text-gray-900">Choose a delivery address</h2>
@@ -130,7 +130,7 @@ export const Checkout = () => {
                       <div
                         key={address.id}
                         className={`p-4 border rounded-lg cursor-pointer transition-colors ${
-                          selectedAddress === index ? 'border-orange-500 bg-orange-50' : 'border-gray-200 hover:border-gray-300'
+                          selectedAddress === index ? 'border-blue-500 bg-blue-50' : 'border-gray-200 hover:border-gray-300'
                         }`}
                         onClick={() => setSelectedAddress(index)}
                       >
@@ -138,7 +138,7 @@ export const Checkout = () => {
                           <input
                             type="radio"
                             checked={selectedAddress === index}
-                            className="mt-1 text-orange-500"
+                            className="mt-1 text-blue-500"
                             readOnly
                           />
                           <div className="ml-3 flex-1">
@@ -197,7 +197,7 @@ export const Checkout = () => {
               <div className="p-6 border-b border-gray-200">
                 <div className="flex items-center justify-between">
                   <div className="flex items-center">
-                    <div className={`w-8 h-8 rounded-full flex items-center justify-center text-white font-bold ${currentStep >= 2 ? 'bg-orange-500' : 'bg-gray-400'}`}>
+                    <div className={`w-8 h-8 rounded-full flex items-center justify-center text-white font-bold ${currentStep >= 2 ? 'bg-blue-500' : 'bg-gray-400'}`}>
                       {currentStep > 2 ? <Check className="w-5 h-5" /> : '2'}
                     </div>
                     <h2 className="ml-3 text-xl font-bold text-gray-900">Choose a payment method</h2>
@@ -220,7 +220,7 @@ export const Checkout = () => {
                       <div
                         key={payment.id}
                         className={`p-4 border rounded-lg cursor-pointer transition-colors ${
-                          selectedPayment === index ? 'border-orange-500 bg-orange-50' : 'border-gray-200 hover:border-gray-300'
+                          selectedPayment === index ? 'border-blue-500 bg-blue-50' : 'border-gray-200 hover:border-gray-300'
                         }`}
                         onClick={() => setSelectedPayment(index)}
                       >
@@ -228,7 +228,7 @@ export const Checkout = () => {
                           <input
                             type="radio"
                             checked={selectedPayment === index}
-                            className="text-orange-500"
+                            className="text-blue-500"
                             readOnly
                           />
                           <div className="ml-3 flex-1">
@@ -279,7 +279,7 @@ export const Checkout = () => {
             <div className="bg-white rounded-lg shadow-sm">
               <div className="p-6 border-b border-gray-200">
                 <div className="flex items-center">
-                  <div className={`w-8 h-8 rounded-full flex items-center justify-center text-white font-bold ${currentStep >= 3 ? 'bg-orange-500' : 'bg-gray-400'}`}>
+                  <div className={`w-8 h-8 rounded-full flex items-center justify-center text-white font-bold ${currentStep >= 3 ? 'bg-blue-500' : 'bg-gray-400'}`}>
                     3
                   </div>
                   <h2 className="ml-3 text-xl font-bold text-gray-900">Review items and delivery</h2>
@@ -389,3 +389,4 @@ export const Checkout = () => {
     </div>
   );
 };
+

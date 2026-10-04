@@ -1,4 +1,4 @@
-'use client'
+﻿'use client'
 
 import { useMemo, useState } from 'react';
 import { useSearchParams } from 'next/navigation';
@@ -30,7 +30,7 @@ const products: Product[] = [
   { id: "product8", category: "Today's best deal", categorySlug: "todays-best-deal", title: "15.6\" FHD Display Laptop - Intel i7 - Intel HD Graphics 6000, Webcam, WiFi, Bluetooth, HDMI, Windows 11,Grey", image: "/images/Pc_laptop.jpg", originalPrice: 1029, price: 999, rating: 4, reviews: 370, onSale: true },
   { id: "product9", category: "Audio & Video", categorySlug: "audio-video", title: "Max 5.1 Home Theater", image: "/images/Max 5.1 Home Theater.jpg", price: 620, rating: 5, reviews: 316 },
   { id: "product10", category: "Audio & Video", categorySlug: "audio-video", title: "V-Series 5.1 Home Theater", image: "/images/V-Series 5.1 Home Theater.jpg", originalPrice: 799, price: 499, rating: 4, reviews: 294, onSale: true },
-  { id: "product11", category: "Audio & Video", categorySlug: "audio-video", title: "OLED C4 Series 55” 4K TV", image: "/images/OLED C4 Series 55” 4K TV.jpg", price: 1249, rating: 5, reviews: 248 },
+  { id: "product11", category: "Audio & Video", categorySlug: "audio-video", title: "OLED C4 Series 55â€ 4K TV", image: "/images/OLED C4 Series 55â€ 4K TV.jpg", price: 1249, rating: 5, reviews: 248 },
   { id: "product12", category: "Audio & Video", categorySlug: "audio-video", title: "X90J 65 Inch TV 4K", image: "/images/Audio.jpg", originalPrice: 1499, price: 1329, rating: 5, reviews: 221, onSale: true },
   { id: "product13", category: "Home appliances", categorySlug: "home-appliances", title: "Multigroomer Grooming Kit", image: "/images/Multigroomer Grooming Kit.jpg", originalPrice: 60, price: 44, rating: 5, reviews: 206, onSale: true },
   { id: "product14", category: "Home appliances", categorySlug: "home-appliances", title: "Compact Pulsator Washer", image: "/images/Compact Pulsator Washer.jpg", originalPrice: 319, price: 259, rating: 5, reviews: 186 },
@@ -194,7 +194,7 @@ export const CategoryDetails = () => {
               </Link>
 
               <Link href={`/product/${product.id}`}>
-                <h2 className="text-sm mb-1 line-clamp-2 hover:text-orange-500 cursor-pointer min-h-10">
+                <h2 className="text-sm mb-1 line-clamp-2 hover:text-blue-500 cursor-pointer min-h-10">
                   {product.title}
                 </h2>
               </Link>
@@ -240,7 +240,7 @@ export const CategoryDetails = () => {
           <button className="px-3 py-1 border-r border-gray-300 hover:bg-gray-100 disabled:text-gray-400" disabled>
             Previous
           </button>
-          <button className="px-3 py-1 border-r border-gray-300 bg-orange-500 text-white">1</button>
+          <button className="px-3 py-1 border-r border-gray-300 bg-blue-500 text-white">1</button>
           <button className="px-3 py-1 hover:bg-gray-100" disabled>
             Next
           </button>
@@ -249,3 +249,4 @@ export const CategoryDetails = () => {
     </div>
   );
 };
+

@@ -1,4 +1,4 @@
-'use client';
+﻿'use client';
 
 import { motion } from "framer-motion";
 import Link from "next/link";
@@ -68,16 +68,16 @@ export const Signin = () => {
   }
 
   return (
-    <section className="min-h-screen flex items-center justify-center bg-gradient-to-r from-gray-900 to-black relative py-20 px-5">
+    <section className="min-h-screen flex items-center justify-center bg-gray-50 relative py-20 px-5">
       <div className="absolute inset-0 bg-[url('/images/blockchain-bg.jpg')] bg-cover bg-center opacity-20"></div>
 
       <motion.div
         initial={{ opacity: 0, y: -20 }}
         animate={{ opacity: 1, y: 0 }}
         transition={{ duration: 1, delay: 0.1 }}
-        className="relative z-10 bg-black bg-opacity-70 backdrop-blur-lg rounded-2xl border border-blue-500 shadow-2xl p-10 max-w-lg w-full"
+        className="relative z-10 bg-white backdrop-blur-lg rounded-2xl border border-gray-300 shadow-2xl p-10 max-w-lg w-full"
       >
-        <h2 className="text-3xl font-bold text-white text-center mb-8">
+        <h2 className="text-3xl font-bold text-gray-900 text-center mb-8">
           Login to Your RsTrade Account
         </h2>
 
@@ -90,9 +90,9 @@ export const Signin = () => {
 
         {/* Divider */}
         <div className="flex items-center my-4">
-          <div className="flex-grow border-t border-blue-500"></div>
-          <span className="mx-4 text-white">Or, login with your email</span>
-          <div className="flex-grow border-t border-blue-500"></div>
+          <div className="flex-grow border-t border-gray-300"></div>
+          <span className="mx-4 text-gray-900">Or, login with your email</span>
+          <div className="flex-grow border-t border-gray-300"></div>
         </div>
 
         {/* Email & Password Login */}
@@ -105,7 +105,7 @@ export const Signin = () => {
               value={formData.email}
               onChange={handleChange}
               required
-              className="w-full p-3 bg-transparent border border-blue-500 rounded-md text-white placeholder-blue-300 focus:outline-none focus:ring-2 focus:ring-blue-400"
+              className="w-full p-3 bg-transparent border border-gray-300 rounded-md text-gray-900 placeholder-gray-500 focus:outline-none focus:ring-2 focus:ring-blue-400"
             />
             <input
               type="password"
@@ -114,7 +114,7 @@ export const Signin = () => {
               value={formData.password}
               onChange={handleChange}
               required
-              className="w-full p-3 bg-transparent border border-blue-500 rounded-md text-white placeholder-blue-300 focus:outline-none focus:ring-2 focus:ring-blue-400"
+              className="w-full p-3 bg-transparent border border-gray-300 rounded-md text-gray-900 placeholder-gray-500 focus:outline-none focus:ring-2 focus:ring-blue-400"
             />
             {error && (
               <p className="text-red-500 text-center text-sm">{error}</p>
@@ -122,16 +122,16 @@ export const Signin = () => {
           </div>
 
           <div className="flex items-center justify-between mt-4">
-            <label className="flex items-center text-white">
+            <label className="flex items-center text-gray-900">
               <input
                 type="checkbox"
                 checked={keepSignedIn}
                 onChange={() => setKeepSignedIn(!keepSignedIn)}
-                className="form-checkbox h-4 w-4 text-blue-500 bg-transparent border-blue-500"
+                className="form-checkbox h-4 w-4 text-blue-500 bg-transparent border-gray-300"
               />
               <span className="ml-2">Keep me signed in</span>
             </label>
-            <Link href="/accounts/forgetPassword" className="text-blue-400 hover:underline">
+            <Link href="/accounts/forgetPassword" className="text-blue-700 hover:underline">
               Forgot Password?
             </Link>
           </div>
@@ -139,7 +139,7 @@ export const Signin = () => {
           <button
             type="submit"
             disabled={loading}
-            className={`w-full mt-6 py-3 rounded-full font-bold text-black bg-gradient-to-r from-blue-500 to-green-500 hover:from-blue-600 hover:to-green-600 transition ${
+            className={`w-full mt-6 py-3 rounded-full font-bold text-black bg-yellow-300 hover:bg-yellow-500 transition ${
               loading ? "opacity-50 cursor-not-allowed" : ""
             }`}
           >
@@ -148,9 +148,9 @@ export const Signin = () => {
         </form>
 
         <div className="mt-6 text-center">
-          <p className="text-white">
+          <p className="text-gray-900">
             Don&apos;t have an account?{" "}
-            <Link href="/accounts/signup" className="text-blue-400 hover:underline">
+            <Link href="/accounts/signup" className="text-blue-700 hover:underline">
               Sign Up
             </Link>
           </p>
@@ -161,3 +161,5 @@ export const Signin = () => {
 };
 
 export default Signin;
+
+

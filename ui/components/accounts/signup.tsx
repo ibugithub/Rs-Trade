@@ -1,4 +1,4 @@
-'use client';
+﻿'use client';
 
 import { motion } from "framer-motion";
 import Image from "next/image";
@@ -100,7 +100,7 @@ const Signup = () => {
   };
 
   return (
-    <section className="relative min-h-screen flex items-center justify-center bg-gradient-to-r from-gray-900 to-black py-12 px-4">
+    <section className="relative min-h-screen flex items-center justify-center bg-gray-50 py-12 px-4">
       {/* Background blockchain overlay (optional) */}
       <div className="absolute inset-0 opacity-20">
         <Image
@@ -117,9 +117,9 @@ const Signup = () => {
           whileInView={{ opacity: 1, y: 0 }}
           transition={{ duration: 1, delay: 0.1 }}
           viewport={{ once: true }}
-          className="rounded-xl bg-gray-900 bg-opacity-80 backdrop-blur-lg border border-blue-500 p-10 shadow-2xl"
+          className="rounded-xl bg-white backdrop-blur-lg border border-gray-300 p-10 shadow-2xl"
         >
-          <h2 className="mb-8 text-center text-4xl font-bold text-white tracking-wider">
+          <h2 className="mb-8 text-center text-4xl font-bold text-gray-900 tracking-wider">
             Create an Account
           </h2>
 
@@ -132,7 +132,7 @@ const Signup = () => {
 
           <div className="mb-8 flex items-center justify-center">
             <span className="hidden h-px w-full max-w-[200px] bg-blue-500 md:block"></span>
-            <p className="px-4 text-center text-white">Or, register with your email</p>
+            <p className="px-4 text-center text-gray-900">Or, register with your email</p>
             <span className="hidden h-px w-full max-w-[200px] bg-blue-500 md:block"></span>
           </div>
 
@@ -144,7 +144,7 @@ const Signup = () => {
                 placeholder="User name"
                 value={formData.username}
                 onChange={handleChange}
-                className="w-full border-b border-blue-500 bg-transparent pb-3 text-white placeholder-blue-300 focus:border-blue-400 focus:outline-none md:w-1/2"
+                className="w-full border-b border-gray-300 bg-transparent pb-3 text-gray-900 placeholder-gray-500 focus:border-blue-400 focus:outline-none md:w-1/2"
               />
               <input
                 name="email"
@@ -152,7 +152,7 @@ const Signup = () => {
                 placeholder="Email address"
                 value={formData.email}
                 onChange={handleChange}
-                className="w-full border-b border-blue-500 bg-transparent pb-3 text-white placeholder-blue-300 focus:border-blue-400 focus:outline-none md:w-1/2"
+                className="w-full border-b border-gray-300 bg-transparent pb-3 text-gray-900 placeholder-gray-500 focus:border-blue-400 focus:outline-none md:w-1/2"
               />
             </div>
 
@@ -163,7 +163,7 @@ const Signup = () => {
                 placeholder="Password"
                 value={formData.password}
                 onChange={handleChange}
-                className="w-full border-b border-blue-500 bg-transparent pb-3 text-white placeholder-blue-300 focus:border-blue-400 focus:outline-none md:w-1/2"
+                className="w-full border-b border-gray-300 bg-transparent pb-3 text-gray-900 placeholder-gray-500 focus:border-blue-400 focus:outline-none md:w-1/2"
               />
               <input
                 name="confirmPassword"
@@ -171,7 +171,7 @@ const Signup = () => {
                 placeholder="Confirm Password"
                 value={formData.confirmPassword}
                 onChange={handleChange}
-                className="w-full border-b border-blue-500 bg-transparent pb-3 text-white placeholder-blue-300 focus:border-blue-400 focus:outline-none md:w-1/2"
+                className="w-full border-b border-gray-300 bg-transparent pb-3 text-gray-900 placeholder-gray-500 focus:border-blue-400 focus:outline-none md:w-1/2"
               />
             </div>
 
@@ -186,7 +186,7 @@ const Signup = () => {
                   type="checkbox"
                   className="peer sr-only"
                 />
-                <span className="border-gray-300 bg-gray-800 text-blue-400 dark:border-gray-600 dark:bg-gray-700 group mt-1 flex h-5 w-5 items-center justify-center rounded peer-checked:bg-blue-500">
+                <span className="border-gray-300 bg-gray-800 text-blue-700 dark:border-gray-600 dark:bg-gray-700 group mt-1 flex h-5 w-5 items-center justify-center rounded peer-checked:bg-blue-500">
                   <svg
                     className="opacity-0 peer-checked:opacity-100"
                     width="10"
@@ -205,7 +205,7 @@ const Signup = () => {
                 </span>
                 <label
                   htmlFor="default-checkbox"
-                  className="ml-3 cursor-pointer text-white"
+                  className="ml-3 cursor-pointer text-gray-900"
                 >
                   Keep me signed in
                 </label>
@@ -214,7 +214,7 @@ const Signup = () => {
               <button
                 type="submit"
                 aria-label="signup with email and password"
-                className="inline-flex items-center gap-2.5 rounded-full bg-gradient-to-r from-blue-500 to-green-500 px-8 py-3 font-bold text-black transition-all duration-300 ease-in-out hover:from-blue-600 hover:to-green-600"
+                className="inline-flex items-center gap-2.5 rounded-full bg-yellow-300 px-8 py-3 font-bold text-black transition-all duration-300 ease-in-out hover:bg-yellow-500"
                 onClick={handleSubmit}
               >
                 {loading ? "Creating Account..." : "Create Account"}
@@ -231,12 +231,12 @@ const Signup = () => {
               </button>
             </div>
 
-            <div className="mt-10 border-t border-blue-500 pt-5 text-center">
-              <p className="text-white">
+            <div className="mt-10 border-t border-gray-300 pt-5 text-center">
+              <p className="text-gray-900">
                 Already have an account?{" "}
                 <Link
                   href="/accounts/signin"
-                  className="text-blue-400 hover:underline"
+                  className="text-blue-700 hover:underline"
                 >
                   Sign In
                 </Link>
@@ -250,3 +250,4 @@ const Signup = () => {
 };
 
 export default Signup;
+
