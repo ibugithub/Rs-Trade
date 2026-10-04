@@ -10,13 +10,13 @@ This is the ongoing tracker for the full website restructuring. Planning decisio
 
 ## Current position
 
-**Current phase:** Navigation implementation (Phase 4), with planning/design items still open.
+**Current phase:** Service page implementation (Phase 4), with planning/design items still open.
 
 **Completed:** Business direction, service list, order approach, full door-to-door responsibility, restructuring roadmap and planned sitemap have been documented.
 
-**Next:** Review the shared color palette, then plan and build China Product Sourcing first. Finish the remaining service pages one at a time; return to homepage refinement later.
+**Next:** Review the four service pages on mobile and desktop, then continue the remaining initial pages. Build the quotation form and connect inquiries later; return to homepage refinement after the other initial pages.
 
-**Implementation status:** Navigation and the first corporate homepage design are implemented. The old shopping homepage is now at `/ready-stock`. Service/quotation pages, real product data and inquiry handling remain pending. Runtime integrations and deployment remain unverified.
+**Implementation status:** Navigation, first homepage design and all four initial service pages are implemented. The old shopping homepage is at `/ready-stock`. Other corporate pages, quotation form, real product data and inquiry handling remain pending. Browser review and live integrations remain unverified.
 
 ## Visual roadmap
 
@@ -107,10 +107,13 @@ Status vocabulary: **Not started / In progress / Waiting for input / Complete**.
 - [x] Move existing shopping homepage content to `/ready-stock` without deleting its components.
 - [ ] Review homepage design on mobile and desktop; add genuine evidence and approved content when available.
 - [ ] Implement About Us and services overview.
-- [ ] Implement China Product Sourcing page.
-- [ ] Implement Supplier Verification page.
-- [ ] Implement Quality Control & Inspection page.
-- [ ] Implement Shipping & Door-to-Door Import page.
+- [x] Implement initial China Product Sourcing page (introduction, support, process, checklist, related services, FAQ and inquiry links).
+- [ ] Review sourcing page on mobile/desktop and connect it to the working quotation form when built.
+- [x] Implement initial Supplier Verification page (checks, process, customer checklist, related services, FAQs and inquiry links).
+- [ ] Review Supplier Verification on mobile/desktop and connect the quotation form when built.
+- [x] Implement initial Quality Control & Inspection page with the six-step process, reporting details, customer checklist and FAQs.
+- [x] Implement initial Shipping & Door-to-Door Import page with full handling, process, shipment checklist and FAQs.
+- [ ] Review QC and shipping pages on mobile/desktop and connect the quotation form when built.
 - [ ] Implement Ready Stock listing and individual product pages.
 - [ ] Implement product-aware WhatsApp links and phone actions.
 - [ ] Implement Our Work and individual project pages.
@@ -184,7 +187,7 @@ These items await business content or account access; they do not prevent indepe
 
 ## Next work queue
 
-1. Review shared colors; plan and build the China Product Sourcing page before the remaining services.
+1. Review all four initial service pages; continue the remaining corporate pages.
 2. Collect company details, real contact information, products and photos using the pending-information table above.
 3. Decide how new product pages will be published and how old links will work.
 
@@ -211,4 +214,7 @@ Current palette: blue for links/highlights, yellow for main actions, white/light
 | 2026-10-04 | Navigation implementation | Main order: Home, Services, Ready Stock, Our Work, About Us, Contact; Request a Quote stays on the right. Dropdown contains only the four services; the overview link was removed at the owner's request. Desktop/mobile share this order. Added mobile menu and active-page styles; removed shopping controls. Desktop height is 90px; mobile is 64px, with matching page spacing. Initial production build passed; TypeScript and component lint passed for the arrangement update. Full browser review and destination pages remain pending. |
 | 2026-10-04 | Shopping content moved and first corporate homepage built | Previous home content preserved at `ui/app/ready-stock/page.tsx`. New `ui/app/page.tsx` presents services, process, QC, import support, FAQ and inquiry links. TypeScript, changed-page ESLint and production export passed, including `/ready-stock`. Browser review, real product data, evidence, service pages and quotation handling remain pending. |
 | 2026-10-04 | Shared website colors | Added centralized blue, yellow and neutral shades; white header, light QC/contact sections, charcoal footer, yellow primary inquiry/account actions. Replaced orange shopping accents and account gradients. TypeScript, homepage/navigation/theme lint and production export passed. A final input-background correction was made after the build; visual review remains pending. |
+| 2026-10-04 | Initial China Product Sourcing page | Built `/services/china-product-sourcing` with the agreed sections, shared company footer, page title/description and service-specific quotation links. TypeScript, page/footer lint and production export passed. Quotation form and related service destinations are still pending; no negotiation/sample promises or fabricated evidence added. |
+| 2026-10-04 | Initial Supplier Verification page | Built `/services/supplier-verification` with supplier identity/business/capability information, four-step process, customer checklist, related services, FAQs and service-specific quotation links. Shared palette/footer and page title/description included. TypeScript, page lint and production export passed. Browser review, quotation handling and final operational content remain pending. |
+| 2026-10-04 | Initial QC and Door-to-Door Import pages | Built `/services/quality-control` and `/services/door-to-door-import` with shared service layout, six-step processes, checklists, FAQs, related services, metadata and quotation links. All four service destinations now exist. TypeScript, changed-file lint and production export passed. Browser review, quotation handling, real evidence and final business terms remain pending. |
 
