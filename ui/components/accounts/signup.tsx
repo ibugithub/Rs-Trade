@@ -1,7 +1,6 @@
-﻿'use client';
+'use client';
 
-import { motion } from "framer-motion";
-import Image from "next/image";
+import { ArrowLeft, ArrowRight, Eye, EyeOff, LoaderCircle } from "lucide-react";
 import Link from "next/link";
 import { useState } from "react";
 import { GoogleSignInButton } from "./googleSignIn";
@@ -21,6 +20,7 @@ const Signup = () => {
   const [error, setError] = useState<string | null>(null);
   const [loading, setLoading] = useState<boolean>(false);
   const router = useRouter();
+  const [visiblePasswords, setVisiblePasswords] = useState({ password: false, confirmPassword: false });
 
   const handleChange = (e: React.ChangeEvent<HTMLInputElement>) => {
     setFormData({
@@ -31,11 +31,12 @@ const Signup = () => {
 
   const handleSubmit = async (e: React.FormEvent) => {
     e.preventDefault();
+    if (loading) return;
     setLoading(true);
     setError(null);
 
     if (!formData.username) {
-      setError("Username is required");
+      setError("Your name is required");
       setLoading(false);
       return;
     }
@@ -99,155 +100,54 @@ const Signup = () => {
     }
   };
 
+  const inputClass = "min-h-12 w-full rounded-lg border border-gray-300 bg-white px-4 py-3 text-sm text-gray-900 placeholder:text-gray-400 focus:border-blue-600 focus:outline-none focus:ring-2 focus:ring-blue-100 disabled:bg-gray-50";
+  const socialClass = "[&_span]:mr-0 flex min-h-12 w-full items-center justify-center rounded-lg border border-gray-200 bg-white px-4 py-3 text-sm font-medium text-gray-700 transition hover:border-blue-300 hover:bg-blue-50 focus-visible:outline focus-visible:outline-2 focus-visible:outline-offset-2 focus-visible:outline-blue-600";
+
   return (
-    <section className="relative min-h-screen flex items-center justify-center bg-gray-50 py-12 px-4">
-      {/* Background blockchain overlay (optional) */}
-      <div className="absolute inset-0 opacity-20">
-        <Image
-          src="/images/blockchain-bg.jpg"
-          alt="Blockchain Background"
-          fill
-          className="object-cover"
-        />
-      </div>
-
-      <div className="relative z-10 w-full max-w-3xl">
-        <motion.div
-          initial={{ opacity: 0, y: -20 }}
-          whileInView={{ opacity: 1, y: 0 }}
-          transition={{ duration: 1, delay: 0.1 }}
-          viewport={{ once: true }}
-          className="rounded-xl bg-white backdrop-blur-lg border border-gray-300 p-10 shadow-2xl"
-        >
-          <h2 className="mb-8 text-center text-4xl font-bold text-gray-900 tracking-wider">
-            Create an Account
-          </h2>
-
-          {/* Social Sign-Up Buttons */}
-          <div className="flex flex-col items-center gap-4 mb-8">
-            <GoogleSignInButton type="SignUp" />
-            <FacebookSignInButton type="SignUp" />
-            <MicrosoftSignInButton type="SignUp" />
-          </div>
-
-          <div className="mb-8 flex items-center justify-center">
-            <span className="hidden h-px w-full max-w-[200px] bg-blue-500 md:block"></span>
-            <p className="px-4 text-center text-gray-900">Or, register with your email</p>
-            <span className="hidden h-px w-full max-w-[200px] bg-blue-500 md:block"></span>
-          </div>
-
-          <form>
-            <div className="mb-8 flex flex-col gap-8 md:flex-row md:justify-between">
-              <input
-                name="username"
-                type="text"
-                placeholder="User name"
-                value={formData.username}
-                onChange={handleChange}
-                className="w-full border-b border-gray-300 bg-transparent pb-3 text-gray-900 placeholder-gray-500 focus:border-blue-400 focus:outline-none md:w-1/2"
-              />
-              <input
-                name="email"
-                type="email"
-                placeholder="Email address"
-                value={formData.email}
-                onChange={handleChange}
-                className="w-full border-b border-gray-300 bg-transparent pb-3 text-gray-900 placeholder-gray-500 focus:border-blue-400 focus:outline-none md:w-1/2"
-              />
+    <main className="flex min-h-[calc(100svh_-_64px)] items-center justify-center bg-gray-50 px-4 py-8 text-gray-900 sm:py-12 lg:min-h-[calc(100svh_-_90px)]">
+      <div className="w-full max-w-md">
+        <section aria-labelledby="signup-title" className="overflow-hidden rounded-2xl border border-gray-200 bg-white shadow-[0_8px_40px_-16px_rgba(24,34,48,0.18)]">
+          <div className="h-1 bg-blue-600" />
+          <div className="p-6 sm:p-8">
+            <div className="text-center">
+              <span className="inline-flex h-12 w-12 items-center justify-center rounded-full bg-yellow-300 text-lg font-bold text-blue-700" aria-hidden="true">RS</span>
+              <h1 id="signup-title" className="mt-5 text-2xl font-bold tracking-tight">Create an account</h1>
+              <p className="mt-2 text-sm text-gray-500">Join RS Trade International.</p>
             </div>
-
-            <div className="mb-8 flex flex-col gap-8 md:flex-row md:justify-between">
-              <input
-                name="password"
-                type="password"
-                placeholder="Password"
-                value={formData.password}
-                onChange={handleChange}
-                className="w-full border-b border-gray-300 bg-transparent pb-3 text-gray-900 placeholder-gray-500 focus:border-blue-400 focus:outline-none md:w-1/2"
-              />
-              <input
-                name="confirmPassword"
-                type="password"
-                placeholder="Confirm Password"
-                value={formData.confirmPassword}
-                onChange={handleChange}
-                className="w-full border-b border-gray-300 bg-transparent pb-3 text-gray-900 placeholder-gray-500 focus:border-blue-400 focus:outline-none md:w-1/2"
-              />
-            </div>
-
-            {error && (
-              <div className="mb-4 text-center text-red-500">{error}</div>
-            )}
-
-            <div className="flex flex-col items-center gap-6 md:flex-row md:justify-between">
-              <div className="flex items-center">
-                <input
-                  id="default-checkbox"
-                  type="checkbox"
-                  className="peer sr-only"
-                />
-                <span className="border-gray-300 bg-gray-800 text-blue-700 dark:border-gray-600 dark:bg-gray-700 group mt-1 flex h-5 w-5 items-center justify-center rounded peer-checked:bg-blue-500">
-                  <svg
-                    className="opacity-0 peer-checked:opacity-100"
-                    width="10"
-                    height="8"
-                    viewBox="0 0 10 8"
-                    fill="none"
-                    xmlns="http://www.w3.org/2000/svg"
-                  >
-                    <path
-                      fillRule="evenodd"
-                      clipRule="evenodd"
-                      d="M9.70704 0.792787C9.89451 0.980314 9.99983 1.23462 9.99983 1.49979C9.99983 1.76495 9.89451 2.01926 9.70704 2.20679L4.70704 7.20679C4.51951 7.39426 4.26521 7.49957 4.00004 7.49957C3.73488 7.49957 3.48057 7.39426 3.29304 7.20679L0.293041 4.20679C0.110883 4.01818 0.0100885 3.76558 0.0123669 3.50339C0.0146453 3.24119 0.119814 2.99038 0.305222 2.80497C0.490631 2.61956 0.741443 2.51439 1.00364 2.51211C1.26584 2.50983 1.51844 2.61063 1.70704 2.79279L4.00004 5.08579L8.29304 0.792787C8.48057 0.605316 8.73488 0.5 9.00004 0.5C9.26521 0.5 9.51951 0.605316 9.70704 0.792787Z"
-                      fill="white"
-                    />
-                  </svg>
-                </span>
-                <label
-                  htmlFor="default-checkbox"
-                  className="ml-3 cursor-pointer text-gray-900"
-                >
-                  Keep me signed in
-                </label>
+            <form onSubmit={handleSubmit} className="mt-7" aria-busy={loading}>
+              <div className="space-y-5">
+                <div>
+                  <label htmlFor="signup-name" className="mb-2 block text-sm font-semibold">Full name</label>
+                  <input id="signup-name" name="username" type="text" autoComplete="name" placeholder="Your full name" value={formData.username} onChange={handleChange} required disabled={loading} className={inputClass} />
+                </div>
+                <div>
+                  <label htmlFor="signup-email" className="mb-2 block text-sm font-semibold">Email address</label>
+                  <input id="signup-email" name="email" type="email" autoComplete="email" placeholder="you@example.com" value={formData.email} onChange={handleChange} required disabled={loading} className={inputClass} />
+                </div>
+                {(['password', 'confirmPassword'] as const).map(field => (
+                  <div key={field}>
+                    <label htmlFor={`signup-${field}`} className="mb-2 block text-sm font-semibold">{field === 'password' ? 'Password' : 'Confirm password'}</label>
+                    <div className="relative">
+                      <input id={`signup-${field}`} name={field} type={visiblePasswords[field] ? 'text' : 'password'} autoComplete="new-password" placeholder={field === 'password' ? 'Create a password' : 'Enter your password again'} value={formData[field]} onChange={handleChange} required minLength={8} disabled={loading} aria-describedby={field === 'password' ? 'signup-password-hint' : undefined} className={`${inputClass} pr-14`} />
+                      <button type="button" onClick={() => setVisiblePasswords(current => ({ ...current, [field]: !current[field] }))} aria-label={`${visiblePasswords[field] ? 'Hide' : 'Show'} ${field === 'password' ? 'password' : 'confirmation password'}`} aria-controls={`signup-${field}`} aria-pressed={visiblePasswords[field]} className="absolute right-1 top-1 flex h-10 w-10 items-center justify-center rounded-md text-gray-500 hover:bg-gray-50 hover:text-blue-700 focus-visible:outline-blue-600">{visiblePasswords[field] ? <EyeOff size={19} aria-hidden="true" /> : <Eye size={19} aria-hidden="true" />}</button>
+                    </div>
+                    {field === 'password' && <p id="signup-password-hint" className="mt-2 text-xs text-gray-500">Use at least 8 characters.</p>}
+                  </div>
+                ))}
+                {error && <p role="alert" className="rounded-lg border border-red-200 bg-red-50 px-4 py-3 text-sm leading-6 text-red-700">{error}</p>}
               </div>
-
-              <button
-                type="submit"
-                aria-label="signup with email and password"
-                className="inline-flex items-center gap-2.5 rounded-full bg-yellow-300 px-8 py-3 font-bold text-black transition-all duration-300 ease-in-out hover:bg-yellow-500"
-                onClick={handleSubmit}
-              >
-                {loading ? "Creating Account..." : "Create Account"}
-                <svg
-                  className="fill-current"
-                  width="14"
-                  height="14"
-                  viewBox="0 0 14 14"
-                  fill="none"
-                  xmlns="http://www.w3.org/2000/svg"
-                >
-                  <path d="M10.4767 6.16664L6.00668 1.69664L7.18501 0.518311L13.6667 6.99998L7.18501 13.4816L6.00668 12.3033L10.4767 7.83331H0.333344V6.16664H10.4767Z" />
-                </svg>
-              </button>
-            </div>
-
-            <div className="mt-10 border-t border-gray-300 pt-5 text-center">
-              <p className="text-gray-900">
-                Already have an account?{" "}
-                <Link
-                  href="/accounts/signin"
-                  className="text-blue-700 hover:underline"
-                >
-                  Sign In
-                </Link>
-              </p>
-            </div>
-          </form>
-        </motion.div>
+              <button type="submit" disabled={loading} className="mt-6 inline-flex min-h-12 w-full items-center justify-center gap-2 rounded-lg bg-yellow-300 px-5 py-3 text-sm font-bold text-gray-900 transition hover:bg-yellow-500 focus-visible:outline focus-visible:outline-2 focus-visible:outline-offset-2 focus-visible:outline-blue-600 disabled:cursor-wait disabled:opacity-60">{loading ? <><LoaderCircle size={18} className="animate-spin" aria-hidden="true" />Creating account...</> : <>Create Account<ArrowRight size={18} aria-hidden="true" /></>}</button>
+              <p className="mt-3 text-center text-xs leading-5 text-gray-500">We will email you a link to verify your account.</p>
+            </form>
+            <div className="my-6 flex items-center gap-3"><span className="h-px flex-1 bg-gray-200" /><span className="text-xs text-gray-500">Or continue with</span><span className="h-px flex-1 bg-gray-200" /></div>
+            <div className="grid grid-cols-3 gap-3"><GoogleSignInButton type="Continue" iconOnly className={socialClass} /><FacebookSignInButton type="Continue" iconOnly className={socialClass} /><MicrosoftSignInButton type="Continue" iconOnly className={socialClass} /></div>
+            <p className="mt-7 border-t border-gray-100 pt-5 text-center text-sm leading-6 text-gray-600">Already have an account? <Link href="/accounts/signin" className="font-semibold text-blue-700 hover:underline focus-visible:outline-blue-600">Sign in</Link></p>
+          </div>
+        </section>
+        <div className="mt-5 text-center"><Link href="/" className="inline-flex min-h-11 items-center gap-2 text-sm text-gray-500 hover:text-blue-700 focus-visible:outline-blue-600"><ArrowLeft size={15} aria-hidden="true" />Back to website</Link></div>
       </div>
-    </section>
+    </main>
   );
 };
 
 export default Signup;
-
