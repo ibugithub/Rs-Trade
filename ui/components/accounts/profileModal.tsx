@@ -1,3 +1,5 @@
+'use client';
+
 import Link from "next/link";
 import { useAppSelector, useAppDispatch } from "@/configs/redux/hooks";
 import { useState } from "react";
