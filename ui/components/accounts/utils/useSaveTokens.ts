@@ -1,3 +1,4 @@
+import { useCallback } from "react";
 
 import { useRouter } from "next/navigation";
 import { useAppDispatch } from "@/configs/redux/hooks";
@@ -12,7 +13,7 @@ interface Tokens {
 export const useSaveTokens = () => {
   const router = useRouter();
   const dispatch = useAppDispatch();
-  const SaveTokensToLocal = (Tokens: Tokens): void => {
+  const SaveTokensToLocal = useCallback((Tokens: Tokens): void => {
     const HandleFetchUser = (): void => {
       dispatch(fetchLoggedInUser());
     }
@@ -24,6 +25,6 @@ export const useSaveTokens = () => {
     document.cookie = `${cookieName}=${cookieValue}; expires=${expirationDate.toUTCString()}; path=/; SameSite=strict`;
     HandleFetchUser();
     router.push('/');
-  }
+  }, [dispatch, router]);
   return SaveTokensToLocal;
 }

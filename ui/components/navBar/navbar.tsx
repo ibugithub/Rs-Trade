@@ -1,9 +1,10 @@
-﻿'use client';
+'use client';
 
 import { useEffect, useRef, useState } from 'react';
 import Link from 'next/link';
 import { usePathname } from 'next/navigation';
 import { ArrowUpRight, ChevronDown, Menu, X } from 'lucide-react';
+import { ProfileModal } from '@/components/accounts/profileModal';
 
 const services = [
   { label: 'China Product Sourcing', href: '/services/china-product-sourcing' },
@@ -97,9 +98,7 @@ export const NavBar = () => {
         </nav>
 
         <div className="flex items-center gap-2">
-          <Link href="/accounts/signin" onClick={close} aria-current={active('/accounts/signin') ? 'page' : undefined} className={`hidden lg:inline-flex ${linkStyle('/accounts/signin')}`}>
-            Sign In
-          </Link>
+          <div className="hidden lg:block"><ProfileModal onNavigate={close} /></div>
           <Link href="/request-a-quote" onClick={close} className="inline-flex min-h-11 items-center gap-1 rounded-lg bg-yellow-300 px-3 text-sm font-semibold text-gray-900 transition-colors hover:bg-yellow-500 focus-visible:outline focus-visible:outline-2 focus-visible:outline-offset-2 focus-visible:outline-blue-600 sm:px-4">
             Request a Quote <ArrowUpRight size={16} aria-hidden="true" className="hidden sm:block" />
           </Link>
@@ -123,7 +122,7 @@ export const NavBar = () => {
             )}
             {links.slice(1).map(renderLink)}
             <div className="mt-2 flex flex-col border-t border-gray-200 pt-2">
-              {renderLink({ label: 'Sign In', href: '/accounts/signin' })}
+              <ProfileModal mobile onNavigate={close} />
             </div>
           </div>
         </nav>
