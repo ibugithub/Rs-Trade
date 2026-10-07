@@ -137,7 +137,7 @@ Status vocabulary: **Not started / In progress / Waiting for input / Complete**.
 - [ ] Connect and verify quotation submissions when the backend phase is authorized.
 - [ ] Implement approved Privacy Policy and Terms pages.
 - [ ] Integrate genuine approved content; withhold unavailable evidence sections.
-- [ ] Remove cart/checkout from the primary journey after dependency review.
+- [x] Remove old category/product routes and unused shopping presentation components after dependency review; retain cart, buy-now and checkout for future use.
 - [ ] Preserve useful URLs or implement redirects for replaced routes.
 
 ## Phase 5 - Verification
@@ -179,7 +179,7 @@ Status vocabulary: **Not started / In progress / Waiting for input / Complete**.
 ### What we learned from the existing website
 
 - We can reuse the product admin area and existing product storage.
-- Current public product pages and checkout use example data. They need real products and inquiry actions.
+- The original product pages used example data and are now removed. Cart, buy-now and checkout demo pages are retained for future development, outside the main navigation. Ready Stock has its own clearly labelled static previews.
 - Some menu/footer links do not lead to built pages yet.
 - We need a form that saves customer inquiries and notifies the team.
 - We need to decide how adding a product in admin creates its public page. The current setup builds pages before publication.
@@ -209,6 +209,8 @@ Current scope: static frontend only. The quotation page previews service choices
 
 Ready Stock decisions: no category controls on the public page for now. Existing backend categories remain available for future use. Sample cards are clearly labelled as a catalog preview; product inquiries stay disabled until real products and business contact details are confirmed. Search, sorting and product-detail previews work locally without backend changes.
 
+Cleanup decisions: old category/product routes and unused presentation components have been removed. Cart, add-to-cart, buy-now and checkout pages/components are retained for future use without main navigation links. Existing account pages, `profileModal.tsx`, Django backend and product/category records are preserved. The layout uses the shared `reduxInitializer.tsx`; its inline duplicate was removed. Old `/category_details` and `/product/*` URLs no longer exist; redirects for any previously published URLs must be reviewed before deployment. Removed 44 unused public pictures; the eight images referenced by Ready Stock and retained shopping pages remain. All referenced local picture files exist.
+
 1. Review Projects and the four services; continue the remaining static corporate pages.
 2. Collect company details, real contact information, products and photos using the pending-information table above.
 3. Decide how new product pages will be published and how old links will work.
@@ -233,6 +235,8 @@ Navigation follow-up (2026-10-05): restored Sign In beside the desktop quotation
 
 | Date (Asia/Dhaka) | Meaningful part | Result and checks |
 | --- | --- | --- |
+| 2026-10-07 | Unused picture cleanup | Moved the 44 unused public pictures into unused-pictures.zip at the project root, recovering the previously deleted files from Git. The archive contains all 44 pictures and passes its integrity check; it can be moved elsewhere. Kept the eight images used by Ready Stock and restored cart/checkout in ui/public/images. No missing referenced pictures. Backend media and database unchanged. |
+| 2026-10-07 | Old frontend cleanup and retained features | Removed 21 obsolete source files: category/product routes and components, banners, old hero/home/footer/contact blocks and old sidebar. At the owner's request, restored cart/add-to-cart, buy-now and checkout pages/components, profileModal.tsx and reduxInitializer.tsx. The layout now imports the shared initializer instead of defining a duplicate. Removed unused framer-motion and react-inner-image-zoom packages. Production build/type validation, static export and layout/account-component lint passed after restoration. Retained shopping pages remain demos outside the main navigation; profile modal is retained without changing navigation. Backend/database unchanged. Published-URL redirect review remains pending. |
 | 2026-10-07 | Sign Up redesign | Matched the approved centered Sign In card: RS badge, blue accent, four labelled fields, password/confirmation visibility, yellow Create Account button, compact social icons and sign-in/website links. Existing creation endpoint, password checks, verification-email notification and redirect preserved. Form now submits through onSubmit, supports Enter and disables repeat submissions while loading. Removed unused keep-signed-in control and corrected metadata. TypeScript and changed-file ESLint passed. Browser review and live signup/email verification remain pending; no backend/database changes. |
 | 2026-10-07 | Sign In redesign | Simplified to one centered white card with a blue accent, RS badge, email-first form, visible labels, password toggle and yellow sign-in button. Social options sit in a compact icon row with accessible names; signup, password recovery and return-to-website links remain. Existing login endpoint, token handling and verification preserved. Removed the unused keep-signed-in checkbox and corrected metadata. Initial production export passed; TypeScript and changed-file ESLint passed again after simplification. Browser and live authentication checks remain pending; no backend/database changes. |
 | 2026-10-07 | Ready Stock redesign | Replaced the old shopping layout at `/ready-stock` with a responsive product grid, search, alphabetical sorting, product-detail dialogs, ordering guide and shared company footer. Public categories removed from this page; backend categories unchanged. Six sample items are explicitly marked as previews; price, MOQ, quantity and contact actions await real details. TypeScript, changed-file ESLint and production export passed. Browser review and real product/contact content remain pending. |

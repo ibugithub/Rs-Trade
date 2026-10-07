@@ -228,7 +228,7 @@ Each product detail page includes:
 
 WhatsApp messages include product name and URL. Website inquiries preselect the product. Your team confirms availability, final price and delivery before confirming an order.
 
-No online payment is included. Registration and checkout are outside the new main customer journey. Audit existing cart, checkout and account dependencies before changing routes or navigation.
+No online payment is included. Registration is outside the new main customer journey. After dependency review, old category and product demo pages were removed on 2026-10-07. Cart, add-to-cart, buy-now and checkout pages/components are retained for future use without main navigation links. Existing account functionality, profile modal, shared Redux initializer and backend product/category data remain. Review redirects for any removed URLs that were published before deployment.
 
 ### Inquiry form and administration
 
@@ -272,7 +272,7 @@ Current color direction: blue for brand links/highlights, yellow for main action
 
 ### Technical restructuring
 
-Initial review identified a Next.js frontend in `ui`, Django backend, product catalog models and existing cart/checkout/account pages. The current homepage is centered on product categories, promotional banners and deals. A full integration/deployment audit remains necessary.
+Initial review identified a Next.js frontend in `ui`, Django backend, product catalog models and old cart/checkout/account pages. The corporate homepage and Ready Stock now replace the previous shopping presentation. Category/product demo routes and unused presentation components were removed on 2026-10-07; cart/buy-now/checkout are retained for future use. Account features and backend catalog data remain. A full integration/deployment audit remains necessary.
 
 | Area | Planned change |
 | --- | --- |
@@ -285,7 +285,7 @@ Initial review identified a Next.js frontend in `ui`, Django backend, product ca
 | Content | Manage company information and genuine project content |
 | Frontend layout | Shared corporate layout and reusable page sections |
 | Accounts | Inquiries must work without login |
-| Cart/checkout | Review dependencies; exclude from primary navigation |
+| Cart/checkout | Retain demo pages/components for future use, outside main navigation; no current online payment integration |
 | Existing URLs | Preserve useful routes or redirect replaced pages |
 
 Audit APIs and existing records before migrations. Preserve existing product data. Review frontend server/client boundaries and metadata support during restructuring.
