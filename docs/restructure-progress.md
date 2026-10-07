@@ -1,6 +1,6 @@
 ﻿# RS Trade International: restructuring progress
 
-Last updated: 2026-10-05 (Asia/Dhaka).
+Last updated: 2026-10-07 (Asia/Dhaka).
 
 Source plan: [Website restructuring plan](restructuring-plan.md).
 
@@ -16,7 +16,7 @@ This is the ongoing tracker for the full website restructuring. Planning decisio
 
 **Next:** Review Projects and add real factory photos, short stories and public video links when supplied. Continue About Us and Contact as static pages. Backend work remains deferred.
 
-**Implementation status:** Navigation, homepage draft, four services, static quotation form and initial Projects page are implemented. Projects uses empty static content lists until real material is supplied. Quote submissions remain disabled. Backend work is deferred; production database unchanged.
+**Implementation status:** Navigation, homepage draft, four services, static quotation form, initial Projects page and redesigned Ready Stock listing are implemented. Ready Stock uses clearly labelled sample products until real stock details are supplied. Projects uses empty static content lists until real material is supplied. Quote submissions remain disabled. Backend work is deferred; production database unchanged.
 
 ## Visual roadmap
 
@@ -120,6 +120,9 @@ Status vocabulary: **Not started / In progress / Waiting for input / Complete**.
 - [x] Implement initial Shipping & Door-to-Door Import page with full handling, process, shipment checklist and FAQs.
 - [ ] Review QC and shipping pages on mobile/desktop and connect the quotation form when built.
 - [ ] Implement Ready Stock listing and individual product pages.
+- [x] Redesign the initial static Ready Stock listing with search, sorting, product previews and an ordering guide; no public categories.
+- [ ] Add approved Ready Stock products, price/MOQ/quantity details and separate product pages if needed; current details open in a preview dialog.
+- [ ] Review Ready Stock on mobile and desktop with real product content.
 - [ ] Implement product-aware WhatsApp links and phone actions.
 - [ ] Implement Our Work and individual project pages.
 - [x] Build the initial Projects page at `/our-work` with category filters, expandable photo stories and external video links.
@@ -200,6 +203,8 @@ Projects decisions: real factory photos are available from the owner but have no
 
 Current scope: static frontend only. The quotation page previews service choices and fields; details are not sent or saved. Inquiry API, models, migration, admin and email additions were removed. Existing account/backend features remain intact. No production migration was applied.
 
+Ready Stock decisions: no category controls on the public page for now. Existing backend categories remain available for future use. Sample cards are clearly labelled as a catalog preview; product inquiries stay disabled until real products and business contact details are confirmed. Search, sorting and product-detail previews work locally without backend changes.
+
 1. Review Projects and the four services; continue the remaining static corporate pages.
 2. Collect company details, real contact information, products and photos using the pending-information table above.
 3. Decide how new product pages will be published and how old links will work.
@@ -224,6 +229,7 @@ Navigation follow-up (2026-10-05): restored Sign In beside the desktop quotation
 
 | Date (Asia/Dhaka) | Meaningful part | Result and checks |
 | --- | --- | --- |
+| 2026-10-07 | Ready Stock redesign | Replaced the old shopping layout at `/ready-stock` with a responsive product grid, search, alphabetical sorting, product-detail dialogs, ordering guide and shared company footer. Public categories removed from this page; backend categories unchanged. Six sample items are explicitly marked as previews; price, MOQ, quantity and contact actions await real details. TypeScript, changed-file ESLint and production export passed. Browser review and real product/contact content remain pending. |
 | 2026-10-04 | Website plan and progress tracking | Business model, services, full door-to-door handling, sitemap and task list recorded. Progress is maintained here. |
 | 2026-10-04 | Existing website review | Identified reusable admin/product storage, example shopping features and missing pages/inquiry handling. Useful findings and pending information are kept in this file. Live checks remain pending. |
 | 2026-10-04 | Navigation implementation | Main order: Home, Services, Ready Stock, Projects, About Us, Contact; Request a Quote stays on the right. Dropdown contains only the four services; the overview link was removed at the owner's request. Desktop/mobile share this order. Added mobile menu and active-page styles; removed shopping controls. Desktop height is 90px; mobile is 64px, with matching page spacing. Initial production build passed; TypeScript and component lint passed for the arrangement update. Full browser review and destination pages remain pending. |

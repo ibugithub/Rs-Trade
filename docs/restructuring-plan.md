@@ -215,7 +215,7 @@ Do not invent testimonials, customer counts, project statistics, credentials, pa
 
 ### Ready Stock experience
 
-Product listing cards show image, name, price or Request Price, MOQ and availability. Add category filtering only if useful for the initial products.
+Product listing cards show image, name, price or Request Price, MOQ and availability. Do not show public categories in the initial version; preserve existing backend categories so public filtering can be added later. The initial static redesign includes search, sorting and product-detail previews. Real products and working WhatsApp/phone actions follow when approved content and contact details are supplied.
 
 Each product detail page includes:
 
