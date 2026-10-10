@@ -86,7 +86,7 @@ RS Trade International
 
 Main navigation: **Home / Services / Ready Stock / Projects / About Us / Contact / Request a Quote**. The Services dropdown contains only the four individual services; no overview link.
 
-Footer links include FAQ, Privacy Policy, Terms and contact details. The sitemap contains 14 fixed public pages, plus individual product and project pages. Policies is a grouping, not an additional page. Evidence sections will appear when genuine content is available. Orders are confirmed through WhatsApp or phone without online payment or mandatory registration.
+Footer links include FAQ, Privacy Policy, Terms and contact details. The sitemap contains 14 fixed public pages, plus individual product and project pages. Policies is a grouping, not an additional page. Evidence sections will appear when genuine content is available. Orders are confirmed through WhatsApp or phone without online payment. Direct phone/WhatsApp inquiries do not require registration. The website's Buy Now/checkout flow now requires sign-in to use saved profile addresses.
 
 ### Page summary
 
@@ -216,6 +216,8 @@ Do not invent testimonials, customer counts, project statistics, credentials, pa
 ### Ready Stock experience
 
 Product listing cards show image, name, price or Request Price, MOQ and availability. Do not show public categories in the initial version; preserve existing backend categories so public filtering can be added later. The static redesign includes search, sorting and dedicated `/product/[id]` pages with image zoom and quantity selection. Add to Cart saves selections in the browser; Buy Now reviews a separate product selection. Cart checkout prepares a copyable order inquiry with contact/delivery details without sending an order or collecting payment. Real products and working WhatsApp/phone actions follow when approved content and contact details are supplied.
+
+Saved delivery addresses: Profile supports multiple addresses with labels, recipient names, phone numbers, street details, city/district, optional postal code and country. Users can edit/remove addresses and set a default. Buy Now/checkout select the default and allow another address for that request. Users without an address are sent to Profile and can return to their saved selection after adding one. Guests sign in first; email/social sign-in retain the return path. This initial version stores addresses separately per signed-in account in browser storage, with a clear notice that they do not sync across devices. Server storage and synchronization will be added when backend work resumes.
 
 Each product detail page includes:
 

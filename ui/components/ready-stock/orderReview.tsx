@@ -2,6 +2,7 @@
 
 import { useEffect, useState } from 'react';
 import Link from 'next/link';
+import { useRouter } from 'next/navigation';
 import { Clipboard, LoaderCircle, ShoppingBag } from 'lucide-react';
 import { useAppDispatch, useAppSelector } from '@/configs/redux/hooks';
 import { setQuantity, setBuyNow } from '@/configs/redux/cart/cartSlice';
@@ -9,24 +10,73 @@ import { formatOrderRequest, type OrderContact } from '@/content/orderRequest';
 import { CartItems } from '@/components/cart/cartItems';
 import { ShopShell } from './shopShell';
 import { demoSubtotal, formatBDT } from '@/content/pricing';
+import { useAddressBook } from '@/components/profile/useAddressBook';
+import {
+  formatDeliveryAddress,
+  selectDeliveryAddress,
+} from '@/configs/redux/addresses/addressSlice';
+import {
+  orderAddressDestination,
+  profileAddressPath,
+  rememberAddressSignIn,
+} from '@/lib/orderNavigation';
 
 export function OrderReview({ mode }: { mode: 'cart' | 'buyNow' }) {
   const { items: cartItems, buyNow, hydrated } = useAppSelector((state) => state.cart);
   const dispatch = useAppDispatch();
+  const router = useRouter();
+  const authStatus = useAppSelector((state) => state.auth.status);
+  const {
+    owner,
+    ready: addressesReady,
+    items: addresses,
+    defaultId,
+    storageAvailable,
+  } = useAddressBook();
+  const orderPath = mode === 'buyNow' ? '/buy_now' : '/checkout';
+  const addressPage = profileAddressPath(orderPath);
   const items = mode === 'buyNow' ? (buyNow ? [buyNow] : []) : cartItems;
-  const [contact, setContact] = useState<OrderContact>({
-    name: '',
-    phone: '',
-    address: '',
-    notes: '',
-  });
+  const [selectedId, setSelectedId] = useState<string | null>(null);
+  const [notes, setNotes] = useState('');
+  const selectedAddress = selectDeliveryAddress(addresses, selectedId, defaultId);
+  const contact: OrderContact = {
+    name: selectedAddress?.recipient ?? '',
+    phone: selectedAddress?.phone ?? '',
+    address: selectedAddress ? formatDeliveryAddress(selectedAddress) : '',
+    notes,
+  };
   const [reviewed, setReviewed] = useState(false);
   const [copyStatus, setCopyStatus] = useState('');
   const [copying, setCopying] = useState(false);
   useEffect(() => {
     setReviewed(false);
     setCopyStatus('');
-  }, [cartItems, buyNow]);
+  }, [cartItems, buyNow, selectedAddress, notes, owner]);
+  useEffect(() => {
+    setSelectedId(null);
+    setNotes('');
+  }, [owner]);
+  useEffect(() => {
+    if (!hydrated || !items.length) return;
+    const destination = orderAddressDestination(
+      authStatus,
+      addressesReady,
+      addresses.length,
+      orderPath,
+    );
+    if (!destination) return;
+    if (destination === '/accounts/signin') rememberAddressSignIn(orderPath);
+    router.replace(destination);
+  }, [
+    hydrated,
+    items.length,
+    authStatus,
+    addressesReady,
+    addresses.length,
+    orderPath,
+    addressPage,
+    router,
+  ]);
   const summary = formatOrderRequest(items, contact);
   const copy = async () => {
     setCopying(true);
@@ -46,7 +96,7 @@ export function OrderReview({ mode }: { mode: 'cart' | 'buyNow' }) {
       title={mode === 'buyNow' ? 'Buy Now' : 'Review Your Request'}
       description="Confirm your selection and prepare a request for our team. Final price and delivery are agreed before an order is confirmed."
     >
-      {!hydrated ? (
+      {!hydrated || (items.length > 0 && (!addressesReady || !selectedAddress)) ? (
         <p
           role="status"
           className="mt-8 flex items-center gap-2 text-sm text-gray-600"
@@ -56,7 +106,13 @@ export function OrderReview({ mode }: { mode: 'cart' | 'buyNow' }) {
             className="motion-safe:animate-spin"
             aria-hidden="true"
           />
-          Loading your selection...
+          {!hydrated
+            ? 'Loading your selection...'
+            : authStatus === 'unauthenticated'
+              ? 'Returning to Sign In...'
+              : addressesReady
+                ? 'Opening your profile to add an address...'
+                : 'Loading your saved addresses...'}
         </p>
       ) : !items.length ? (
         <div className="mt-8 rounded-2xl border border-gray-200 bg-white p-10 text-center">
@@ -109,80 +165,70 @@ export function OrderReview({ mode }: { mode: 'cart' | 'buyNow' }) {
               id="order-contact-title"
               className="text-xl font-semibold"
             >
-              Your contact and delivery details
+              Delivery address
             </h2>
             <p className="mt-2 text-sm leading-6 text-gray-500">
-              Use the request summary to discuss your order with our team.
+              Choose a saved address for this order. Your default is selected automatically.
             </p>
             <form
               className="mt-6 space-y-4"
               onSubmit={(event) => {
                 event.preventDefault();
+                if (!selectedAddress) return;
                 setReviewed(true);
                 setCopyStatus('');
               }}
             >
-              {(
-                [
-                  { key: 'name', label: 'Full name', autocomplete: 'name' },
-                  { key: 'phone', label: 'Phone / WhatsApp number', autocomplete: 'tel' },
-                  { key: 'address', label: 'Delivery address', autocomplete: 'street-address' },
-                ] as const
-              ).map((field) => (
-                <div key={field.key}>
+              <fieldset className="space-y-3">
+                <legend className="sr-only">Choose your delivery address</legend>
+                {addresses.map((address) => (
                   <label
-                    htmlFor={`order-${field.key}`}
-                    className="mb-2 block text-sm font-medium"
+                    key={address.id}
+                    className={`flex cursor-pointer items-start gap-3 rounded-xl border p-4 ${selectedAddress?.id === address.id ? 'border-blue-600 bg-blue-50' : 'border-gray-200 hover:border-blue-300'}`}
                   >
-                    {field.label}
-                  </label>
-                  {field.key === 'address' ? (
-                    <textarea
-                      id={`order-${field.key}`}
-                      autoComplete={field.autocomplete}
-                      required
-                      rows={3}
-                      value={contact[field.key]}
-                      onChange={(event) => {
-                        setContact((value) => ({ ...value, [field.key]: event.target.value }));
-                        setReviewed(false);
-                      }}
-                      className={inputClass}
-                    />
-                  ) : (
                     <input
-                      id={`order-${field.key}`}
-                      type={field.key === 'phone' ? 'tel' : 'text'}
-                      autoComplete={field.autocomplete}
-                      required
-                      value={contact[field.key]}
-                      onChange={(event) => {
-                        setContact((value) => ({ ...value, [field.key]: event.target.value }));
+                      type="radio"
+                      name="delivery-address"
+                      value={address.id}
+                      checked={selectedAddress?.id === address.id}
+                      onChange={() => {
+                        setSelectedId(address.id);
                         setReviewed(false);
+                        setCopyStatus('');
                       }}
-                      className={inputClass}
+                      className="mt-1 h-4 w-4 shrink-0 accent-blue-600"
                     />
-                  )}
-                </div>
-              ))}
-              <div>
-                <label
-                  htmlFor="order-notes"
-                  className="mb-2 block text-sm font-medium"
+                    <span className="min-w-0 text-sm">
+                      <span className="block font-semibold">
+                        {address.label}
+                        {address.id === defaultId && (
+                          <span className="ml-2 text-xs font-normal text-blue-700">Default</span>
+                        )}
+                      </span>
+                      <span className="mt-2 block break-words">{address.recipient}</span>
+                      <span className="mt-1 block break-words leading-6 text-gray-600">
+                        {formatDeliveryAddress(address)}
+                      </span>
+                      <span className="mt-1 block text-gray-600">{address.phone}</span>
+                    </span>
+                  </label>
+                ))}
+              </fieldset>
+              <Link
+                href={addressPage}
+                className="inline-flex min-h-11 items-center text-sm font-semibold text-blue-700 hover:underline"
+              >
+                Add or Edit Addresses
+              </Link>
+              {!storageAvailable && (
+                <p
+                  role="alert"
+                  className="text-sm leading-6 text-gray-600"
                 >
-                  Notes <span className="font-normal text-gray-500">(optional)</span>
-                </label>
-                <textarea
-                  id="order-notes"
-                  rows={2}
-                  value={contact.notes}
-                  onChange={(event) => {
-                    setContact((value) => ({ ...value, notes: event.target.value }));
-                    setReviewed(false);
-                  }}
-                  className={inputClass}
-                />
-              </div>
+                  These addresses may not survive a reload because browser storage is unavailable.
+                </p>
+              )}
+
               <button
                 type="submit"
                 className="min-h-12 w-full rounded-lg bg-yellow-300 px-5 text-sm font-semibold hover:bg-yellow-500"

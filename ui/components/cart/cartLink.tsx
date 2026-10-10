@@ -6,12 +6,12 @@ import { useAppSelector } from '@/configs/redux/hooks';
 
 export function CartLink({ onNavigate }: { onNavigate?: () => void }) {
   const { items, hydrated } = useAppSelector((state) => state.cart);
-  const count = hydrated ? items.reduce((total, item) => total + item.quantity, 0) : 0;
+  const count = hydrated ? items.length : 0;
   return (
     <Link
       href="/cart"
       onClick={onNavigate}
-      aria-label={`Cart, ${count} items`}
+      aria-label={`Cart, ${count} ${count === 1 ? 'product' : 'products'}`}
       className="relative flex h-11 w-11 shrink-0 items-center justify-center rounded-lg text-gray-700 hover:bg-blue-50 hover:text-blue-700 focus-visible:outline-blue-600"
     >
       <ShoppingBag

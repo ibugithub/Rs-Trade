@@ -3,6 +3,7 @@ import { useCallback } from 'react';
 import { useRouter } from 'next/navigation';
 import { useAppDispatch } from '@/configs/redux/hooks';
 import { fetchLoggedInUser } from '@/configs/redux/auth/authSlice';
+import { consumeSignInReturn } from '@/lib/orderNavigation';
 
 interface Tokens {
   accessToken: string;
@@ -24,7 +25,7 @@ export const useSaveTokens = () => {
       expirationDate.setMonth(expirationDate.getMonth() + 1);
       document.cookie = `${cookieName}=${cookieValue}; expires=${expirationDate.toUTCString()}; path=/; SameSite=strict`;
       HandleFetchUser();
-      router.push('/');
+      router.push(consumeSignInReturn());
     },
     [dispatch, router],
   );

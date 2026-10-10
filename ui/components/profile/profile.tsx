@@ -9,6 +9,9 @@ import { ArrowLeft, KeyRound, LoaderCircle, UserRound } from 'lucide-react';
 import { AxiosReqInstance } from '../accounts/utils/axiosInstance';
 import { useAppSelector } from '@/configs/redux/hooks';
 import type { ProfileInterface } from '@/types/interface';
+import { AddressBook } from './addressBook';
+import { useAddressBook } from './useAddressBook';
+import { orderReturnPath, rememberAddressSignIn } from '@/lib/orderNavigation';
 
 export function formatProfileDate(value?: string | null) {
   if (!value) return 'Not available';
@@ -21,6 +24,7 @@ export function formatProfileDate(value?: string | null) {
 export const Profile = () => {
   const { loogedInUser: account, isAuthenticated, status } = useAppSelector((state) => state.auth);
   const router = useRouter();
+  const { owner } = useAddressBook();
   const requestVersion = useRef(0);
   const [profile, setProfile] = useState<ProfileInterface | null>(null);
   const [fetching, setFetching] = useState(true);
@@ -89,7 +93,11 @@ export const Profile = () => {
       setNewPassword('');
       setConfirmPassword('');
       setResult(null);
-      if (status === 'unauthenticated') router.replace('/accounts/signin');
+      if (status === 'unauthenticated') {
+        const returnTo = orderReturnPath(window.location.search);
+        if (returnTo) rememberAddressSignIn(returnTo);
+        router.replace('/accounts/signin');
+      }
       return;
     }
     const controller = new AbortController();
@@ -417,6 +425,7 @@ export const Profile = () => {
             )}
           </div>
         </section>
+        <AddressBook key={owner ?? 'signed-out'} />
       </div>
     </main>
   );

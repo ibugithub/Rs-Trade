@@ -4,6 +4,7 @@ interface User {
   signUp_by: 'email' | 'google' | 'facebook' | 'microsoft';
 }
 export interface ProfileInterface {
+  email?: string;
   user: User;
   name: string;
   Display_name: string | null;
