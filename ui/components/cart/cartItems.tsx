@@ -4,6 +4,7 @@ import Image from 'next/image';
 import Link from 'next/link';
 import { Trash2 } from 'lucide-react';
 import { readyStockProducts } from '@/content/readyStock';
+import { formatBDT } from '@/content/pricing';
 import type { CartItem } from '@/configs/redux/cart/cartSlice';
 import { QuantityInput } from '@/components/ready-stock/quantityInput';
 
@@ -45,7 +46,13 @@ export function CartItems({
               >
                 {product.name}
               </Link>
-              <p className="mt-2 text-sm font-medium text-blue-700">Request Price</p>
+              <p className="mt-2 text-sm font-medium text-blue-700">
+                {formatBDT(product.demoPrice)}{' '}
+                <span className="text-xs font-normal text-gray-500">/ unit · demo price</span>
+              </p>
+              <p className="mt-1 text-sm text-gray-600">
+                Demo line total: {formatBDT(product.demoPrice * item.quantity)}
+              </p>
               <p className="mt-1 text-xs text-gray-500">Stock and MOQ to be confirmed.</p>
               <div className="mt-4 flex flex-wrap items-center justify-between gap-3">
                 <QuantityInput

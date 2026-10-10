@@ -31,6 +31,7 @@ function load(relative) {
 }
 const cart = load('configs/redux/cart/cartSlice.ts');
 const { formatOrderRequest } = load('content/orderRequest.ts');
+const { demoSubtotal, formatBDT } = load('content/pricing.ts');
 const empty = () => cart.cartReducer(undefined, { type: 'init' });
 
 test('adds merge quantities; update, removal and clear work together', () => {
@@ -84,7 +85,7 @@ test('quantity limits and invalid payloads cannot corrupt selections', () => {
     [],
   );
 });
-test('request summary follows chosen products and quantities without invented prices', () => {
+test('request summary labels demo prices and keeps final confirmation explicit', () => {
   const summary = formatOrderRequest([{ productId: 'trimmer', quantity: 3 }], {
     name: ' Buyer ',
     phone: '+880123',
@@ -92,9 +93,23 @@ test('request summary follows chosen products and quantities without invented pr
     notes: 'Confirm packaging',
   });
   assert.match(summary, /Multi-purpose Grooming Kit: 3 requested/);
+  assert.match(summary, /BDT 1,250 per unit, demo price/);
+  assert.match(summary, /Demo subtotal: BDT 3,750 \(preview only; not a final quote\)/);
   assert.match(summary, /Name: Buyer/);
   assert.match(summary, /Phone \/ WhatsApp: \+880123/);
   assert.match(summary, /Confirm packaging/);
   assert.match(summary, /Please confirm availability, MOQ, final price and delivery charges/);
   assert.doesNotMatch(summary, /\$|payment successful|order confirmed/i);
+});
+
+test('demo totals follow quantities and removal without delivery charges', () => {
+  let state = cart.cartReducer(empty(), cart.addItem({ productId: 'trimmer', quantity: 2 }));
+  state = cart.cartReducer(state, cart.addItem({ productId: 'speaker', quantity: 1 }));
+  assert.equal(demoSubtotal(state.items), 6000);
+  state = cart.cartReducer(state, cart.setQuantity({ productId: 'trimmer', quantity: 3 }));
+  assert.equal(demoSubtotal(state.items), 7250);
+  state = cart.cartReducer(state, cart.removeItem('speaker'));
+  assert.equal(demoSubtotal(state.items), 3750);
+  assert.equal(demoSubtotal([]), 0);
+  assert.equal(formatBDT(3750), 'BDT 3,750');
 });

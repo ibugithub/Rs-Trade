@@ -8,6 +8,7 @@ import { setQuantity, setBuyNow } from '@/configs/redux/cart/cartSlice';
 import { formatOrderRequest, type OrderContact } from '@/content/orderRequest';
 import { CartItems } from '@/components/cart/cartItems';
 import { ShopShell } from './shopShell';
+import { demoSubtotal, formatBDT } from '@/content/pricing';
 
 export function OrderReview({ mode }: { mode: 'cart' | 'buyNow' }) {
   const { items: cartItems, buyNow, hydrated } = useAppSelector((state) => state.cart);
@@ -82,7 +83,12 @@ export function OrderReview({ mode }: { mode: 'cart' | 'buyNow' }) {
               onChange={(item) => dispatch(mode === 'buyNow' ? setBuyNow(item) : setQuantity(item))}
             />
             <div className="mt-5 rounded-xl border border-blue-100 bg-blue-50 p-5 text-sm leading-7 text-gray-600">
-              <p className="font-semibold text-gray-900">Price and delivery: to be confirmed</p>
+              <p className="font-semibold text-gray-900">
+                Demo subtotal: {formatBDT(demoSubtotal(items))}
+              </p>
+              <p className="mt-2 text-xs">
+                Preview prices only. Delivery and final selling prices must be confirmed.
+              </p>
               <p className="mt-2">
                 These are sample products. Preparing a request does not reserve stock, place an
                 order or take payment.

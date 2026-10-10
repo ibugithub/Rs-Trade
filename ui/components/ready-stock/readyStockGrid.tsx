@@ -5,6 +5,7 @@ import Link from 'next/link';
 import { useState } from 'react';
 import { ArrowUpRight, Search } from 'lucide-react';
 import { readyStockProducts } from '@/content/readyStock';
+import { formatBDT } from '@/content/pricing';
 
 export function ReadyStockGrid() {
   const [query, setQuery] = useState('');
@@ -105,8 +106,10 @@ export function ReadyStockGrid() {
                 <p className="mt-2 flex-1 text-sm leading-6 text-gray-600">{product.description}</p>
                 <div className="mt-5 flex items-end justify-between gap-3 border-t border-gray-100 pt-4">
                   <div>
-                    <p className="text-xs text-gray-500">Price</p>
-                    <p className="mt-1 font-semibold text-blue-700">Request Price</p>
+                    <p className="text-xs text-gray-500">Demo price</p>
+                    <p className="mt-1 font-semibold text-blue-700">
+                      {formatBDT(product.demoPrice)}
+                    </p>
                   </div>
                   <p className="text-xs text-gray-500">MOQ: to be confirmed</p>
                 </div>

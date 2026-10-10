@@ -6,6 +6,7 @@ import { useAppDispatch, useAppSelector } from '@/configs/redux/hooks';
 import { clearCart, removeItem, setQuantity } from '@/configs/redux/cart/cartSlice';
 import { CartItems } from './cartItems';
 import { ShopShell } from '@/components/ready-stock/shopShell';
+import { demoSubtotal, formatBDT } from '@/content/pricing';
 
 export const Cart = () => {
   const { items, hydrated } = useAppSelector((state) => state.cart);
@@ -76,8 +77,8 @@ export const Cart = () => {
                 <dd>{quantity}</dd>
               </div>
               <div className="flex justify-between">
-                <dt>Product price</dt>
-                <dd className="font-medium text-blue-700">Request Price</dd>
+                <dt>Demo subtotal</dt>
+                <dd className="font-semibold text-blue-700">{formatBDT(demoSubtotal(items))}</dd>
               </div>
               <div className="flex justify-between">
                 <dt>Delivery</dt>

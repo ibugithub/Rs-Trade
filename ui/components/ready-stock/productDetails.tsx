@@ -7,6 +7,7 @@ import { ShoppingBag, ArrowRight, Check } from 'lucide-react';
 import { useAppDispatch, useAppSelector } from '@/configs/redux/hooks';
 import { addItem, setBuyNow } from '@/configs/redux/cart/cartSlice';
 import type { ReadyStockProduct } from '@/content/readyStock';
+import { formatBDT } from '@/content/pricing';
 import { ProductImage } from './productImage';
 import { QuantityInput } from './quantityInput';
 import { ShopShell } from './shopShell';
@@ -34,8 +35,11 @@ export function ProductDetails({ product }: { product: ReadyStockProduct }) {
             Catalog preview
           </span>
           <p className="mt-5 text-base leading-8 text-gray-600">{product.description}</p>
-          <p className="mt-6 text-xs text-gray-500">Price</p>
-          <p className="mt-1 text-2xl font-bold text-blue-700">Request Price</p>
+          <p className="mt-6 text-xs text-gray-500">Demo price per unit</p>
+          <p className="mt-1 text-3xl font-bold text-blue-700">{formatBDT(product.demoPrice)}</p>
+          <p className="mt-2 text-xs text-gray-500">
+            Preview price only. Confirm the actual price with our team.
+          </p>
           <dl className="mt-6 space-y-4 border-y border-gray-200 py-5 text-sm">
             {[
               ['Minimum order quantity', 'To be confirmed'],
@@ -56,6 +60,12 @@ export function ProductDetails({ product }: { product: ReadyStockProduct }) {
               setAdded(false);
             }}
           />
+          <p className="mt-3 text-sm text-gray-600">
+            Demo subtotal:{' '}
+            <span className="font-semibold text-gray-900">
+              {formatBDT(product.demoPrice * quantity)}
+            </span>
+          </p>
           <div className="mt-6 grid gap-3 sm:grid-cols-2">
             <button
               type="button"
