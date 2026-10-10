@@ -1,6 +1,6 @@
-import { createSlice, createAsyncThunk } from "@reduxjs/toolkit";
-import { AxiosReqInstance } from "@/components/accounts/utils/axiosInstance";
-import { ProfileInterface } from "@/types/interface";
+import { createSlice, createAsyncThunk } from '@reduxjs/toolkit';
+import { AxiosReqInstance } from '@/components/accounts/utils/axiosInstance';
+import { ProfileInterface } from '@/types/interface';
 
 interface AuthState {
   isAuthenticated: boolean;
@@ -18,12 +18,12 @@ const initialState: AuthState = {
 };
 
 export const fetchLoggedInUser = createAsyncThunk(
-  "auth/fetchLoggedInUser",
+  'auth/fetchLoggedInUser',
   async (_, { rejectWithValue }) => {
     const protectedRoute = AxiosReqInstance();
-    const accessToken = localStorage.getItem("accessToken");
+    const accessToken = localStorage.getItem('accessToken');
     if (!accessToken) {
-      return rejectWithValue("No access token found");
+      return rejectWithValue('No access token found');
     }
     const baseUrl = process.env.NEXT_PUBLIC_BACKEND_BASE_URL;
     const url = `${baseUrl}/api/users/validateUser/`;
@@ -32,7 +32,7 @@ export const fetchLoggedInUser = createAsyncThunk(
       if (response.status === 200) {
         return response.data;
       } else {
-        return rejectWithValue("Invalid token");
+        return rejectWithValue('Invalid token');
       }
     } catch {
       return rejectWithValue('Could not validate session');
@@ -41,7 +41,7 @@ export const fetchLoggedInUser = createAsyncThunk(
 );
 
 const authSlice = createSlice({
-  name: "auth",
+  name: 'auth',
   initialState,
   reducers: {
     signOut(state) {

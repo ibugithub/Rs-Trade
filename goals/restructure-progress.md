@@ -16,7 +16,7 @@ This is the ongoing tracker for the full website restructuring. Planning decisio
 
 **Next:** Review Projects and add real factory photos, short stories and public video links when supplied. Continue About Us and Contact as static pages. Backend work remains deferred.
 
-**Implementation status:** Navigation, homepage draft, four services, static quotation form, initial Projects page and redesigned Ready Stock listing are implemented. Ready Stock uses clearly labelled sample products until real stock details are supplied. Projects uses empty static content lists until real material is supplied. Quote submissions remain disabled. Backend work is deferred; production database unchanged.
+**Implementation status:** Navigation, homepage draft, four services, static quotation form, initial Projects page, Ready Stock listing and six dedicated product pages are implemented. Products have image zoom, quantity selection, Add to Cart and Buy Now. A browser-saved cart and order-request review are connected; no payment or order submission. Ready Stock uses clearly labelled sample products until real stock details are supplied. Projects uses empty static content lists until real material is supplied. Quote submissions remain disabled. New commerce backend work is deferred.
 
 ## Visual roadmap
 
@@ -123,9 +123,11 @@ Status vocabulary: **Not started / In progress / Waiting for input / Complete**.
 - [x] Implement initial Quality Control & Inspection page with the six-step process, reporting details, customer checklist and FAQs.
 - [x] Implement initial Shipping & Door-to-Door Import page with full handling, process, shipment checklist and FAQs.
 - [ ] Review QC and shipping pages on mobile/desktop and connect the quotation form when built.
-- [ ] Implement Ready Stock listing and individual product pages.
+- [x] Implement initial static Ready Stock listing and individual product pages.
 - [x] Redesign the initial static Ready Stock listing with search, sorting, product previews and an ordering guide; no public categories.
-- [ ] Add approved Ready Stock products, price/MOQ/quantity details and separate product pages if needed; current details open in a preview dialog.
+- [x] Replace product preview dialogs with six dedicated `/product/[id]` pages and an accessible enlarged-image dialog with zoom controls.
+- [x] Connect quantity selection, browser-persisted cart, cart badge, independent Buy Now selection and order-request review.
+- [ ] Add approved Ready Stock products, price/MOQ/quantity details and business contact actions.
 - [ ] Review Ready Stock on mobile and desktop with real product content.
 - [ ] Implement product-aware WhatsApp links and phone actions.
 - [ ] Implement Our Work and individual project pages.
@@ -179,7 +181,7 @@ Status vocabulary: **Not started / In progress / Waiting for input / Complete**.
 ### What we learned from the existing website
 
 - We can reuse the product admin area and existing product storage.
-- The original product pages used example data and are now removed. Cart, buy-now and checkout demo pages are retained for future development, outside the main navigation. Ready Stock has its own clearly labelled static previews.
+- Original product and checkout demo content has been replaced. Dedicated product pages, cart, Buy Now and checkout now share the current Ready Stock catalog and quantities. Real products and direct contact actions remain pending.
 - Some menu/footer links do not lead to built pages yet.
 - We need a form that saves customer inquiries and notifies the team.
 - We need to decide how adding a product in admin creates its public page. The current setup builds pages before publication.
@@ -207,9 +209,9 @@ Projects decisions: real factory photos are available from the owner but have no
 
 Current scope: static frontend only. The quotation page previews service choices and fields; details are not sent or saved. Inquiry API, models, migration, admin and email additions were removed. Existing account/backend features remain intact. No production migration was applied.
 
-Ready Stock decisions: no category controls on the public page for now. Existing backend categories remain available for future use. Sample cards are clearly labelled as a catalog preview; product inquiries stay disabled until real products and business contact details are confirmed. Search, sorting and product-detail previews work locally without backend changes.
+Ready Stock decisions: no category controls on the public page for now. Existing backend categories remain available for future use. Sample cards link to real product-page routes. Add to Cart and Buy Now work locally; product IDs/quantities persist in browser storage. Checkout prepares a copyable inquiry with contact/delivery details, but sends nothing and collects no payment. Personal contact details are not persisted. Official WhatsApp/phone actions await confirmed contacts; product prices, MOQ and stock remain unconfirmed.
 
-Cleanup decisions: old category/product routes and unused presentation components have been removed. Cart, add-to-cart, buy-now and checkout pages/components are retained for future use without main navigation links. Existing account pages, `profileModal.tsx`, Django backend and product/category records are preserved. The layout uses the shared `reduxInitializer.tsx`; its inline duplicate was removed. Old `/category_details` and `/product/*` URLs no longer exist; redirects for any previously published URLs must be reviewed before deployment. Removed 44 unused public pictures; the eight images referenced by Ready Stock and retained shopping pages remain. All referenced local picture files exist.
+Cleanup decisions: old category/product demo content and unused presentation components were removed. Product pages have now been rebuilt under `/product/[id]` for the six current catalog IDs, and cart/add-to-cart, buy-now and checkout are connected to those selections. The navbar has a cart icon. Existing account pages, `profileModal.tsx`, Django backend and product/category records are preserved. The layout uses the shared `reduxInitializer.tsx`. Old `/category_details` and former `/product/product1` style URLs remain removed; review redirects for published URLs before deployment. Unused picture files are preserved in unused-pictures.zip; current public product pictures remain.
 
 1. Review Projects and the four services; continue the remaining static corporate pages.
 2. Collect company details, real contact information, products and photos using the pending-information table above.
@@ -237,6 +239,8 @@ Account navigation follow-up (2026-10-07): the navbar now uses ProfileModal on d
 
 | Date (Asia/Dhaka) | Meaningful part | Result and checks |
 | --- | --- | --- |
+| 2026-10-10 | Frontend code readability | Reformatted frontend source and cart tests with consistent two-space indentation, expanded JSX/props, readable handlers and multiline objects. Added Prettier development tooling/configuration plus npm run format and format:check to maintain this style. Formatting only; intended site behavior unchanged. Format check, TypeScript, relevant component/state ESLint and all five cart regression tests passed. |
+| 2026-10-10 | Product pages, zoom and connected cart flow | Replaced listing popups with six static product routes. Added native enlarged-image dialog with 100–300% zoom/reset, scroll/swipe and Escape dismissal. Added Redux cart with validated quantities, merge/update/remove/clear, localStorage persistence and navbar badge. Buy Now keeps a separate selection. Replaced old fake cart/checkout content with current catalog items and a copyable contact/delivery request; no submission or payment. TypeScript, changed-file ESLint, five cart/request regression tests and production static export passed. Browser/mobile interaction review, real stock data and official ordering contacts remain pending. No backend/database changes. |
 | 2026-10-10 | Profile request follow-up | Browser reported GET /api/profile/getProfile/ returning 404; the endpoint returned 404 for accounts without a separate Profile record. It now serializes an unsaved profile with the authenticated user's name, email and sign-in method, leaving unavailable dates/photo/display name empty without database writes. Existing profiles remain intact; anonymous access stays blocked. Also corrected the frontend token-refresh guard and added distinct error messages. Three isolated backend regression tests, TypeScript, lint and six mocked frontend response cases passed. Backend tests used isolated settings with no production database access; no migration or data write performed. Live browser recheck remains pending. |
 | 2026-10-10 | Profile sign-out protection | Sign Out now clears Redux user data synchronously and redirects from Profile to Sign In. Profile waits for session validation, hides private details immediately when unauthenticated, clears local profile/password state and cancels its fetch on logout. Late authentication responses are ignored after sign-out. TypeScript, changed-file ESLint and simulated logout/late-response/private-data/redirect checks passed. No backend/database changes; live browser verification remains pending. |
 | 2026-10-10 | Profile page repair and redesign | Replaced the gradient profile card with the current white/blue/neutral account style and responsive details. Added profile loading, retry and expired-session messages; missing display names fall back to the signed-in account name and missing/invalid dates show Not available. Profile photos have dimensions and a fallback. Removed the nonfunctional Edit Profile button. Email accounts retain password changes with confirmation, saving feedback and visible success/errors; social accounts show provider guidance. Existing profile/password endpoints unchanged. TypeScript, component lint, mocked loading/data/error/date checks and production export passed. Live profile retrieval and password changes remain unverified; no database changes. |

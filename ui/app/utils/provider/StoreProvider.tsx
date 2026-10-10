@@ -1,17 +1,19 @@
-"use client";
-import { useRef } from "react";
-import { Provider } from "react-redux";
-import { makeStore, AppStore } from "@/configs/redux/store";
+'use client';
+import { useRef } from 'react';
+import { Provider } from 'react-redux';
+import { makeStore, AppStore } from '@/configs/redux/store';
+import { CartPersistence } from '@/components/cart/cartPersistence';
 
-export default function StoreProvider({
-  children,
-}: {
-  children: React.ReactNode;
-}) {
+export default function StoreProvider({ children }: { children: React.ReactNode }) {
   const storeRef = useRef<AppStore | null>(null);
   if (!storeRef.current) {
     storeRef.current = makeStore();
   }
 
-  return <Provider store={storeRef.current}>{children}</Provider>;
+  return (
+    <Provider store={storeRef.current}>
+      <CartPersistence />
+      {children}
+    </Provider>
+  );
 }

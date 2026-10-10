@@ -215,7 +215,7 @@ Do not invent testimonials, customer counts, project statistics, credentials, pa
 
 ### Ready Stock experience
 
-Product listing cards show image, name, price or Request Price, MOQ and availability. Do not show public categories in the initial version; preserve existing backend categories so public filtering can be added later. The initial static redesign includes search, sorting and product-detail previews. Real products and working WhatsApp/phone actions follow when approved content and contact details are supplied.
+Product listing cards show image, name, price or Request Price, MOQ and availability. Do not show public categories in the initial version; preserve existing backend categories so public filtering can be added later. The static redesign includes search, sorting and dedicated `/product/[id]` pages with image zoom and quantity selection. Add to Cart saves selections in the browser; Buy Now reviews a separate product selection. Cart checkout prepares a copyable order inquiry with contact/delivery details without sending an order or collecting payment. Real products and working WhatsApp/phone actions follow when approved content and contact details are supplied.
 
 Each product detail page includes:
 
@@ -228,7 +228,7 @@ Each product detail page includes:
 
 WhatsApp messages include product name and URL. Website inquiries preselect the product. Your team confirms availability, final price and delivery before confirming an order.
 
-No online payment is included. Registration is outside the new main customer journey. After dependency review, old category and product demo pages were removed on 2026-10-07. Cart, add-to-cart, buy-now and checkout pages/components are retained for future use without main navigation links. Existing account functionality, profile modal, shared Redux initializer and backend product/category data remain. Review redirects for any removed URLs that were published before deployment.
+No online payment is included. Registration is outside the new main customer journey. Old category and product demo content was removed on 2026-10-07. On 2026-10-10, product pages, cart, Buy Now and checkout were rebuilt around the current static Ready Stock catalog. The navbar includes a cart icon; quantities persist in the browser while contact/delivery fields remain temporary. Final ordering is still confirmed through WhatsApp/phone when official contacts are supplied. Existing account functionality and backend product/category data remain. Review redirects for any removed URLs that were published before deployment.
 
 ### Inquiry form and administration
 
@@ -285,7 +285,7 @@ Initial review identified a Next.js frontend in `ui`, Django backend, product ca
 | Content | Manage company information and genuine project content |
 | Frontend layout | Shared corporate layout and reusable page sections |
 | Accounts | Inquiries must work without login |
-| Cart/checkout | Retain demo pages/components for future use, outside main navigation; no current online payment integration |
+| Cart/checkout | Connected browser cart, separate Buy Now selection and copyable order-request review; no payment or order submission |
 | Existing URLs | Preserve useful routes or redirect replaced pages |
 
 Audit APIs and existing records before migrations. Preserve existing product data. Review frontend server/client boundaries and metadata support during restructuring.

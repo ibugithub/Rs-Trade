@@ -2,7 +2,15 @@
 
 import React from 'react';
 
-export const GoogleSignInButton = ({type, className, iconOnly = false}: {type: string; className?: string; iconOnly?: boolean}) => {
+export const GoogleSignInButton = ({
+  type,
+  className,
+  iconOnly = false,
+}: {
+  type: string;
+  className?: string;
+  iconOnly?: boolean;
+}) => {
   const handleGoogleSignIn = () => {
     const clientId = process.env.NEXT_PUBLIC_GOOGLE_CLIENT_ID;
     const redirectUri = `${window.location.origin}/${process.env.NEXT_PUBLIC_GOOGLE_REDIRECT_URI}`;
@@ -16,7 +24,10 @@ export const GoogleSignInButton = ({type, className, iconOnly = false}: {type: s
       type="button"
       title="Continue with Google"
       aria-label="sign in google"
-      className={className ?? "max-w-[350px] text-body-color dark:text-body-color-dark dark:shadow-two mb-6 flex w-full items-center justify-center rounded-md border border-stroke bg-[#f8f8f8] px-6 py-3 text-base outline-none transition-all duration-300 hover:border-primary hover:bg-primary/5 hover:text-primary dark:border-transparent dark:bg-[#2C303B] dark:hover:border-primary dark:hover:bg-primary/5 dark:hover:text-primary dark:hover:shadow-none"}
+      className={
+        className ??
+        'max-w-[350px] text-body-color dark:text-body-color-dark dark:shadow-two mb-6 flex w-full items-center justify-center rounded-md border border-stroke bg-[#f8f8f8] px-6 py-3 text-base outline-none transition-all duration-300 hover:border-primary hover:bg-primary/5 hover:text-primary dark:border-transparent dark:bg-[#2C303B] dark:hover:border-primary dark:hover:bg-primary/5 dark:hover:text-primary dark:hover:shadow-none'
+      }
       onClick={handleGoogleSignIn}
     >
       <span className="mr-3">
@@ -47,13 +58,16 @@ export const GoogleSignInButton = ({type, className, iconOnly = false}: {type: s
           </g>
           <defs>
             <clipPath id="clip0_95:967">
-              <rect width="20" height="20" fill="white" />
+              <rect
+                width="20"
+                height="20"
+                fill="white"
+              />
             </clipPath>
           </defs>
         </svg>
       </span>
-      <span className={iconOnly ? "sr-only" : undefined}>{type} with Google</span>
+      <span className={iconOnly ? 'sr-only' : undefined}>{type} with Google</span>
     </button>
   );
 };
-

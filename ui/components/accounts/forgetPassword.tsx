@@ -1,8 +1,8 @@
 ﻿'use client';
-import { useState } from "react";
-import axios from "axios";
-import { toast } from "react-toastify";
-import { LoaderCircle } from "lucide-react";
+import { useState } from 'react';
+import axios from 'axios';
+import { toast } from 'react-toastify';
+import { LoaderCircle } from 'lucide-react';
 
 export const ForgotPassword = () => {
   const [email, setEmail] = useState('');
@@ -18,12 +18,15 @@ export const ForgotPassword = () => {
     try {
       const response = await axios.post(url, { email }, { timeout: 30000 });
       if (response.status === 200) {
-        setResult({ type: 'success', message: 'Reset instructions sent. Check your inbox and spam folder.' });
-        toast.success("Email sent successfully!");
+        setResult({
+          type: 'success',
+          message: 'Reset instructions sent. Check your inbox and spam folder.',
+        });
+        toast.success('Email sent successfully!');
       }
     } catch {
       setResult({ type: 'error', message: 'Could not send the reset link. Please try again.' });
-      toast.error("Failed to send email. Please try again.");
+      toast.error('Failed to send email. Please try again.');
     } finally {
       setLoading(false);
     }
@@ -44,9 +47,16 @@ export const ForgotPassword = () => {
         <p className="text-center text-gray-600">
           Enter your email below to receive instructions to reset your password.
         </p>
-        <form className="mt-6 space-y-4" onSubmit={HandleSubmit} aria-busy={loading}>
+        <form
+          className="mt-6 space-y-4"
+          onSubmit={HandleSubmit}
+          aria-busy={loading}
+        >
           <div>
-            <label htmlFor="email" className="block text-sm font-medium text-gray-900">
+            <label
+              htmlFor="email"
+              className="block text-sm font-medium text-gray-900"
+            >
               Email Address
             </label>
             <input
@@ -67,15 +77,43 @@ export const ForgotPassword = () => {
             disabled={loading}
             className="inline-flex min-h-11 w-full items-center justify-center gap-2 py-2 px-4 text-black bg-yellow-300 hover:bg-yellow-500 focus:ring-2 focus:ring-blue-500 rounded-full transition duration-300 ease-in-out disabled:cursor-wait disabled:opacity-70"
           >
-            {loading ? <><LoaderCircle size={18} className="motion-safe:animate-spin" aria-hidden="true" />Sending reset link...</> : 'Send Reset Link'}
+            {loading ? (
+              <>
+                <LoaderCircle
+                  size={18}
+                  className="motion-safe:animate-spin"
+                  aria-hidden="true"
+                />
+                Sending reset link...
+              </>
+            ) : (
+              'Send Reset Link'
+            )}
           </button>
-          <div aria-live="polite" aria-atomic="true">
-            {loading && <p className="text-center text-sm text-gray-600">Please wait while we send your reset instructions.</p>}
-            {result && <p role={result.type === 'error' ? 'alert' : undefined} className={`rounded-lg border px-4 py-3 text-sm leading-6 ${result.type === 'success' ? 'border-green-200 bg-green-50 text-green-800' : 'border-red-200 bg-red-50 text-red-700'}`}>{result.message}</p>}
+          <div
+            aria-live="polite"
+            aria-atomic="true"
+          >
+            {loading && (
+              <p className="text-center text-sm text-gray-600">
+                Please wait while we send your reset instructions.
+              </p>
+            )}
+            {result && (
+              <p
+                role={result.type === 'error' ? 'alert' : undefined}
+                className={`rounded-lg border px-4 py-3 text-sm leading-6 ${result.type === 'success' ? 'border-green-200 bg-green-50 text-green-800' : 'border-red-200 bg-red-50 text-red-700'}`}
+              >
+                {result.message}
+              </p>
+            )}
           </div>
         </form>
         <div className="text-center">
-          <a href="/accounts/signin" className="text-blue-700 hover:underline">
+          <a
+            href="/accounts/signin"
+            className="text-blue-700 hover:underline"
+          >
             Back to Login
           </a>
         </div>
@@ -83,4 +121,3 @@ export const ForgotPassword = () => {
     </div>
   );
 };
-

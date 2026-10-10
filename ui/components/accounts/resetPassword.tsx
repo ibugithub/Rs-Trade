@@ -8,7 +8,7 @@ const ResetPassword = ({ token }: { token: string }) => {
   const router = useRouter();
   const [formData, setFormData] = useState({
     password: '',
-    confirmPassword: ''
+    confirmPassword: '',
   });
   const [error, setError] = useState('');
 
@@ -16,7 +16,7 @@ const ResetPassword = ({ token }: { token: string }) => {
     const { name, value } = e.target;
     setFormData({
       ...formData,
-      [name]: value
+      [name]: value,
     });
   };
 
@@ -30,15 +30,15 @@ const ResetPassword = ({ token }: { token: string }) => {
       const url = `${process.env.NEXT_PUBLIC_BACKEND_BASE_URL}/api/users/resetPassword/`;
       const response = await axios.post(url, {
         token: token,
-        password: formData.password
+        password: formData.password,
       });
       if (response.status === 200) {
-        toast.success("Password reset successfully!");
+        toast.success('Password reset successfully!');
         router.push('/accounts/signin');
       }
     } catch (error) {
-      console.error("An error occurred while resetting password at resetPassword.tsx", error);
-      toast.error("Failed to reset password. Please try again.");
+      console.error('An error occurred while resetting password at resetPassword.tsx', error);
+      toast.error('Failed to reset password. Please try again.');
     }
   };
 
@@ -48,12 +48,16 @@ const ResetPassword = ({ token }: { token: string }) => {
         <h2 className="text-2xl font-bold text-center text-gray-900 tracking-wider">
           Reset Password
         </h2>
-        <p className="text-center text-gray-600">
-          Enter your new password below.
-        </p>
-        <form className="mt-6 space-y-4" onSubmit={handleSubmit}>
+        <p className="text-center text-gray-600">Enter your new password below.</p>
+        <form
+          className="mt-6 space-y-4"
+          onSubmit={handleSubmit}
+        >
           <div>
-            <label htmlFor="password" className="block text-sm font-medium text-gray-900">
+            <label
+              htmlFor="password"
+              className="block text-sm font-medium text-gray-900"
+            >
               Password
             </label>
             <input
@@ -68,7 +72,10 @@ const ResetPassword = ({ token }: { token: string }) => {
             />
           </div>
           <div>
-            <label htmlFor="confirmPassword" className="block text-sm font-medium text-gray-900">
+            <label
+              htmlFor="confirmPassword"
+              className="block text-sm font-medium text-gray-900"
+            >
               Confirm Password
             </label>
             <input
@@ -91,7 +98,10 @@ const ResetPassword = ({ token }: { token: string }) => {
           </button>
         </form>
         <div className="text-center">
-          <a href="/accounts/signin" className="text-blue-700 hover:underline">
+          <a
+            href="/accounts/signin"
+            className="text-blue-700 hover:underline"
+          >
             Back to Login
           </a>
         </div>
@@ -101,4 +111,3 @@ const ResetPassword = ({ token }: { token: string }) => {
 };
 
 export default ResetPassword;
-
