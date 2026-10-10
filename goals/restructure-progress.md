@@ -1,6 +1,6 @@
 ﻿# RS Trade International: restructuring progress
 
-Last updated: 2026-10-07 (Asia/Dhaka).
+Last updated: 2026-10-10 (Asia/Dhaka).
 
 Source plan: [Website restructuring plan](restructuring-plan.md).
 
@@ -237,6 +237,7 @@ Account navigation follow-up (2026-10-07): the navbar now uses ProfileModal on d
 
 | Date (Asia/Dhaka) | Meaningful part | Result and checks |
 | --- | --- | --- |
+| 2026-10-10 | Forgot Password submission feedback | Added a spinner and Sending reset link button state, disabled controls during requests, duplicate-submit guard and inline success/error feedback with accessible announcements. Requests time out after 30 seconds; controls recover after success or failure. Fixed the broken apostrophe text. Existing backend endpoint unchanged. TypeScript, component ESLint and mocked pending/success/failure checks passed; no live reset email sent during verification. |
 | 2026-10-07 | Social sign-in loading and recovery | Replaced Google/Facebook/Microsoft callback loaders with one shared RS-branded white card, blue loading ring, plain signing-in messages and reduced-motion support. Missing/cancelled authorization, failed requests (30-second timeout) and invalid token responses show a recovery link. Stable token-save callback and one-time exchange guard prevent repeated code exchanges; leaving the page prevents late redirects. Existing endpoints and token storage preserved. TypeScript, callback lint, production export and 15 simulated provider/outcome cases passed. Real OAuth and browser review remain pending. |
 | 2026-10-07 | Unused picture cleanup | Moved the 44 unused public pictures into unused-pictures.zip at the project root, recovering the previously deleted files from Git. The archive contains all 44 pictures and passes its integrity check; it can be moved elsewhere. Kept the eight images used by Ready Stock and restored cart/checkout in ui/public/images. No missing referenced pictures. Backend media and database unchanged. |
 | 2026-10-07 | Old frontend cleanup and retained features | Removed 21 obsolete source files: category/product routes and components, banners, old hero/home/footer/contact blocks and old sidebar. At the owner's request, restored cart/add-to-cart, buy-now and checkout pages/components, profileModal.tsx and reduxInitializer.tsx. The layout now imports the shared initializer instead of defining a duplicate. Removed unused framer-motion and react-inner-image-zoom packages. Production build/type validation, static export and layout/account-component lint passed after restoration. Retained shopping pages remain demos outside the main navigation; profile modal is retained without changing navigation. Backend/database unchanged. Published-URL redirect review remains pending. |
