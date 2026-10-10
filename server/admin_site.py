@@ -1,4 +1,5 @@
 from types import MethodType
+from django.urls import reverse
 
 
 ACCOUNT_APP_LABELS = {'auth', 'users', 'userProfile', 'userprofile'}
@@ -8,8 +9,8 @@ ACCOUNT_MODEL_ORDER = {
     'Group': 3,
 }
 APP_ORDER = {
-    'accounts': 1,
-    'catalog': 2,
+    'catalog': 1,
+    'accounts': 2,
 }
 
 
@@ -46,7 +47,7 @@ def configure_admin_site(site):
             grouped_apps.append({
                 'name': 'Accounts',
                 'app_label': 'accounts',
-                'app_url': '#',
+                'app_url': reverse(f'{self.name}:index') + '#app-accounts',
                 'has_module_perms': has_account_permissions,
                 'models': account_models,
             })

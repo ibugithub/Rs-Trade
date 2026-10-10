@@ -1,0 +1,148 @@
+{% extends "admin/base_site.html" %}
+{% load i18n log %}
+
+{% block coltype %}colM{% endblock %}
+{% block bodyclass %}{{ block.super }} dashboard rs-dashboard{% endblock %}
+{% block nav-breadcrumbs %}{% endblock %}
+{% block nav-sidebar %}{% endblock %}
+{% block content_title %}{% endblock %}
+
+{% block content %}
+<div id="content-main">
+    <section class="rs-dashboard-intro" aria-labelledby="dashboard-title">
+        <div>
+            <p class="rs-eyebrow">RS Trade workspace</p>
+            <h1 id="dashboard-title">{{ title }}</h1>
+            <p class="rs-dashboard-description">
+                {% if app_label %}
+                    Choose a section below to view or update your records.
+                {% else %}
+                    Manage your catalog and accounts from one place.
+                {% endif %}
+            </p>
+        </div>
+        {% if site_url %}
+        <a class="rs-button rs-button--primary" href="{{ site_url }}">
+            View website <span aria-hidden="true">&nearr;</span>
+        </a>
+        {% endif %}
+    </section>
+
+    <div class="rs-dashboard-layout{% if app_label %} rs-dashboard-layout--app{% endif %}">
+        <div class="rs-management-sections">
+            {% for app in app_list %}
+            <section id="app-{{ app.app_label }}" class="rs-card" aria-labelledby="title-{{ app.app_label }}">
+                <header class="rs-card-header">
+                    <span class="rs-section-icon" aria-hidden="true">
+                        {% if app.app_label == 'catalog' %}
+                        <svg width="25" height="25" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="1.7">
+                            <path d="m12 3 9 5-9 5-9-5 9-5Z M3 8v9l9 5 9-5V8 M12 13v9" />
+                        </svg>
+                        {% else %}
+                        <svg width="25" height="25" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="1.7">
+                            <circle cx="9" cy="8" r="3" />
+                            <path d="M3 21v-3a6 6 0 0 1 12 0v3 M16 5a3 3 0 0 1 0 6 M21 21v-3a6 6 0 0 0-4-5.65" />
+                        </svg>
+                        {% endif %}
+                    </span>
+                    <div>
+                        <h2 id="title-{{ app.app_label }}">{{ app.name }}</h2>
+                        <p>
+                            {% if app.app_label == 'catalog' %}Products, stock and catalog settings.
+                            {% elif app.app_label == 'accounts' %}People, profiles and access permissions.
+                            {% else %}Manage your {{ app.name|lower }} records.{% endif %}
+                        </p>
+                    </div>
+                </header>
+                <ul class="rs-model-list">
+                    {% for model in app.models %}
+                    <li class="rs-model-row">
+                        <div class="rs-model-info">
+                            {% if model.admin_url %}
+                            <a class="rs-model-name" href="{{ model.admin_url }}">{{ model.name }}</a>
+                            {% else %}
+                            <span class="rs-model-name">{{ model.name }}</span>
+                            {% endif %}
+                            <p>
+                                {% if model.object_name == 'Product' %}Manage product details, prices and available stock.
+                                {% elif model.object_name == 'Category' %}Organize the main groups in your catalog.
+                                {% elif model.object_name == 'SubCategory' %}Organize products within each category.
+                                {% elif model.object_name == 'Deal' %}Manage promotions and their schedules.
+                                {% elif model.object_name == 'DealProduct' %}Choose products and prices for promotions.
+                                {% elif model.object_name == 'User' %}Manage customer and staff accounts.
+                                {% elif model.object_name == 'Profile' %}View and update account profile records.
+                                {% elif model.object_name == 'Group' %}Set staff roles and access permissions.
+                                {% else %}View and maintain {{ model.name|lower }}.{% endif %}
+                            </p>
+                        </div>
+                        <div class="rs-model-actions">
+                            {% if model.add_url %}
+                            <a class="rs-button rs-button--small" href="{{ model.add_url }}" aria-label="Add {{ model.name }}">
+                                <span aria-hidden="true">+</span> Add
+                            </a>
+                            {% endif %}
+                            {% if model.admin_url %}
+                            <a class="rs-manage-link" href="{{ model.admin_url }}" aria-label="{% if model.view_only %}View{% else %}Manage{% endif %} {{ model.name }}">
+                                {% if model.view_only %}View{% else %}Manage{% endif %}
+                                <span aria-hidden="true">&rarr;</span>
+                            </a>
+                            {% endif %}
+                        </div>
+                    </li>
+                    {% endfor %}
+                </ul>
+            </section>
+            {% empty %}
+            <section class="rs-card rs-empty-state">
+                <h2>No management sections available</h2>
+                <p>Your account does not have permission to manage records. Contact your administrator for access.</p>
+            </section>
+            {% endfor %}
+        </div>
+
+        {% block sidebar %}
+        <aside class="rs-activity" aria-labelledby="activity-title">
+            <section class="rs-card">
+                <header class="rs-card-header">
+                    <div>
+                        <h2 id="activity-title">Recent activity</h2>
+                        <p>Your latest admin changes.</p>
+                    </div>
+                </header>
+                {% get_admin_log 6 as admin_log for_user user %}
+                {% if admin_log %}
+                <ul class="rs-activity-list">
+                    {% for entry in admin_log %}
+                    <li>
+                        <span class="rs-activity-dot{% if entry.is_deletion %} rs-activity-dot--deleted{% endif %}" aria-hidden="true"></span>
+                        <div>
+                            <span class="rs-activity-type">
+                                {% if entry.is_addition %}Added{% elif entry.is_change %}Updated{% else %}Deleted{% endif %}
+                                {% if entry.content_type %} &middot; {{ entry.content_type.name }}{% endif %}
+                            </span>
+                            {% if entry.is_deletion or not entry.get_admin_url %}
+                            <p class="rs-activity-name">{{ entry.object_repr }}</p>
+                            {% else %}
+                            <a class="rs-activity-name" href="{{ entry.get_admin_url }}">{{ entry.object_repr }}</a>
+                            {% endif %}
+                            <time datetime="{{ entry.action_time|date:'c' }}">{{ entry.action_time|date:'j M Y, H:i' }}</time>
+                        </div>
+                    </li>
+                    {% endfor %}
+                </ul>
+                {% else %}
+                <div class="rs-empty-state">
+                    <p class="rs-empty-title">No recent changes</p>
+                    <p>Your admin activity will appear here as you add or update records.</p>
+                </div>
+                {% endif %}
+            </section>
+            <div class="rs-workspace-note">
+                <strong>Catalog workspace</strong>
+                <p>These tools manage backend records. The current website preview uses sample products.</p>
+            </div>
+        </aside>
+        {% endblock %}
+    </div>
+</div>
+{% endblock %}
