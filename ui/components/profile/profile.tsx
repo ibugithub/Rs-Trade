@@ -1,9 +1,10 @@
 'use client';
 
-import { useCallback, useEffect, useState } from 'react';
+import { useCallback, useEffect, useRef, useState } from 'react';
 import axios from 'axios';
 import Image from 'next/image';
 import Link from 'next/link';
+import { useRouter } from 'next/navigation';
 import { ArrowLeft, KeyRound, LoaderCircle, UserRound } from 'lucide-react';
 import { AxiosReqInstance } from '../accounts/utils/axiosInstance';
 import { useAppSelector } from '@/configs/redux/hooks';
@@ -16,7 +17,9 @@ export function formatProfileDate(value?: string | null) {
 }
 
 export const Profile = () => {
-  const account = useAppSelector(state => state.auth.loogedInUser);
+  const { loogedInUser: account, isAuthenticated, status } = useAppSelector(state => state.auth);
+  const router = useRouter();
+  const requestVersion = useRef(0);
   const [profile, setProfile] = useState<ProfileInterface | null>(null);
   const [fetching, setFetching] = useState(true);
   const [fetchError, setFetchError] = useState<string | null>(null);
@@ -29,32 +32,57 @@ export const Profile = () => {
   const [result, setResult] = useState<{ type: 'success' | 'error'; message: string } | null>(null);
 
   const fetchProfile = useCallback(async (signal?: AbortSignal) => {
+    const version = ++requestVersion.current;
     setFetching(true);
     setFetchError(null);
     setImageFailed(false);
     try {
-      if (!localStorage.getItem('accessToken')) {
+      const token = localStorage.getItem('accessToken');
+      if (!token) {
         setFetchError('Please sign in to view your profile.');
         return;
       }
       const response = await AxiosReqInstance().get(`${process.env.NEXT_PUBLIC_BACKEND_BASE_URL}/api/profile/getProfile/`, { signal, timeout: 30000 });
-      if (signal?.aborted) return;
-      if (!response.data?.user?.email) throw new Error('Profile details unavailable');
+      // Refreshing an expired token legitimately changes its value during this request.
+      // Guard against sign-out and superseded requests without rejecting that refresh.
+      if (signal?.aborted || requestVersion.current !== version || !localStorage.getItem('accessToken')) return;
+      if (!response.data?.user?.email) {
+        setFetchError('The profile service returned incomplete details. Please try again.');
+        return;
+      }
       setProfile(response.data);
     } catch (error) {
-      if (signal?.aborted || axios.isCancel(error)) return;
-      const unauthorized = axios.isAxiosError(error) && [401, 403].includes(error.response?.status ?? 0);
-      setFetchError(unauthorized ? 'Your session has expired. Please sign in again.' : 'We could not load your profile. Please try again.');
+      if (signal?.aborted || axios.isCancel(error) || requestVersion.current !== version) return;
+      const responseStatus = axios.isAxiosError(error) ? error.response?.status : undefined;
+      const message = responseStatus === 401 || responseStatus === 403
+        ? 'Your session has expired. Please sign in again.'
+        : responseStatus === 404
+          ? 'Your profile could not be found. Please contact RS Trade for help.'
+          : responseStatus && responseStatus >= 500
+            ? 'The profile service is temporarily unavailable. Please try again shortly.'
+            : axios.isAxiosError(error) && !error.response
+              ? 'Could not connect to the profile service. Please check your connection and try again.'
+              : 'We could not load your profile. Please try again.';
+      setFetchError(message);
     } finally {
-      if (!signal?.aborted) setFetching(false);
+      if (!signal?.aborted && requestVersion.current === version) setFetching(false);
     }
   }, []);
 
   useEffect(() => {
+    if (!isAuthenticated) {
+      requestVersion.current++;
+      setProfile(null);
+      setShowPasswordForm(false);
+      setOldPassword(''); setNewPassword(''); setConfirmPassword('');
+      setResult(null);
+      if (status === 'unauthenticated') router.replace('/accounts/signin');
+      return;
+    }
     const controller = new AbortController();
     void fetchProfile(controller.signal);
     return () => controller.abort();
-  }, [fetchProfile]);
+  }, [fetchProfile, isAuthenticated, status, router]);
 
   const handleChangePassword = async (event: React.FormEvent) => {
     event.preventDefault();
@@ -76,10 +104,16 @@ export const Profile = () => {
     } finally { setSaving(false); }
   };
 
-  const name = profile?.Display_name?.trim() || account?.name?.trim() || 'My Account';
+  const name = profile?.Display_name?.trim() || profile?.user?.name?.trim() || account?.name?.trim() || 'My Account';
   const method = profile?.user?.signUp_by?.toLowerCase();
   const provider = ({ google: 'Google', facebook: 'Facebook', microsoft: 'Microsoft', email: 'Email and password' } as Record<string, string>)[method ?? ''] || 'Not available';
   const inputClass = 'min-h-12 w-full rounded-lg border border-gray-300 bg-white px-4 py-3 text-sm focus:border-blue-600 focus:outline-none focus:ring-2 focus:ring-blue-100 disabled:bg-gray-50';
+
+  if (!isAuthenticated) return (
+    <main className="flex min-h-[calc(100svh_-_64px)] items-center justify-center bg-gray-50 px-4 text-gray-600 lg:min-h-[calc(100svh_-_90px)]">
+      <p role="status" className="flex items-center gap-3 text-sm"><LoaderCircle size={20} className="text-blue-600 motion-safe:animate-spin" aria-hidden="true" />{status === 'unauthenticated' ? 'Returning to Sign In...' : 'Checking your session...'}</p>
+    </main>
+  );
 
   return (
     <main className="min-h-[calc(100svh_-_64px)] bg-gray-50 px-4 py-8 text-gray-900 sm:py-12 lg:min-h-[calc(100svh_-_90px)]">

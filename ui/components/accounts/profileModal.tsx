@@ -1,11 +1,11 @@
 'use client';
 
 import Link from "next/link";
-import { usePathname } from "next/navigation";
+import { usePathname, useRouter } from "next/navigation";
 import { useEffect, useId, useRef, useState } from "react";
 import { ChevronDown, LogOut, UserRound } from "lucide-react";
 import { useAppSelector, useAppDispatch } from "@/configs/redux/hooks";
-import { fetchLoggedInUser } from "@/configs/redux/auth/authSlice";
+import { signOut } from "@/configs/redux/auth/authSlice";
 
 type ProfileModalProps = {
   mobile?: boolean;
@@ -17,6 +17,7 @@ export const ProfileModal = ({ mobile = false, onNavigate }: ProfileModalProps) 
   const [isModalOpen, setIsModalOpen] = useState(false);
   const dispatch = useAppDispatch();
   const pathname = usePathname();
+  const router = useRouter();
   const menuId = useId();
   const containerRef = useRef<HTMLDivElement>(null);
   const buttonRef = useRef<HTMLButtonElement>(null);
@@ -48,8 +49,11 @@ export const ProfileModal = ({ mobile = false, onNavigate }: ProfileModalProps) 
   const handleLogout = () => {
     localStorage.removeItem('accessToken');
     document.cookie = 'refreshToken=; expires=Thu, 01 Jan 1970 00:00:00 UTC; path=/;';
-    dispatch(fetchLoggedInUser());
+    dispatch(signOut());
     close();
+    if (pathname === '/accounts/profile' || pathname.startsWith('/accounts/profile/')) {
+      router.replace('/accounts/signin');
+    }
   };
 
   if (!isAuthenticated) return (

@@ -1,12 +1,11 @@
 from rest_framework import serializers
 from .models import Profile
 from users.models import User
-from users.models import User
 import os
 class UserSerializer(serializers.ModelSerializer):
     class Meta:
         model = User
-        fields = ['email', 'signUp_by']
+        fields = ['email', 'name', 'signUp_by']
 
 class UserProfileSerializer(serializers.ModelSerializer):
     user = UserSerializer()

@@ -1,4 +1,5 @@
 interface User {
+  name?: string;
   email: string;
   signUp_by: "email" | "google" | "facebook" | "microsoft";
 }
