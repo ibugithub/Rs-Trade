@@ -1,0 +1,26 @@
+{% extends "admin/change_form.html" %}
+{% load admin_urls static %}
+
+{% block responsive %}
+{{ block.super }}
+<link rel="stylesheet" href="{% static 'admin/css/admin_forms.css' %}?v=20261011-1">
+{% endblock %}
+
+{% block bodyclass %}{{ block.super }} rs-admin-form{% endblock %}
+{% block nav-sidebar %}{% endblock %}
+{% block content_subtitle %}{% endblock %}
+
+{% block content_title %}
+<div class="rs-form-heading">
+    <div>
+        <h1>{{ title }}</h1>
+        <p>{% if add %}Enter the details below to create a new {{ opts.verbose_name|lower }}.{% else %}Review and update this {{ opts.verbose_name|lower }}.{% endif %}</p>
+    </div>
+    {% if has_view_permission and not is_popup %}
+    {% url opts|admin_urlname:'changelist' as changelist_url %}
+    <a class="rs-button" href="{% add_preserved_filters changelist_url %}">
+        <span aria-hidden="true">&larr;</span> Back to {{ opts.verbose_name_plural|capfirst }}
+    </a>
+    {% endif %}
+</div>
+{% endblock %}

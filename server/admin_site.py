@@ -15,19 +15,36 @@ APP_ORDER = {
 }
 
 
+def configure_model_admin(model_admin):
+    """Shared presentation and list limits for existing and future models."""
+    model_admin.change_list_template = 'admin/modern_change_list.html'
+    if not model_admin.search_help_text:
+        model_admin.search_help_text = f'Search {model_admin.model._meta.verbose_name_plural.lower()}'
+    model_admin.list_per_page = 25
+    model_admin.list_max_show_all = 25
+    model_admin.show_full_result_count = False
+    model_admin.show_facets = ShowFacets.NEVER
+
+
 def configure_admin_site(site):
-    # Apply the same bounded list settings to every registered admin model.
     for model_admin in site._registry.values():
-        model_admin.list_per_page = 25
-        model_admin.list_max_show_all = 25
-        model_admin.show_full_result_count = False
-        model_admin.show_facets = ShowFacets.NEVER
+        configure_model_admin(model_admin)
 
     if getattr(site, '_rs_trade_grouped_app_list', False):
         return
 
     original_get_app_list = site.get_app_list
     original_get_urls = site.get_urls
+    original_register = site.register
+
+    def register(self, model_or_iterable, admin_class=None, **options):
+        existing_models = set(self._registry)
+        result = original_register(model_or_iterable, admin_class, **options)
+        for model in self._registry.keys() - existing_models:
+            configure_model_admin(self._registry[model])
+        return result
+
+    site.register = MethodType(register, site)
 
     def get_grouped_app_list(self, request, app_label=None):
         if app_label == 'accounts':

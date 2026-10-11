@@ -1,6 +1,6 @@
 """Admin checks run with isolated settings, never the production database."""
 from copy import copy
-from types import SimpleNamespace
+from types import ModuleType, SimpleNamespace
 from unittest.mock import patch
 
 from django.contrib import admin
@@ -8,7 +8,7 @@ from django.template.loader import render_to_string
 from django.template import Context, Template
 from django.test import RequestFactory, SimpleTestCase, TestCase, override_settings
 from django.db import connection
-from django.test.utils import CaptureQueriesContext
+from django.test.utils import CaptureQueriesContext, isolate_apps
 from django.urls import path
 
 from .admin_site import configure_admin_site
@@ -142,6 +142,117 @@ class AdminChangeListTests(TestCase):
         self.assertFalse(changelist.is_facets_optional)
         self.assertContains(response, 'form-TOTAL_FORMS')
         self.assertContains(response, 'name="form-0-price"')
+
+    def test_product_list_design_preserves_filters_search_and_add_links(self):
+        response = self.client.get('/admin/catalog/product/')
+        self.assertContains(response, '<h1>Products</h1>')
+        self.assertContains(response, '/static/admin/css/admin_lists.css')
+        self.assertContains(response, 'placeholder="Search by name, SKU or description"')
+        self.assertContains(response, '/admin/catalog/product/add/')
+        self.assertNotContains(response, 'id="nav-sidebar"')
+        self.assertContains(response, '<details data-filter-title="status">')
+        filtered = self.client.get('/admin/catalog/product/', {'status__exact': 'active'})
+        self.assertContains(filtered, '<details data-filter-title="status" open>')
+        self.assertContains(filtered, 'name="status__exact" value="active"')
+
+    def test_all_registered_management_lists_use_the_shared_design(self):
+        for model in admin.site._registry:
+            with self.subTest(model=model.__name__):
+                opts = model._meta
+                response = self.client.get(f'/admin/{opts.app_label}/{opts.model_name}/')
+                self.assertEqual(response.status_code, 200)
+                self.assertContains(response, 'rs-admin-list')
+                self.assertContains(response, '/static/admin/css/admin_lists.css')
+                self.assertContains(response, f'<h1>{str(opts.verbose_name_plural).capitalize()}</h1>')
+                self.assertNotContains(response, 'id="nav-sidebar"')
+                self.assertContains(response, f'/admin/{opts.app_label}/{opts.model_name}/add/')
+                self.assertContains(response, 'csrfmiddlewaretoken')
+                self.assertContains(response, 'id="changelist-search"')
+
+    def test_all_registered_add_forms_use_shared_design_and_native_controls(self):
+        for model in admin.site._registry:
+            with self.subTest(model=model.__name__):
+                opts = model._meta
+                response = self.client.get(f'/admin/{opts.app_label}/{opts.model_name}/add/')
+                self.assertEqual(response.status_code, 200)
+                self.assertContains(response, 'rs-admin-form')
+                self.assertContains(response, '/static/admin/css/admin_forms.css')
+                self.assertContains(response, 'csrfmiddlewaretoken')
+                self.assertContains(response, 'name="_save"')
+                self.assertNotContains(response, 'id="nav-sidebar"')
+                self.assertContains(response, f'Back to {str(opts.verbose_name_plural).capitalize()}')
+
+    def test_category_add_validation_and_inline_save_are_preserved(self):
+        url = '/admin/catalog/category/add/'
+        payload = {
+            'name': '', 'slug': '', 'description': 'Test description',
+            'is_active': 'on', '_save': 'Save',
+            'subcategories-TOTAL_FORMS': '1',
+            'subcategories-INITIAL_FORMS': '0',
+            'subcategories-MIN_NUM_FORMS': '0',
+            'subcategories-MAX_NUM_FORMS': '1000',
+            'subcategories-0-name': 'Test subcategory',
+            'subcategories-0-slug': '',
+            'subcategories-0-is_active': 'on',
+        }
+        invalid = self.client.post(url, payload)
+        self.assertEqual(invalid.status_code, 200)
+        self.assertContains(invalid, 'This field is required.')
+        self.assertContains(invalid, 'admin_forms.css')
+        self.assertEqual(Category.objects.count(), 0)
+        payload['name'] = 'Created from modern form'
+        saved = self.client.post(url, payload)
+        self.assertEqual(saved.status_code, 302)
+        category = Category.objects.get(name='Created from modern form')
+        self.assertEqual(category.subcategories.get().name, 'Test subcategory')
+        edit = self.client.get(f'/admin/catalog/category/{category.pk}/change/')
+        self.assertEqual(edit.status_code, 200)
+        self.assertContains(edit, 'rs-admin-form')
+        self.assertContains(edit, 'name="_continue"')
+
+    def test_shared_design_respects_view_only_add_permissions(self):
+        with patch.object(User, 'has_module_perms', lambda user, app: app == 'catalog'):
+            with patch.object(User, 'has_perm', lambda user, permission, obj=None: permission == 'catalog.view_product'):
+                response = self.client.get('/admin/catalog/product/')
+                self.assertEqual(response.status_code, 200)
+                self.assertNotContains(response, '/admin/catalog/product/add/')
+                self.assertContains(response, '<h1>Products</h1>')
+
+    @isolate_apps('catalog')
+    def test_future_admin_registration_inherits_design_and_dashboard_card(self):
+        class FutureCategory(Category):
+            class Meta:
+                proxy = True
+                app_label = 'catalog'
+                verbose_name = 'future feature'
+                verbose_name_plural = 'future features'
+
+        future_site = admin.AdminSite(name='future_admin')
+        configure_admin_site(future_site)
+        future_site.register(FutureCategory, search_fields=('name',))
+        future_admin = future_site.get_model_admin(FutureCategory)
+        self.assertEqual(future_admin.change_list_template, 'admin/modern_change_list.html')
+        self.assertEqual(future_admin.list_per_page, 25)
+        self.assertFalse(future_admin.show_full_result_count)
+
+        urlconf = ModuleType('future_admin_test_urls')
+        urlconf.urlpatterns = [path('future-admin/', future_site.urls)]
+        with override_settings(ROOT_URLCONF=urlconf):
+            response = self.client.get('/future-admin/catalog/futurecategory/')
+            self.assertEqual(response.status_code, 200)
+            self.assertContains(response, '<h1>Future features</h1>')
+            self.assertContains(response, '/static/admin/css/admin_lists.css')
+            self.assertContains(response, 'View and update your future features.')
+            self.assertContains(response, 'placeholder="Search future features"')
+            dashboard = self.client.get('/future-admin/')
+            self.assertEqual(dashboard.status_code, 200)
+            self.assertContains(dashboard, 'class="rs-card rs-model-card"')
+            self.assertContains(dashboard, '/future-admin/catalog/futurecategory/')
+            self.assertContains(dashboard, '/future-admin/catalog/futurecategory/add/')
+            add_page = self.client.get('/future-admin/catalog/futurecategory/add/')
+            self.assertEqual(add_page.status_code, 200)
+            self.assertContains(add_page, 'rs-admin-form')
+            self.assertContains(add_page, 'admin_forms.css')
 
     def test_profile_search_and_autocomplete_avoid_full_user_dropdown(self):
         user = User.objects.create_user(
@@ -307,7 +418,7 @@ class AdminDashboardTests(SimpleTestCase):
 
     def test_header_uses_light_theme_and_preserves_post_logout_csrf(self):
         html = self.render()
-        self.assertIn('/static/admin/css/custom_admin.css?v=20261011-6', html)
+        self.assertIn('/static/admin/css/custom_admin.css?v=20261011-7', html)
         self.assertIn('<svg width="25" height="25"', html)
         self.assertLess(html.index('/static/admin/css/responsive.css'), html.index('/static/admin/css/custom_admin.css'))
         self.assertNotIn('dark_mode.css', html)

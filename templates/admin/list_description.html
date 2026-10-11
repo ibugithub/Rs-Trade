@@ -1,0 +1,9 @@
+{% if cl.opts.model_name == 'product' %}Manage your catalog, prices and available stock.
+{% elif cl.opts.model_name == 'category' %}Organize the main groups in your catalog.
+{% elif cl.opts.model_name == 'subcategory' %}Manage the product groups within each category.
+{% elif cl.opts.model_name == 'deal' %}Manage promotions, schedules and availability.
+{% elif cl.opts.model_name == 'dealproduct' %}Choose promotional products and set their deal prices.
+{% elif cl.opts.model_name == 'user' %}Manage customers, sign-in details and account access.
+{% elif cl.opts.model_name == 'profile' %}Manage customer profile details and photos.
+{% elif cl.opts.model_name == 'group' %}Organize staff roles and their permissions.
+{% else %}View and update your {{ cl.opts.verbose_name_plural|lower }}.{% endif %}

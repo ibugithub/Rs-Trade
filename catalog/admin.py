@@ -62,18 +62,18 @@ class ProductAdmin(admin.ModelAdmin):
     list_display = (
         'name',
         'category',
-        'subcategory',
+        'subcategory_name',
         'price',
         'stock_quantity',
         'status',
         'is_featured',
-        'created_at',
     )
     list_filter = (
         'status', 'is_featured', 'category',
         ('subcategory', SubCategoryListFilter), 'created_at',
     )
     search_fields = ('name', 'sku', 'short_description', 'description')
+    search_help_text = 'Search by name, SKU or description'
     prepopulated_fields = {'slug': ('name',)}
     autocomplete_fields = ('category', 'subcategory')
     readonly_fields = ('created_at', 'updated_at')
@@ -81,6 +81,11 @@ class ProductAdmin(admin.ModelAdmin):
     list_select_related = ('category', 'subcategory__category')
     list_per_page = 25
     list_editable = ('price', 'stock_quantity', 'status', 'is_featured')
+
+    @admin.display(description='Subcategory', ordering='subcategory__name')
+    def subcategory_name(self, obj):
+        return obj.subcategory.name if obj.subcategory else None
+
     fieldsets = (
         ('Classification', {'fields': ('category', 'subcategory')}),
         ('Product information', {'fields': ('name', 'slug', 'sku', 'short_description', 'description', 'image')}),
