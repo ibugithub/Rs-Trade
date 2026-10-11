@@ -9,7 +9,7 @@
 {% block responsive %}
 {{ block.super }}
 {# Bump the version when this stylesheet changes so browsers fetch the new theme. #}
-<link rel="stylesheet" href="{% static 'admin/css/custom_admin.css' %}?v=20261010-2">
+<link rel="stylesheet" href="{% static 'admin/css/custom_admin.css' %}?v=20261011-6">
 {% endblock %}
 
 {% block branding %}
@@ -28,7 +28,6 @@
 {% endblock %}
 
 {% block userlinks %}
-{% if site_url %}<a href="{{ site_url }}">View website</a>{% endif %}
 {% if user.has_usable_password %}
 <a href="{% url 'admin:password_change' %}">Change password</a>
 {% endif %}

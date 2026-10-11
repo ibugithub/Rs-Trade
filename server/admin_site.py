@@ -1,5 +1,6 @@
 from types import MethodType
-from django.urls import reverse
+from django.contrib.admin import ShowFacets
+from django.urls import path, reverse
 
 
 ACCOUNT_APP_LABELS = {'auth', 'users', 'userProfile', 'userprofile'}
@@ -15,12 +16,26 @@ APP_ORDER = {
 
 
 def configure_admin_site(site):
+    # Apply the same bounded list settings to every registered admin model.
+    for model_admin in site._registry.values():
+        model_admin.list_per_page = 25
+        model_admin.list_max_show_all = 25
+        model_admin.show_full_result_count = False
+        model_admin.show_facets = ShowFacets.NEVER
+
     if getattr(site, '_rs_trade_grouped_app_list', False):
         return
 
     original_get_app_list = site.get_app_list
+    original_get_urls = site.get_urls
 
     def get_grouped_app_list(self, request, app_label=None):
+        if app_label == 'accounts':
+            return [
+                app for app in get_grouped_app_list(self, request)
+                if app['app_label'] == 'accounts'
+            ]
+
         app_list = original_get_app_list(request, app_label)
 
         if app_label is not None:
@@ -47,7 +62,7 @@ def configure_admin_site(site):
             grouped_apps.append({
                 'name': 'Accounts',
                 'app_label': 'accounts',
-                'app_url': reverse(f'{self.name}:index') + '#app-accounts',
+                'app_url': reverse(f'{self.name}:accounts'),
                 'has_module_perms': has_account_permissions,
                 'models': account_models,
             })
@@ -56,4 +71,15 @@ def configure_admin_site(site):
         return grouped_apps
 
     site.get_app_list = MethodType(get_grouped_app_list, site)
+
+    def accounts_view(request):
+        return site.app_index(request, 'accounts')
+
+    def get_urls(self):
+        return [
+            path('accounts/', self.admin_view(accounts_view), name='accounts'),
+            *original_get_urls(),
+        ]
+
+    site.get_urls = MethodType(get_urls, site)
     site._rs_trade_grouped_app_list = True

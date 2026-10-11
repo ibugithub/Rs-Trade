@@ -6,12 +6,12 @@
 {% block nav-breadcrumbs %}{% endblock %}
 {% block nav-sidebar %}{% endblock %}
 {% block content_title %}{% endblock %}
+{% block sidebar %}{% endblock %}
 
 {% block content %}
 <div id="content-main">
     <section class="rs-dashboard-intro" aria-labelledby="dashboard-title">
         <div>
-            <p class="rs-eyebrow">RS Trade workspace</p>
             <h1 id="dashboard-title">{{ title }}</h1>
             <p class="rs-dashboard-description">
                 {% if app_label %}
@@ -31,6 +31,9 @@
     <div class="rs-dashboard-layout{% if app_label %} rs-dashboard-layout--app{% endif %}">
         <div class="rs-management-sections">
             {% for app in app_list %}
+            {% if not app_label %}
+            {% include "admin/management_cards.html" %}
+            {% else %}
             <section id="app-{{ app.app_label }}" class="rs-card" aria-labelledby="title-{{ app.app_label }}">
                 <header class="rs-card-header">
                     <span class="rs-section-icon" aria-hidden="true">
@@ -64,15 +67,7 @@
                             <span class="rs-model-name">{{ model.name }}</span>
                             {% endif %}
                             <p>
-                                {% if model.object_name == 'Product' %}Manage product details, prices and available stock.
-                                {% elif model.object_name == 'Category' %}Organize the main groups in your catalog.
-                                {% elif model.object_name == 'SubCategory' %}Organize products within each category.
-                                {% elif model.object_name == 'Deal' %}Manage promotions and their schedules.
-                                {% elif model.object_name == 'DealProduct' %}Choose products and prices for promotions.
-                                {% elif model.object_name == 'User' %}Manage customer and staff accounts.
-                                {% elif model.object_name == 'Profile' %}View and update account profile records.
-                                {% elif model.object_name == 'Group' %}Set staff roles and access permissions.
-                                {% else %}View and maintain {{ model.name|lower }}.{% endif %}
+                                {% include "admin/model_description.html" %}
                             </p>
                         </div>
                         <div class="rs-model-actions">
@@ -92,6 +87,7 @@
                     {% endfor %}
                 </ul>
             </section>
+            {% endif %}
             {% empty %}
             <section class="rs-card rs-empty-state">
                 <h2>No management sections available</h2>
@@ -100,49 +96,38 @@
             {% endfor %}
         </div>
 
-        {% block sidebar %}
-        <aside class="rs-activity" aria-labelledby="activity-title">
-            <section class="rs-card">
-                <header class="rs-card-header">
+        {% if not app_label %}
+        <section class="rs-card rs-recent-activity" aria-labelledby="activity-title">
+            <header class="rs-card-header">
+                <h2 id="activity-title">Recent activity</h2>
+            </header>
+            {% get_admin_log 6 as admin_log for_user user %}
+            {% if admin_log %}
+            <ul class="rs-activity-list">
+                {% for entry in admin_log %}
+                <li>
                     <div>
-                        <h2 id="activity-title">Recent activity</h2>
-                        <p>Your latest admin changes.</p>
+                        <span class="rs-activity-type">
+                            {% if entry.is_addition %}Added{% elif entry.is_change %}Updated{% else %}Deleted{% endif %}
+                            {% if entry.content_type %} &middot; {{ entry.content_type.name }}{% endif %}
+                        </span>
+                        {% if entry.is_deletion or not entry.get_admin_url %}
+                        <span class="rs-activity-name">{{ entry.object_repr }}</span>
+                        {% else %}
+                        <a class="rs-activity-name" href="{{ entry.get_admin_url }}">{{ entry.object_repr }}</a>
+                        {% endif %}
                     </div>
-                </header>
-                {% get_admin_log 6 as admin_log for_user user %}
-                {% if admin_log %}
-                <ul class="rs-activity-list">
-                    {% for entry in admin_log %}
-                    <li>
-                        <span class="rs-activity-dot{% if entry.is_deletion %} rs-activity-dot--deleted{% endif %}" aria-hidden="true"></span>
-                        <div>
-                            <span class="rs-activity-type">
-                                {% if entry.is_addition %}Added{% elif entry.is_change %}Updated{% else %}Deleted{% endif %}
-                                {% if entry.content_type %} &middot; {{ entry.content_type.name }}{% endif %}
-                            </span>
-                            {% if entry.is_deletion or not entry.get_admin_url %}
-                            <p class="rs-activity-name">{{ entry.object_repr }}</p>
-                            {% else %}
-                            <a class="rs-activity-name" href="{{ entry.get_admin_url }}">{{ entry.object_repr }}</a>
-                            {% endif %}
-                            <time datetime="{{ entry.action_time|date:'c' }}">{{ entry.action_time|date:'j M Y, H:i' }}</time>
-                        </div>
-                    </li>
-                    {% endfor %}
-                </ul>
-                {% else %}
-                <div class="rs-empty-state">
-                    <p class="rs-empty-title">No recent changes</p>
-                    <p>Your admin activity will appear here as you add or update records.</p>
-                </div>
-                {% endif %}
-            </section>
-            <div class="rs-workspace-note">
-                <strong>Catalog workspace</strong>
-                <p>These tools manage backend records. The current website preview uses sample products.</p>
+                    <time datetime="{{ entry.action_time|date:'c' }}">{{ entry.action_time|date:'j M Y, H:i' }}</time>
+                </li>
+                {% endfor %}
+            </ul>
+            {% else %}
+            <div class="rs-empty-state">
+                <p>No recent changes yet.</p>
             </div>
-        </aside>
-        {% endblock %}
+            {% endif %}
+        </section>
+        {% endif %}
     </div>
 </div>
 {% endblock %}

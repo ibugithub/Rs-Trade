@@ -1,6 +1,19 @@
 from django.contrib import admin
+from django.db.models import Count
 
 from .models import Category, Deal, DealProduct, Product, SubCategory
+
+
+class SubCategoryListFilter(admin.RelatedFieldListFilter):
+    def field_choices(self, field, request, model_admin):
+        # Each label includes its category; fetch it in the same query.
+        queryset = field.remote_field.model._default_manager.complex_filter(
+            field.get_limit_choices_to()
+        ).select_related('category')
+        ordering = self.field_admin_ordering(field, request, model_admin)
+        if ordering:
+            queryset = queryset.order_by(*ordering)
+        return [(item.pk, str(item)) for item in queryset]
 
 
 class SubCategoryInline(admin.TabularInline):
@@ -19,8 +32,13 @@ class CategoryAdmin(admin.ModelAdmin):
     readonly_fields = ('created_at', 'updated_at')
     inlines = [SubCategoryInline]
 
+    def get_queryset(self, request):
+        return super().get_queryset(request).annotate(
+            total_subcategories=Count('subcategories')
+        )
+
     def subcategory_count(self, obj):
-        return obj.subcategories.count()
+        return obj.total_subcategories
 
     subcategory_count.short_description = 'Subcategories'
 
@@ -33,6 +51,10 @@ class SubCategoryAdmin(admin.ModelAdmin):
     prepopulated_fields = {'slug': ('name',)}
     autocomplete_fields = ('category',)
     readonly_fields = ('created_at', 'updated_at')
+
+    def get_queryset(self, request):
+        # Also used by the autocomplete endpoint and selected form labels.
+        return super().get_queryset(request).select_related('category')
 
 
 @admin.register(Product)
@@ -47,11 +69,17 @@ class ProductAdmin(admin.ModelAdmin):
         'is_featured',
         'created_at',
     )
-    list_filter = ('status', 'is_featured', 'category', 'subcategory', 'created_at')
+    list_filter = (
+        'status', 'is_featured', 'category',
+        ('subcategory', SubCategoryListFilter), 'created_at',
+    )
     search_fields = ('name', 'sku', 'short_description', 'description')
     prepopulated_fields = {'slug': ('name',)}
     autocomplete_fields = ('category', 'subcategory')
     readonly_fields = ('created_at', 'updated_at')
+    # Subcategory labels also use their category; load both in the list query.
+    list_select_related = ('category', 'subcategory__category')
+    list_per_page = 25
     list_editable = ('price', 'stock_quantity', 'status', 'is_featured')
     fieldsets = (
         ('Classification', {'fields': ('category', 'subcategory')}),
@@ -91,3 +119,4 @@ class DealProductAdmin(admin.ModelAdmin):
     search_fields = ('deal__name', 'product__name', 'product__sku')
     autocomplete_fields = ('deal', 'product')
     readonly_fields = ('created_at', 'updated_at')
+    list_select_related = ('deal', 'product')
