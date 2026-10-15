@@ -308,3 +308,7 @@ Registered Cart with the shared admin design. Staff with view permission can sea
 ### Django-served cart build refreshed
 Investigated carts missing from admin: read-only checks confirmed migrations 0003 and 0004 are applied, Cart is registered, and there were zero saved cart records. The previous ui/out export predated account-cart syncing and contained no /api/cart/ requests. Rebuilt the frontend export successfully so Django now serves account-cart code; confirmed /api/cart/ is present in the generated JavaScript. No customer cart records were created or changed during diagnosis. Manual signed-in add-to-cart and admin review remain pending. Guest carts stay browser-only until sign-in.
 
+
+### Readable admin cart and product IDs
+Replaced raw cart JSON with a full-width product table: linked product names, product IDs, SKU, quantities, current BDT unit prices, line totals and stock/publication warnings. Added product/unit/subtotal summary cards and readable empty/deleted-product states. Cart details stay view-only, and prices explicitly reflect the current catalog rather than an order. Product admin now shows read-only IDs on detail pages and an ID column in the list, with ID search. Updated shared view-only page wording. Django system check and a small template-render check passed; no test files, database edits or migrations were needed. Manual visual review remains with the owner.
+

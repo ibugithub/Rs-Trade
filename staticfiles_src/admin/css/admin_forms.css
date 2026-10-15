@@ -1,3 +1,100 @@
+/* Cart details use the full fieldset width instead of a raw JSON field. */
+.rs-admin-form .rs-cart-products .form-row {
+  grid-column: 1 / -1;
+}
+.rs-admin-form .rs-cart-products .field-cart_contents label {
+  display: none;
+}
+.rs-admin-form .aligned.rs-cart-products .readonly {
+  padding: 0;
+  background: transparent;
+}
+.rs-cart-summary {
+  display: grid;
+  grid-template-columns: repeat(auto-fit, minmax(180px, 1fr));
+  gap: 16px;
+  margin-bottom: 24px;
+}
+.rs-cart-summary > div {
+  padding: 18px;
+  border: 1px solid var(--border-color);
+  border-radius: 10px;
+  background: #f8fafc;
+}
+.rs-cart-summary span,
+.rs-cart-summary strong {
+  display: block;
+}
+.rs-cart-summary span {
+  margin-bottom: 6px;
+  color: var(--body-quiet-color);
+  font-size: 12px;
+}
+.rs-cart-summary strong {
+  font-size: 20px;
+  color: var(--body-fg);
+}
+.rs-cart-table-scroll {
+  overflow-x: auto;
+  border: 1px solid var(--border-color);
+  border-radius: 10px;
+}
+.rs-cart-table {
+  width: 100%;
+  min-width: 740px;
+  border-collapse: collapse;
+}
+.rs-cart-table th,
+.rs-cart-table td {
+  padding: 16px;
+  text-align: left;
+  vertical-align: middle;
+  border-bottom: 1px solid var(--hairline-color);
+}
+.rs-cart-table th {
+  background: #eff6ff;
+  font-size: 12px;
+  white-space: nowrap;
+}
+.rs-cart-table td {
+  background: white;
+  font-size: 13px;
+  font-variant-numeric: tabular-nums;
+}
+.rs-cart-table tbody tr:last-child td {
+  border-bottom: 0;
+}
+.rs-cart-table td:first-child {
+  min-width: 180px;
+}
+.rs-cart-table td:first-child a {
+  font-weight: 600;
+}
+.rs-cart-table small {
+  display: block;
+  margin-top: 6px;
+  color: var(--body-quiet-color);
+}
+.rs-cart-availability {
+  display: inline-block;
+  padding: 4px 9px;
+  border-radius: 6px;
+  background: #ecfdf5;
+  color: #166534;
+  font-size: 12px;
+  white-space: nowrap;
+}
+.rs-cart-availability--warning {
+  background: #fffbeb;
+  color: #92400e;
+}
+.rs-admin-form .rs-cart-note {
+  margin: 18px 0 0;
+  color: var(--body-quiet-color);
+  font-size: 12px;
+  line-height: 1.7;
+}
+
 /* Shared add/edit forms. Django owns validation, widgets and submission. */
 .rs-admin-form #content {
   box-sizing: border-box;

@@ -1,5 +1,10 @@
+from decimal import Decimal
+
 from django.contrib import admin
 from django.db.models import Count
+from django.template.loader import render_to_string
+from django.urls import reverse
+from django.utils.safestring import mark_safe
 
 from .models import Cart, Category, Deal, DealProduct, Product, SubCategory
 
@@ -10,12 +15,64 @@ class CartAdmin(admin.ModelAdmin):
     search_fields = ('user__email',)
     list_select_related = ('user',)
     ordering = ('-updated_at',)
-    readonly_fields = ('user', 'items', 'updated_at')
-    fields = ('user', 'items', 'updated_at')
+    readonly_fields = ('id', 'user', 'updated_at', 'cart_contents')
+    fieldsets = (
+        ('Cart details', {'fields': ('id', 'user', 'updated_at')}),
+        ('Products in this cart', {
+            'fields': ('cart_contents',),
+            'classes': ('rs-cart-products',),
+        }),
+    )
 
     @admin.display(description='Products')
     def product_count(self, obj):
         return len(obj.items)
+
+    @admin.display(description='Cart contents')
+    def cart_contents(self, obj):
+        # Fetch all product details together, including inactive and sold-out items.
+        products = {
+            str(product.pk): product
+            for product in Product.objects.filter(
+                pk__in=[item['productId'] for item in obj.items]
+            ).select_related('category', 'subcategory')
+        }
+        rows = []
+        subtotal = Decimal('0.00')
+        units = 0
+        missing_products = False
+        for item in obj.items:
+            product_id = item['productId']
+            quantity = item['quantity']
+            product = products.get(product_id)
+            units += quantity
+            row = {'id': product_id, 'quantity': quantity, 'product': product}
+            if product:
+                row['url'] = reverse('admin:catalog_product_change', args=[product.pk])
+                row['line_total'] = product.price * quantity
+                subtotal += row['line_total']
+                if (
+                    product.status != Product.ProductStatus.ACTIVE
+                    or not product.category.is_active
+                    or (product.subcategory and not product.subcategory.is_active)
+                ):
+                    row['availability'] = 'Not published'
+                elif product.stock_quantity == 0:
+                    row['availability'] = 'Out of stock'
+                elif quantity > product.stock_quantity:
+                    row['availability'] = 'Insufficient stock'
+                else:
+                    row['availability'] = 'Available'
+            else:
+                missing_products = True
+                row['availability'] = 'Product deleted'
+            rows.append(row)
+        return mark_safe(render_to_string('admin/catalog/cart_contents.html', {
+            'rows': rows,
+            'units': units,
+            'subtotal': subtotal,
+            'missing_products': missing_products,
+        }))
 
     # Customer selections are managed through the cart API, including retry receipts.
     def has_add_permission(self, request):
@@ -84,6 +141,7 @@ class SubCategoryAdmin(admin.ModelAdmin):
 @admin.register(Product)
 class ProductAdmin(admin.ModelAdmin):
     list_display = (
+        'id',
         'name',
         'category',
         'subcategory_name',
@@ -96,11 +154,12 @@ class ProductAdmin(admin.ModelAdmin):
         'status', 'is_featured', 'category',
         ('subcategory', SubCategoryListFilter), 'created_at',
     )
-    search_fields = ('name', 'sku', 'short_description', 'description')
-    search_help_text = 'Search by name, SKU or description'
+    list_display_links = ('name',)
+    search_fields = ('=id', 'name', 'sku', 'short_description', 'description')
+    search_help_text = 'Search by product ID, name, SKU or description'
     prepopulated_fields = {'slug': ('name',)}
     autocomplete_fields = ('category', 'subcategory')
-    readonly_fields = ('created_at', 'updated_at')
+    readonly_fields = ('id', 'created_at', 'updated_at')
     # Subcategory labels also use their category; load both in the list query.
     list_select_related = ('category', 'subcategory__category')
     list_per_page = 25
@@ -112,7 +171,7 @@ class ProductAdmin(admin.ModelAdmin):
 
     fieldsets = (
         ('Classification', {'fields': ('category', 'subcategory')}),
-        ('Product information', {'fields': ('name', 'slug', 'sku', 'short_description', 'description', 'image')}),
+        ('Product information', {'fields': ('id', 'name', 'slug', 'sku', 'short_description', 'description', 'image')}),
         ('Pricing and stock', {'fields': ('price', 'compare_at_price', 'stock_quantity')}),
         ('Publishing', {'fields': ('status', 'is_featured')}),
         ('Timestamps', {'fields': ('created_at', 'updated_at')}),

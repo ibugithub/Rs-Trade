@@ -3,7 +3,7 @@
 
 {% block responsive %}
 {{ block.super }}
-<link rel="stylesheet" href="{% static 'admin/css/admin_forms.css' %}?v=20261011-1">
+<link rel="stylesheet" href="{% static 'admin/css/admin_forms.css' %}?v=20261015-1">
 {% endblock %}
 
 {% block bodyclass %}{{ block.super }} rs-admin-form{% endblock %}
@@ -14,7 +14,7 @@
 <div class="rs-form-heading">
     <div>
         <h1>{{ title }}</h1>
-        <p>{% if add %}Enter the details below to create a new {{ opts.verbose_name|lower }}.{% else %}Review and update this {{ opts.verbose_name|lower }}.{% endif %}</p>
+        <p>{% if add %}Enter the details below to create a new {{ opts.verbose_name|lower }}.{% elif not has_change_permission %}View this {{ opts.verbose_name|lower }} and its saved details.{% else %}Review and update this {{ opts.verbose_name|lower }}.{% endif %}</p>
     </div>
     {% if has_view_permission and not is_popup %}
     {% url opts|admin_urlname:'changelist' as changelist_url %}
