@@ -3,6 +3,7 @@ from django.db import models
 from django.utils import timezone
 from django.utils.text import slugify
 from cloudinary.models import CloudinaryField
+from django.conf import settings
 
 
 class Category(models.Model):
@@ -176,3 +177,26 @@ class DealProduct(models.Model):
 
     def __str__(self):
         return f'{self.deal.name} / {self.product.name}'
+
+
+class Cart(models.Model):
+    user = models.OneToOneField(
+        settings.AUTH_USER_MODEL, on_delete=models.CASCADE, related_name='shopping_cart',
+    )
+    # Store selections only. Prices and stock always come from Product.
+    items = models.JSONField(default=list)
+    updated_at = models.DateTimeField(auto_now=True)
+
+    def __str__(self):
+        return f'Cart for {self.user.email}'
+
+
+class CartOperation(models.Model):
+    cart = models.ForeignKey(Cart, on_delete=models.CASCADE, related_name='operations')
+    operation_id = models.CharField(max_length=64)
+    created_at = models.DateTimeField(auto_now_add=True)
+
+    class Meta:
+        constraints = [
+            models.UniqueConstraint(fields=['cart', 'operation_id'], name='unique_cart_operation'),
+        ]

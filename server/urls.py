@@ -20,6 +20,7 @@ from drf_yasg import openapi
 from drf_yasg.views import get_schema_view
 from rest_framework import permissions
 from .admin_site import configure_admin_site
+from catalog.cart_views import AccountCartView
 from .frontend import serve_next_frontend
 
 SchemaView = get_schema_view(
@@ -43,6 +44,7 @@ configure_admin_site(admin.site)
 urlpatterns = [
     path('admin/', admin.site.urls),
     path('api/catalog/', include('catalog.urls')),
+    path('api/cart/', AccountCartView.as_view(), name='account-cart'),
     path('api/users/', include('users.urls')),
     path('api/profile/', include('userProfile.urls')),
     # Swagger URLs

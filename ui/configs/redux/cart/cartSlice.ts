@@ -1,17 +1,39 @@
-import { createSlice, type PayloadAction } from '@reduxjs/toolkit';
+import { createSlice, nanoid, type PayloadAction } from '@reduxjs/toolkit';
+import { fetchLoggedInUser, signOut } from '@/configs/redux/auth/authSlice';
 
 export type CartItem = { productId: string; quantity: number };
-type CartState = { items: CartItem[]; buyNow: CartItem | null; hydrated: boolean };
-// Version 2 uses database IDs; demo selections cannot be mapped to real products.
+export type CartOperation = {
+  id: string;
+  kind: 'add' | 'set' | 'remove' | 'clear' | 'merge';
+  productId?: string;
+  quantity?: number;
+  items?: CartItem[];
+};
+export type CartState = {
+  items: CartItem[];
+  buyNow: CartItem | null;
+  hydrated: boolean;
+  owner: string | null;
+  session: number;
+  pending: CartOperation[];
+  syncStatus: 'loading' | 'guest' | 'saving' | 'saved' | 'error';
+  notice: string;
+  storageAvailable: boolean;
+  reloadToken: number;
+};
 export const CART_STORAGE_KEY = 'rs-trade-cart-v2';
-export const MAX_QUANTITY = 9999; // Input limit, not a stock or MOQ claim.
+export const accountCartKey = (owner: string) =>
+  `rs-trade-account-cart-v1:${encodeURIComponent(owner)}`;
+export const MAX_QUANTITY = 9999;
 export const MAX_CART_ITEMS = 100;
 const validProductId = (id: string) => /^[1-9]\d{0,18}$/.test(id);
+
 export function validQuantity(value: unknown): number | null {
   return typeof value === 'number' && Number.isInteger(value) && value > 0
     ? Math.min(value, MAX_QUANTITY)
     : null;
 }
+
 export function sanitizeCartItems(value: unknown): CartItem[] {
   if (!Array.isArray(value)) return [];
   const result: CartItem[] = [];
@@ -25,43 +47,228 @@ export function sanitizeCartItems(value: unknown): CartItem[] {
   }
   return result;
 }
-const initialState: CartState = { items: [], buyNow: null, hydrated: false };
+
+export function sanitizeOperations(value: unknown): CartOperation[] {
+  if (!Array.isArray(value)) return [];
+  return value.filter((operation) => {
+    if (
+      !operation ||
+      typeof operation.id !== 'string' ||
+      !/^[A-Za-z0-9_-]{21,64}$/.test(operation.id)
+    )
+      return false;
+    if (operation.kind === 'clear') return true;
+    if (operation.kind === 'merge')
+      return (
+        Array.isArray(operation.items) &&
+        sanitizeCartItems(operation.items).length === operation.items.length
+      );
+    if (typeof operation.productId !== 'string' || !validProductId(operation.productId))
+      return false;
+    if (operation.kind === 'remove') return true;
+    return (
+      ['add', 'set'].includes(operation.kind) &&
+      validQuantity(operation.quantity) === operation.quantity
+    );
+  });
+}
+
+export function replayCartOperations(items: CartItem[], operations: CartOperation[]) {
+  let result = sanitizeCartItems(items);
+  for (const operation of operations) {
+    if (operation.kind === 'clear') {
+      result = [];
+      continue;
+    }
+    if (operation.kind === 'merge') {
+      result = sanitizeCartItems([...result, ...(operation.items ?? [])]);
+      continue;
+    }
+    if (operation.kind === 'remove') {
+      result = result.filter((item) => item.productId !== operation.productId);
+      continue;
+    }
+    const quantity = validQuantity(operation.quantity);
+    if (!quantity || !operation.productId || !validProductId(operation.productId)) continue;
+    const existing = result.find((item) => item.productId === operation.productId);
+    if (existing)
+      existing.quantity =
+        operation.kind === 'add' ? Math.min(existing.quantity + quantity, MAX_QUANTITY) : quantity;
+    else if (result.length < MAX_CART_ITEMS)
+      result.push({ productId: operation.productId, quantity });
+  }
+  return result;
+}
+
+const initialState: CartState = {
+  items: [],
+  buyNow: null,
+  hydrated: false,
+  owner: null,
+  session: 0,
+  pending: [],
+  syncStatus: 'loading',
+  notice: '',
+  storageAvailable: true,
+  reloadToken: 0,
+};
+function beginSession(state: CartState, owner: string | null) {
+  state.items = [];
+  state.buyNow = null;
+  state.pending = [];
+  state.hydrated = false;
+  state.owner = owner;
+  state.session += 1;
+  state.syncStatus = 'loading';
+  state.notice = '';
+}
+function mutate(state: CartState, operation: CartOperation) {
+  if (!state.hydrated) return;
+  state.items = replayCartOperations(state.items, [operation]);
+  if (state.owner) {
+    state.pending.push(operation);
+    state.syncStatus = 'saving';
+    state.notice = '';
+  }
+}
 const slice = createSlice({
   name: 'cart',
   initialState,
   reducers: {
-    hydrateCart(state, action: PayloadAction<{ items?: unknown; buyNow?: unknown }>) {
-      if (state.hydrated) return;
-      state.items = sanitizeCartItems(action.payload.items);
-      state.buyNow = sanitizeCartItems([action.payload.buyNow])[0] ?? null;
+    beginCartSession(state, action: PayloadAction<string | null>) {
+      beginSession(state, action.payload);
+    },
+    loadCartSession(
+      state,
+      action: PayloadAction<{
+        owner: string | null;
+        session: number;
+        items: unknown;
+        buyNow?: unknown;
+        pending?: unknown;
+        storageAvailable: boolean;
+      }>,
+    ) {
+      const payload = action.payload;
+      if (state.owner !== payload.owner || state.session !== payload.session) return;
+      state.pending = sanitizeOperations(payload.pending);
+      state.items = replayCartOperations(sanitizeCartItems(payload.items), state.pending);
+      state.buyNow = sanitizeCartItems([payload.buyNow])[0] ?? null;
       state.hydrated = true;
+      state.storageAvailable = payload.storageAvailable;
+      state.syncStatus = state.owner ? (state.pending.length ? 'saving' : 'saved') : 'guest';
     },
-    addItem(state, action: PayloadAction<CartItem>) {
-      const item = sanitizeCartItems([action.payload])[0];
-      if (!item) return;
-      const existing = state.items.find((value) => value.productId === item.productId);
-      if (existing) existing.quantity = Math.min(existing.quantity + item.quantity, MAX_QUANTITY);
-      else if (state.items.length < MAX_CART_ITEMS) state.items.push(item);
+    acknowledgeCartOperation(
+      state,
+      action: PayloadAction<{
+        owner: string;
+        session: number;
+        id: string;
+        items: unknown;
+        notice?: string;
+      }>,
+    ) {
+      const payload = action.payload;
+      if (state.owner !== payload.owner || state.session !== payload.session) return;
+      state.pending = state.pending.filter((operation) => operation.id !== payload.id);
+      state.items = replayCartOperations(sanitizeCartItems(payload.items), state.pending);
+      state.syncStatus = state.pending.length ? 'saving' : 'saved';
+      if (payload.notice) state.notice = payload.notice;
     },
-    setQuantity(state, action: PayloadAction<CartItem>) {
-      const quantity = validQuantity(action.payload.quantity);
-      const item = state.items.find((value) => value.productId === action.payload.productId);
-      if (item && quantity) item.quantity = quantity;
+    cartSyncError(
+      state,
+      action: PayloadAction<{ owner: string; session: number; message: string }>,
+    ) {
+      if (state.owner !== action.payload.owner || state.session !== action.payload.session) return;
+      state.syncStatus = 'error';
+      state.notice = action.payload.message;
     },
-    removeItem(state, action: PayloadAction<string>) {
-      state.items = state.items.filter((item) => item.productId !== action.payload);
+    retryCartSync(state) {
+      state.reloadToken += 1;
     },
-    clearCart(state) {
-      state.items = [];
+    cartStorageStatus(state, action: PayloadAction<boolean>) {
+      state.storageAvailable = action.payload;
+    },
+    addItem: {
+      prepare(item: CartItem) {
+        return { payload: { ...item, operationId: nanoid() } };
+      },
+      reducer(state, action: PayloadAction<CartItem & { operationId: string }>) {
+        if (!sanitizeCartItems([action.payload]).length) return;
+        mutate(state, {
+          id: action.payload.operationId,
+          kind: 'add',
+          productId: action.payload.productId,
+          quantity: action.payload.quantity,
+        });
+      },
+    },
+    setQuantity: {
+      prepare(item: CartItem) {
+        return { payload: { ...item, operationId: nanoid() } };
+      },
+      reducer(state, action: PayloadAction<CartItem & { operationId: string }>) {
+        if (!sanitizeCartItems([action.payload]).length) return;
+        mutate(state, {
+          id: action.payload.operationId,
+          kind: 'set',
+          productId: action.payload.productId,
+          quantity: action.payload.quantity,
+        });
+      },
+    },
+    removeItem: {
+      prepare(productId: string) {
+        return { payload: { productId, operationId: nanoid() } };
+      },
+      reducer(state, action: PayloadAction<{ productId: string; operationId: string }>) {
+        mutate(state, {
+          id: action.payload.operationId,
+          kind: 'remove',
+          productId: action.payload.productId,
+        });
+      },
+    },
+    clearCart: {
+      prepare() {
+        return { payload: nanoid() };
+      },
+      reducer(state, action: PayloadAction<string>) {
+        mutate(state, { id: action.payload, kind: 'clear' });
+      },
     },
     clearBuyNow(state) {
       state.buyNow = null;
     },
     setBuyNow(state, action: PayloadAction<CartItem>) {
-      state.buyNow = sanitizeCartItems([action.payload])[0] ?? null;
+      if (state.hydrated) state.buyNow = sanitizeCartItems([action.payload])[0] ?? null;
     },
   },
+  extraReducers(builder) {
+    builder.addCase(signOut, (state) => {
+      beginSession(state, null);
+    });
+    builder.addCase(fetchLoggedInUser.rejected, (state) => {
+      if (state.owner) beginSession(state, null);
+    });
+    builder.addCase(fetchLoggedInUser.fulfilled, (state, action) => {
+      const email = action.payload?.user?.email || action.payload?.email;
+      if (state.owner && state.owner !== email?.trim().toLowerCase()) beginSession(state, null);
+    });
+  },
 });
-export const { hydrateCart, addItem, setQuantity, removeItem, clearCart, setBuyNow, clearBuyNow } =
-  slice.actions;
+export const {
+  beginCartSession,
+  loadCartSession,
+  acknowledgeCartOperation,
+  cartSyncError,
+  retryCartSync,
+  cartStorageStatus,
+  addItem,
+  setQuantity,
+  removeItem,
+  clearCart,
+  setBuyNow,
+  clearBuyNow,
+} = slice.actions;
 export const cartReducer = slice.reducer;

@@ -1,7 +1,31 @@
 from django.contrib import admin
 from django.db.models import Count
 
-from .models import Category, Deal, DealProduct, Product, SubCategory
+from .models import Cart, Category, Deal, DealProduct, Product, SubCategory
+
+
+@admin.register(Cart)
+class CartAdmin(admin.ModelAdmin):
+    list_display = ('user', 'product_count', 'updated_at')
+    search_fields = ('user__email',)
+    list_select_related = ('user',)
+    ordering = ('-updated_at',)
+    readonly_fields = ('user', 'items', 'updated_at')
+    fields = ('user', 'items', 'updated_at')
+
+    @admin.display(description='Products')
+    def product_count(self, obj):
+        return len(obj.items)
+
+    # Customer selections are managed through the cart API, including retry receipts.
+    def has_add_permission(self, request):
+        return False
+
+    def has_change_permission(self, request, obj=None):
+        return False
+
+    def has_delete_permission(self, request, obj=None):
+        return False
 
 
 class SubCategoryListFilter(admin.RelatedFieldListFilter):

@@ -1,6 +1,7 @@
 import Link from 'next/link';
 import { ArrowLeft } from 'lucide-react';
 import { CompanyFooter } from '@/components/footer/companyFooter';
+import { CartSyncStatus } from '@/components/cart/cartSyncStatus';
 
 export function ShopShell({
   title,
@@ -27,6 +28,7 @@ export function ShopShell({
           </Link>
           <h1 className="text-3xl font-bold tracking-tight sm:text-4xl">{title}</h1>
           <p className="mt-3 max-w-2xl text-sm leading-7 text-gray-600">{description}</p>
+          <CartSyncStatus />
           {children}
         </div>
       </main>

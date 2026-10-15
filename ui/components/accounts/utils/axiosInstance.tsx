@@ -29,12 +29,16 @@ export const AxiosReqInstance = () => {
         try {
           const res = await axios.post(url, data);
           if (res.status === 200) {
+            if (localStorage.getItem('accessToken') !== access_token) {
+              throw new axios.CanceledError('The signed-in account changed.');
+            }
             const newToken = res.data.access;
             const authorization = `Bearer ${newToken}`;
             localStorage.setItem('accessToken', newToken);
             req.headers.Authorization = authorization;
           }
         } catch (error: unknown) {
+          if (axios.isCancel(error)) throw error;
           console.log('Error refreshing token:', error);
         }
       }

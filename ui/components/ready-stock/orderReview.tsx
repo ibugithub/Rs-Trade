@@ -23,7 +23,13 @@ import {
 } from '@/lib/orderNavigation';
 
 export function OrderReview({ mode }: { mode: 'cart' | 'buyNow' }) {
-  const { items: cartItems, buyNow, hydrated } = useAppSelector((state) => state.cart);
+  const {
+    items: cartItems,
+    buyNow,
+    hydrated,
+    owner: cartOwner,
+    syncStatus,
+  } = useAppSelector((state) => state.cart);
   const { products, cartStatus } = useAppSelector((state) => state.catalog);
   const dispatch = useAppDispatch();
   const router = useRouter();
@@ -98,7 +104,8 @@ export function OrderReview({ mode }: { mode: 'cart' | 'buyNow' }) {
       title={mode === 'buyNow' ? 'Buy Now' : 'Review Your Request'}
       description="Confirm your selection and prepare a request for our team. Final price and delivery are agreed before an order is confirmed."
     >
-      {!hydrated || (items.length > 0 && (!addressesReady || !selectedAddress)) ? (
+      {!hydrated && syncStatus === 'error' ? null : !hydrated ||
+        (items.length > 0 && (!addressesReady || !selectedAddress)) ? (
         <p
           role="status"
           className="mt-8 flex items-center gap-2 text-sm text-gray-600"
@@ -132,7 +139,9 @@ export function OrderReview({ mode }: { mode: 'cart' | 'buyNow' }) {
             Browse Ready Stock
           </Link>
         </div>
-      ) : cartStatus !== 'succeeded' || invalidCartItems(items, products).length ? (
+      ) : (cartOwner && syncStatus !== 'saved') ||
+        cartStatus !== 'succeeded' ||
+        invalidCartItems(items, products).length ? (
         <div>
           <CartAvailability items={items} />
           <CartItems

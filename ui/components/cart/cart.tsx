@@ -10,9 +10,12 @@ import { ShopShell } from '@/components/ready-stock/shopShell';
 import { productSubtotal, formatBDT, invalidCartItems } from '@/content/pricing';
 
 export const Cart = () => {
-  const { items, hydrated } = useAppSelector((state) => state.cart);
+  const { items, hydrated, owner, syncStatus } = useAppSelector((state) => state.cart);
   const { products, cartStatus } = useAppSelector((state) => state.catalog);
-  const ready = cartStatus === 'succeeded' && invalidCartItems(items, products).length === 0;
+  const ready =
+    (!owner || syncStatus === 'saved') &&
+    cartStatus === 'succeeded' &&
+    invalidCartItems(items, products).length === 0;
   const dispatch = useAppDispatch();
   const quantity = items.reduce((total, item) => total + item.quantity, 0);
   return (
@@ -20,7 +23,7 @@ export const Cart = () => {
       title="Your Cart"
       description="Keep your selected products together, adjust quantities and prepare an order request."
     >
-      {!hydrated ? (
+      {!hydrated && syncStatus === 'error' ? null : !hydrated ? (
         <p
           role="status"
           className="mt-8 flex items-center gap-2 text-sm text-gray-500"
