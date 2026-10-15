@@ -5,11 +5,12 @@ import Link from 'next/link';
 import { useRouter } from 'next/navigation';
 import { Clipboard, LoaderCircle, ShoppingBag } from 'lucide-react';
 import { useAppDispatch, useAppSelector } from '@/configs/redux/hooks';
-import { setQuantity, setBuyNow } from '@/configs/redux/cart/cartSlice';
+import { setQuantity, setBuyNow, removeItem, clearBuyNow } from '@/configs/redux/cart/cartSlice';
 import { formatOrderRequest, type OrderContact } from '@/content/orderRequest';
 import { CartItems } from '@/components/cart/cartItems';
+import { CartAvailability } from '@/components/cart/cartAvailability';
 import { ShopShell } from './shopShell';
-import { demoSubtotal, formatBDT } from '@/content/pricing';
+import { productSubtotal, formatBDT, invalidCartItems } from '@/content/pricing';
 import { useAddressBook } from '@/components/profile/useAddressBook';
 import {
   formatDeliveryAddress,
@@ -23,6 +24,7 @@ import {
 
 export function OrderReview({ mode }: { mode: 'cart' | 'buyNow' }) {
   const { items: cartItems, buyNow, hydrated } = useAppSelector((state) => state.cart);
+  const { products, cartStatus } = useAppSelector((state) => state.catalog);
   const dispatch = useAppDispatch();
   const router = useRouter();
   const authStatus = useAppSelector((state) => state.auth.status);
@@ -51,7 +53,7 @@ export function OrderReview({ mode }: { mode: 'cart' | 'buyNow' }) {
   useEffect(() => {
     setReviewed(false);
     setCopyStatus('');
-  }, [cartItems, buyNow, selectedAddress, notes, owner]);
+  }, [cartItems, buyNow, selectedAddress, notes, owner, products]);
   useEffect(() => {
     setSelectedId(null);
     setNotes('');
@@ -77,7 +79,7 @@ export function OrderReview({ mode }: { mode: 'cart' | 'buyNow' }) {
     addressPage,
     router,
   ]);
-  const summary = formatOrderRequest(items, contact);
+  const summary = formatOrderRequest(items, contact, products);
   const copy = async () => {
     setCopying(true);
     try {
@@ -130,6 +132,15 @@ export function OrderReview({ mode }: { mode: 'cart' | 'buyNow' }) {
             Browse Ready Stock
           </Link>
         </div>
+      ) : cartStatus !== 'succeeded' || invalidCartItems(items, products).length ? (
+        <div>
+          <CartAvailability items={items} />
+          <CartItems
+            items={items}
+            onChange={(item) => dispatch(mode === 'buyNow' ? setBuyNow(item) : setQuantity(item))}
+            onRemove={(id) => dispatch(mode === 'buyNow' ? clearBuyNow() : removeItem(id))}
+          />
+        </div>
       ) : (
         <div className="mt-8 grid items-start gap-7 lg:grid-cols-2">
           <div>
@@ -140,14 +151,13 @@ export function OrderReview({ mode }: { mode: 'cart' | 'buyNow' }) {
             />
             <div className="mt-5 rounded-xl border border-blue-100 bg-blue-50 p-5 text-sm leading-7 text-gray-600">
               <p className="font-semibold text-gray-900">
-                Demo subtotal: {formatBDT(demoSubtotal(items))}
+                Product subtotal: {formatBDT(productSubtotal(items, products))}
               </p>
               <p className="mt-2 text-xs">
-                Preview prices only. Delivery and final selling prices must be confirmed.
+                Delivery charges are excluded and will be confirmed separately.
               </p>
               <p className="mt-2">
-                These are sample products. Preparing a request does not reserve stock, place an
-                order or take payment.
+                Preparing a request does not reserve stock, place an order or take payment.
               </p>
             </div>
             <Link

@@ -5,11 +5,14 @@ import { LoaderCircle, ShoppingBag } from 'lucide-react';
 import { useAppDispatch, useAppSelector } from '@/configs/redux/hooks';
 import { clearCart, removeItem, setQuantity } from '@/configs/redux/cart/cartSlice';
 import { CartItems } from './cartItems';
+import { CartAvailability } from './cartAvailability';
 import { ShopShell } from '@/components/ready-stock/shopShell';
-import { demoSubtotal, formatBDT } from '@/content/pricing';
+import { productSubtotal, formatBDT, invalidCartItems } from '@/content/pricing';
 
 export const Cart = () => {
   const { items, hydrated } = useAppSelector((state) => state.cart);
+  const { products, cartStatus } = useAppSelector((state) => state.catalog);
+  const ready = cartStatus === 'succeeded' && invalidCartItems(items, products).length === 0;
   const dispatch = useAppDispatch();
   const quantity = items.reduce((total, item) => total + item.quantity, 0);
   return (
@@ -56,6 +59,7 @@ export const Cart = () => {
             >
               {items.length} products · {quantity} requested units
             </p>
+            <CartAvailability items={items} />
             <CartItems
               items={items}
               onChange={(item) => dispatch(setQuantity(item))}
@@ -77,8 +81,12 @@ export const Cart = () => {
                 <dd>{quantity}</dd>
               </div>
               <div className="flex justify-between">
-                <dt>Demo subtotal</dt>
-                <dd className="font-semibold text-blue-700">{formatBDT(demoSubtotal(items))}</dd>
+                <dt>Product subtotal</dt>
+                <dd className="font-semibold text-blue-700">
+                  {cartStatus === 'succeeded'
+                    ? formatBDT(productSubtotal(items, products))
+                    : 'Checking...'}
+                </dd>
               </div>
               <div className="flex justify-between">
                 <dt>Delivery</dt>
@@ -86,15 +94,25 @@ export const Cart = () => {
               </div>
             </dl>
             <p className="mt-5 border-t border-gray-200 pt-5 text-xs leading-6 text-gray-500">
-              Sample products for preview. Our team must confirm stock, MOQ, prices and delivery. No
+              Delivery is excluded. Confirm availability, MOQ and your final order with our team. No
               payment is collected here.
             </p>
-            <Link
-              href="/checkout"
-              className="mt-5 flex min-h-12 items-center justify-center rounded-lg bg-yellow-300 px-4 text-sm font-semibold hover:bg-yellow-500"
-            >
-              Review Order Request
-            </Link>
+            {ready ? (
+              <Link
+                href="/checkout"
+                className="mt-5 flex min-h-12 items-center justify-center rounded-lg bg-yellow-300 px-4 text-sm font-semibold hover:bg-yellow-500"
+              >
+                Review Order Request
+              </Link>
+            ) : (
+              <button
+                type="button"
+                disabled
+                className="mt-5 flex min-h-12 w-full items-center justify-center rounded-lg bg-gray-100 px-4 text-sm font-semibold text-gray-400"
+              >
+                Review Order Request
+              </button>
+            )}
             <Link
               href="/ready-stock"
               className="mt-3 flex min-h-11 items-center justify-center text-sm font-medium text-blue-700 hover:underline"

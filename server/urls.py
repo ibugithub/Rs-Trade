@@ -42,6 +42,7 @@ configure_admin_site(admin.site)
 
 urlpatterns = [
     path('admin/', admin.site.urls),
+    path('api/catalog/', include('catalog.urls')),
     path('api/users/', include('users.urls')),
     path('api/profile/', include('userProfile.urls')),
     # Swagger URLs

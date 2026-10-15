@@ -1,22 +1,24 @@
-import { readyStockProducts } from './readyStock';
+import type { ProductCatalog } from './readyStock';
 import type { CartItem } from '@/configs/redux/cart/cartSlice';
-import { demoSubtotal, formatBDT } from './pricing';
+import { productSubtotal, formatBDT } from './pricing';
 
 export type OrderContact = { name: string; phone: string; address: string; notes: string };
-export function formatOrderRequest(items: CartItem[], contact: OrderContact) {
-  const lines = items
-    .map((item) => {
-      const product = readyStockProducts.find((value) => value.id === item.productId);
-      return product
-        ? `- ${product.name}: ${item.quantity} requested (${formatBDT(product.demoPrice)} per unit, demo price)`
-        : null;
-    })
-    .filter(Boolean);
+export function formatOrderRequest(
+  items: CartItem[],
+  contact: OrderContact,
+  products: ProductCatalog,
+) {
+  const lines = items.map((item) => {
+    const product = products[item.productId];
+    return product
+      ? `- ${product.name}: ${item.quantity} requested (${formatBDT(product.price)} per unit)`
+      : `- Product #${item.productId}: unavailable`;
+  });
   return [
     'RS Trade International - Ready Stock inquiry',
     '',
     ...lines,
-    `Demo subtotal: ${formatBDT(demoSubtotal(items))} (preview only; not a final quote)`,
+    `Product subtotal: ${formatBDT(productSubtotal(items, products))} (delivery excluded)`,
     '',
     `Name: ${contact.name.trim()}`,
     `Phone / WhatsApp: ${contact.phone.trim()}`,

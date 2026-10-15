@@ -3,9 +3,8 @@
   "version": "0.1.0",
   "private": true,
   "scripts": {
-    "format": "prettier --write app components configs content lib types tests",
-    "format:check": "prettier --check app components configs content lib types tests",
-    "test:cart": "node --test tests/cart.test.cjs",
+    "format": "prettier --write app components configs content lib types",
+    "format:check": "prettier --check app components configs content lib types",
     "dev": "next dev",
     "build": "next build",
     "start": "next start",

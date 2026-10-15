@@ -5,8 +5,8 @@ import { useRouter } from 'next/navigation';
 import { useState } from 'react';
 import { ShoppingBag, ArrowRight, Check } from 'lucide-react';
 import { useAppDispatch, useAppSelector } from '@/configs/redux/hooks';
-import { addItem, setBuyNow } from '@/configs/redux/cart/cartSlice';
-import type { ReadyStockProduct } from '@/content/readyStock';
+import { addItem, setBuyNow, MAX_CART_ITEMS } from '@/configs/redux/cart/cartSlice';
+import { productImage, type ReadyStockProduct } from '@/content/readyStock';
 import { formatBDT } from '@/content/pricing';
 import { ProductImage } from './productImage';
 import { QuantityInput } from './quantityInput';
@@ -16,6 +16,13 @@ export function ProductDetails({ product }: { product: ReadyStockProduct }) {
   const [quantity, setQuantity] = useState(1);
   const [added, setAdded] = useState(false);
   const hydrated = useAppSelector((state) => state.cart.hydrated);
+  const cartItems = useAppSelector((state) => state.cart.items);
+  const cartFull =
+    cartItems.length >= MAX_CART_ITEMS && !cartItems.some((item) => item.productId === product.id);
+  const inStock = product.stockQuantity > 0;
+  const cartQuantity = cartItems.find((item) => item.productId === product.id)?.quantity ?? 0;
+  const exceedsStock = cartQuantity + quantity > product.stockQuantity;
+  const canAdd = hydrated && inStock && !cartFull && !exceedsStock;
   const dispatch = useAppDispatch();
   const router = useRouter();
   return (
@@ -26,24 +33,24 @@ export function ProductDetails({ product }: { product: ReadyStockProduct }) {
       <div className="mt-8 grid items-start gap-8 lg:grid-cols-2 lg:gap-12">
         <div>
           <ProductImage
-            src={product.image}
+            src={productImage(product)}
             name={product.name}
           />
         </div>
         <div className="rounded-2xl border border-gray-200 bg-white p-6 sm:p-8">
           <span className="rounded-full bg-blue-50 px-3 py-1 text-xs font-semibold text-blue-700">
-            Catalog preview
+            {inStock ? 'In stock' : 'Out of stock'}
           </span>
           <p className="mt-5 text-base leading-8 text-gray-600">{product.description}</p>
-          <p className="mt-6 text-xs text-gray-500">Demo price per unit</p>
-          <p className="mt-1 text-3xl font-bold text-blue-700">{formatBDT(product.demoPrice)}</p>
+          <p className="mt-6 text-xs text-gray-500">Price per unit</p>
+          <p className="mt-1 text-3xl font-bold text-blue-700">{formatBDT(product.price)}</p>
           <p className="mt-2 text-xs text-gray-500">
-            Preview price only. Confirm the actual price with our team.
+            Delivery charges are confirmed separately with our team.
           </p>
           <dl className="mt-6 space-y-4 border-y border-gray-200 py-5 text-sm">
             {[
               ['Minimum order quantity', 'To be confirmed'],
-              ['Available quantity', 'To be confirmed'],
+              ['Available quantity', String(product.stockQuantity)],
               ['Delivery', 'Charges and timing confirmed with our team.'],
             ].map(([label, value]) => (
               <div key={label}>
@@ -55,21 +62,22 @@ export function ProductDetails({ product }: { product: ReadyStockProduct }) {
           <p className="mb-3 mt-6 text-sm font-semibold">Requested quantity</p>
           <QuantityInput
             value={quantity}
+            maximum={product.stockQuantity}
             onChange={(value) => {
               setQuantity(value);
               setAdded(false);
             }}
           />
           <p className="mt-3 text-sm text-gray-600">
-            Demo subtotal:{' '}
+            Product subtotal:{' '}
             <span className="font-semibold text-gray-900">
-              {formatBDT(product.demoPrice * quantity)}
+              {formatBDT(product.price * quantity)}
             </span>
           </p>
           <div className="mt-6 grid gap-3 sm:grid-cols-2">
             <button
               type="button"
-              disabled={!hydrated}
+              disabled={!canAdd}
               onClick={() => {
                 dispatch(addItem({ productId: product.id, quantity }));
                 setAdded(true);
@@ -84,7 +92,7 @@ export function ProductDetails({ product }: { product: ReadyStockProduct }) {
             </button>
             <button
               type="button"
-              disabled={!hydrated}
+              disabled={!hydrated || !inStock || quantity > product.stockQuantity}
               onClick={() => {
                 dispatch(setBuyNow({ productId: product.id, quantity }));
                 router.push('/buy_now');
@@ -98,7 +106,21 @@ export function ProductDetails({ product }: { product: ReadyStockProduct }) {
               />
             </button>
           </div>
+          {cartFull && (
+            <p
+              role="status"
+              className="mt-4 text-sm text-red-700"
+            >
+              Your cart contains 100 different products. Remove an item before adding another.
+            </p>
+          )}
           <div aria-live="polite">
+            {!added && inStock && exceedsStock && (
+              <p className="mt-4 text-sm text-red-700">
+                Your cart already contains {cartQuantity}. Choose a smaller quantity or update your
+                cart.
+              </p>
+            )}
             {added && (
               <p className="mt-4 flex items-center gap-2 text-sm text-green-800">
                 <Check
@@ -116,8 +138,8 @@ export function ProductDetails({ product }: { product: ReadyStockProduct }) {
             )}
           </div>
           <p className="mt-5 text-xs leading-6 text-gray-500">
-            This sample product is for preview. Your selection is saved for review; price, stock and
-            the final order must be confirmed with our team. No online payment.
+            Confirm availability, delivery and your final order with our team. Adding a product to
+            your cart does not reserve stock. No online payment is collected.
           </p>
         </div>
       </div>

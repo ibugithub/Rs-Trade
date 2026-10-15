@@ -4,6 +4,7 @@ import { Provider } from 'react-redux';
 import { makeStore, AppStore } from '@/configs/redux/store';
 import { CartPersistence } from '@/components/cart/cartPersistence';
 import { AddressPersistence } from '@/components/profile/addressPersistence';
+import { CartCatalogLoader } from '@/components/cart/cartCatalogLoader';
 
 export default function StoreProvider({ children }: { children: React.ReactNode }) {
   const storeRef = useRef<AppStore | null>(null);
@@ -14,6 +15,7 @@ export default function StoreProvider({ children }: { children: React.ReactNode 
   return (
     <Provider store={storeRef.current}>
       <CartPersistence />
+      <CartCatalogLoader />
       <AddressPersistence />
       {children}
     </Provider>

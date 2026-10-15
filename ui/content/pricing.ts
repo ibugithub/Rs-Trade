@@ -1,7 +1,6 @@
-import { readyStockProducts } from './readyStock';
+import type { ProductCatalog } from './readyStock';
 import type { CartItem } from '@/configs/redux/cart/cartSlice';
 
-// Demo amounts are for design preview only, never final selling prices.
 export function formatBDT(amount: number) {
   return `BDT ${new Intl.NumberFormat('en-BD', {
     minimumFractionDigits: 0,
@@ -9,9 +8,17 @@ export function formatBDT(amount: number) {
   }).format(amount)}`;
 }
 
-export function demoSubtotal(items: CartItem[]) {
-  return items.reduce((total, item) => {
-    const product = readyStockProducts.find((value) => value.id === item.productId);
-    return total + (product?.demoPrice ?? 0) * item.quantity;
+export function productSubtotal(items: CartItem[], products: ProductCatalog) {
+  const cents = items.reduce((total, item) => {
+    const product = products[item.productId];
+    return total + Math.round((product?.price ?? 0) * 100) * item.quantity;
   }, 0);
+  return cents / 100;
+}
+
+export function invalidCartItems(items: CartItem[], products: ProductCatalog) {
+  return items.filter((item) => {
+    const product = products[item.productId];
+    return !product || item.quantity > product.stockQuantity;
+  });
 }

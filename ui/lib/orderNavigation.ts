@@ -1,6 +1,11 @@
 export type OrderPath = '/checkout' | '/buy_now';
 const SIGN_IN_RETURN_KEY = 'rs-trade-sign-in-return';
 
+export function catalogReviewPath(pathname: string) {
+  const path = pathname.replace(/\/+$/, '');
+  return ['/cart', '/checkout', '/buy_now', '/cart/add-to-cart'].includes(path) ? path : '';
+}
+
 export function orderReturnPath(search: string): OrderPath | null {
   const path = new URLSearchParams(search).get('returnTo');
   return path === '/checkout' || path === '/buy_now' ? path : null;

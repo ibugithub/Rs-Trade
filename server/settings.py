@@ -91,10 +91,17 @@ if DATABASE_URL:
     DATABASES = {
         'default': dj_database_url.parse(
             DATABASE_URL,
-            conn_max_age=600,
+            conn_max_age=0,
             ssl_require=True,
         )
     }
+    # Reuse a small number of PostgreSQL connections across request threads.
+    DATABASES['default']['OPTIONS']['pool'] = {
+        'min_size': 1,
+        'max_size': 4,
+        'timeout': 30,
+    }
+    DATABASES['default']['CONN_HEALTH_CHECKS'] = True
 else:
     DATABASES = {
         'default': {

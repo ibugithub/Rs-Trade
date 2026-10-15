@@ -2,6 +2,7 @@ import { configureStore } from '@reduxjs/toolkit';
 import { authReducer } from './auth/authSlice';
 import { cartReducer } from './cart/cartSlice';
 import { addressReducer } from './addresses/addressSlice';
+import { catalogReducer } from './catalog/catalogSlice';
 
 export const makeStore = () => {
   return configureStore({
@@ -9,6 +10,7 @@ export const makeStore = () => {
       auth: authReducer,
       cart: cartReducer,
       addresses: addressReducer,
+      catalog: catalogReducer,
     },
   });
 };

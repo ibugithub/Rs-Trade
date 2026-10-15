@@ -5,6 +5,7 @@
 
 *.sqlite3
 media/
+backups/
 staticfiles/
 
 # Django / Python
