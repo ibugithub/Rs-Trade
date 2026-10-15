@@ -179,6 +179,9 @@ CLOUDINARY_STORAGE = {
     'API_SECRET': os.environ.get('CLOUDINARY_API_SECRET')
 }
 
+# The SDK reads credentials from the environment; only set HTTPS delivery here.
+CLOUDINARY = {'secure': True}
+
 DEFAULT_FILE_STORAGE = 'cloudinary_storage.storage.MediaCloudinaryStorage'
 
 # Swagger settings

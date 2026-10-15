@@ -1,5 +1,6 @@
 """Admin checks run with isolated settings, never the production database."""
 from copy import copy
+from base64 import b64decode
 from types import ModuleType, SimpleNamespace
 from unittest.mock import patch
 
@@ -8,6 +9,8 @@ from django.template.loader import render_to_string
 from django.template import Context, Template
 from django.test import RequestFactory, SimpleTestCase, TestCase, override_settings
 from django.db import connection
+from django.core.files.uploadedfile import SimpleUploadedFile
+from cloudinary import CloudinaryResource, reset_config
 from django.test.utils import CaptureQueriesContext, isolate_apps
 from django.urls import path
 
@@ -74,6 +77,38 @@ class AdminChangeListTests(TestCase):
             expanded = self.client.get('/admin/catalog/product/')
         self.assertEqual(expanded.status_code, 200)
         self.assertEqual(len(expanded_queries), len(initial_queries))
+
+    @override_settings(CLOUDINARY={'secure': True})
+    @patch.dict('os.environ', {
+        'CLOUDINARY_CLOUD_NAME': 'test-cloud', 'CLOUDINARY_API_KEY': 'test-key',
+        'CLOUDINARY_API_SECRET': 'test-secret',
+    })
+    def test_product_image_upload_saves_cloudinary_reference(self):
+        reset_config()
+        self.addCleanup(reset_config)
+        category = Category.objects.create(name='Upload category', slug='upload-category')
+        image = SimpleUploadedFile(
+            'product.png',
+            b64decode('iVBORw0KGgoAAAANSUhEUgAAAAEAAAABCAQAAAC1HAwCAAAAC0lEQVR42mP8/x8AAwMCAO+jRZkAAAAASUVORK5CYII='),
+            content_type='image/png',
+        )
+        uploaded = CloudinaryResource(
+            public_id='test-products/product-image', format='png', version=1,
+            resource_type='image', type='upload',
+        )
+        with patch('cloudinary.models.uploader.upload_resource', return_value=uploaded) as upload:
+            response = self.client.post('/admin/catalog/product/add/', {
+                'category': category.pk, 'name': 'Uploaded product',
+                'slug': 'uploaded-product', 'price': '1250.00',
+                'stock_quantity': '5', 'status': 'draft', 'image': image,
+                '_save': 'Save',
+            })
+        self.assertEqual(response.status_code, 302)
+        upload.assert_called_once()
+        self.assertEqual(upload.call_args.kwargs['resource_type'], 'image')
+        product = Product.objects.get(slug='uploaded-product')
+        self.assertEqual(product.image.public_id, 'test-products/product-image')
+        self.assertTrue(product.image.url.startswith('https://res.cloudinary.com/test-cloud/'))
 
     def test_product_filter_queries_do_not_grow_with_subcategories(self):
         category = Category.objects.create(name='Filter Category', slug='filter-category')
