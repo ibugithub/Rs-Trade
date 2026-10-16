@@ -1,5 +1,5 @@
 <section id="app-{{ app.app_label }}" class="rs-management-group" aria-labelledby="title-{{ app.app_label }}">
-    <h2 id="title-{{ app.app_label }}">{{ app.name }}</h2>
+    <h2 id="title-{{ app.app_label }}"{% if app_label %} class="visually-hidden"{% endif %}>{{ app.name }}</h2>
     <div class="rs-model-grid">
         {% for model in app.models %}
         <article class="rs-card rs-model-card">
@@ -14,6 +14,14 @@
                         <path d="M3 21v-3a6 6 0 0 1 12 0v3 M16 5a3 3 0 0 1 0 6 M21 21v-3a6 6 0 0 0-4-5.65" />
                         {% elif model.object_name == 'Product' %}
                         <path d="m12 3 9 5-9 5-9-5 9-5Z M3 8v9l9 5 9-5V8 M12 13v9" />
+                        {% elif model.object_name == 'Cart' %}
+                        <path d="M3 3h2l3 12h11l2-9H6 M9 15l-1 3h11" />
+                        <circle cx="9" cy="21" r="1" /><circle cx="18" cy="21" r="1" />
+                        {% elif model.object_name == 'Category' %}
+                        <path d="M3 7V5a2 2 0 0 1 2-2h5l2 3h7a2 2 0 0 1 2 2v11a2 2 0 0 1-2 2H5a2 2 0 0 1-2-2V7Z" />
+                        {% elif model.object_name == 'SubCategory' %}
+                        <rect x="3" y="3" width="6" height="6" rx="1" /><rect x="15" y="15" width="6" height="6" rx="1" />
+                        <path d="M6 9v9h9" />
                         {% elif model.object_name == 'Deal' or model.object_name == 'DealProduct' %}
                         <path d="M3 3h8l10 10-8 8L3 11V3Z" />
                         <circle cx="7.5" cy="7.5" r="1" />

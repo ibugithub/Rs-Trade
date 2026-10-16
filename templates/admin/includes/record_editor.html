@@ -1,0 +1,24 @@
+{% load static admin_modify %}
+
+<form method="post" id="rs-record-form" action="{{ request.get_full_path }}" {% if editor.has_file_field %}enctype="multipart/form-data"{% endif %} novalidate>
+    {% csrf_token %}
+    {% if editor.errors %}
+    <div class="errornote" role="alert">Please correct the highlighted fields below.</div>
+    {{ editor.adminform.form.non_field_errors }}
+    {% endif %}
+
+    {% for fieldset in editor.adminform %}
+        {% include "admin/includes/fieldset.html" with heading_level=2 prefix="fieldset" id_prefix=0 id_suffix=forloop.counter0 %}
+    {% endfor %}
+
+    {% for inline_admin_formset in editor.inline_admin_formsets %}
+        {% include inline_admin_formset.opts.template %}
+    {% endfor %}
+
+    <div class="submit-row">
+        <input type="submit" name="_save" value="Save changes" class="default">
+        <button type="button" class="rs-button" data-record-cancel>Cancel</button>
+        {% if editor.has_delete_permission %}<a href="{{ delete_url }}" class="deletelink">Delete {{ opts.verbose_name }}</a>{% endif %}
+    </div>
+    {% prepopulated_fields_js %}
+</form>

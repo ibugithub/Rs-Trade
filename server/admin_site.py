@@ -1,6 +1,7 @@
 from types import MethodType
 from django.contrib.admin import ShowFacets
 from django.urls import path, reverse
+from .admin_details import enable_record_details
 
 
 ACCOUNT_APP_LABELS = {'auth', 'users', 'userProfile', 'userprofile'}
@@ -24,6 +25,7 @@ def configure_model_admin(model_admin):
     model_admin.list_max_show_all = 25
     model_admin.show_full_result_count = False
     model_admin.show_facets = ShowFacets.NEVER
+    enable_record_details(model_admin)
 
 
 def configure_admin_site(site):

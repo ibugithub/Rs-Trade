@@ -1,0 +1,115 @@
+{% extends "admin/base_site.html" %}
+{% load static admin_urls %}
+
+{% block extrahead %}
+{{ block.super }}
+<script src="{% static 'admin/js/image_preview.js' %}?v=20261016-1" defer></script>
+{% if editor %}
+<script src="{% url 'admin:jsi18n' %}"></script>
+{{ editor.media }}
+<script src="{% static 'admin/js/record_editor.js' %}?v=20261016-1" defer></script>
+{% endif %}
+{% endblock %}
+{% block extrastyle %}
+{{ block.super }}
+{% if editor %}<link rel="stylesheet" href="{% static 'admin/css/forms.css' %}">{% endif %}
+{% endblock %}
+
+{% block responsive %}
+{{ block.super }}
+<link rel="stylesheet" href="{% static 'admin/css/admin_forms.css' %}?v=20261016-1">
+<link rel="stylesheet" href="{% static 'admin/css/admin_details.css' %}?v=20261016-3">
+{% endblock %}
+{% block bodyclass %}{{ block.super }} rs-admin-form rs-record-details{% endblock %}
+{% block nav-sidebar %}{% endblock %}
+{% block content_title %}{% endblock %}
+{% block content_subtitle %}{% endblock %}
+
+{% block breadcrumbs %}
+<div class="breadcrumbs">
+    <a href="{% url 'admin:index' %}">Home</a> &rsaquo;
+    <a href="{% add_preserved_filters changelist_url %}">{{ opts.verbose_name_plural|capfirst }}</a>
+    &rsaquo; {{ original|truncatechars:70 }}
+</div>
+{% endblock %}
+
+{% block content %}
+<div id="content-main" data-record-page data-editing="{{ editing|yesno:'true,false' }}">
+    <a class="rs-detail-back" href="{% add_preserved_filters changelist_url %}">&larr; Back to {{ opts.verbose_name_plural|capfirst }}</a>
+    <header class="rs-detail-heading">
+        <div>
+            <p class="rs-detail-eyebrow">{{ opts.verbose_name|capfirst }} details &middot; #{{ original.pk }}</p>
+            <h1>{{ original }}</h1>
+            <p class="rs-detail-caption">{% if can_edit %}Review this record. Choose Edit to make changes.{% else %}View the saved details for this record.{% endif %}</p>
+            <p class="rs-detail-caption rs-editor-message" role="status" hidden>Editing this record. Save your changes or cancel to return to the saved details.</p>
+        </div>
+        <div class="rs-detail-actions">
+            <a class="rs-button" href="{{ history_url }}">History</a>
+            {% if can_edit %}
+            <button type="button" class="rs-button rs-button--primary" data-record-edit aria-controls="rs-record-editor" aria-expanded="false">
+                <svg width="17" height="17" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="1.8" aria-hidden="true"><path d="m16 3 5 5-12 12-6 1 1-6L16 3Z M13 6l5 5" /></svg>
+                Edit {{ opts.verbose_name|capfirst }}
+            </button>
+            <button type="submit" form="rs-record-form" name="_save" class="rs-button rs-button--primary" data-editor-action hidden>Save changes</button>
+            <button type="button" class="rs-button" data-record-cancel data-editor-action hidden>Cancel</button>
+            {% endif %}
+        </div>
+    </header>
+
+    {% if images %}
+    <section class="rs-detail-card" aria-label="Images">
+        <h2>Images</h2>
+        <div class="rs-detail-gallery">
+            {% for image in images %}
+            {% include 'admin/includes/image_preview.html' %}
+            {% endfor %}
+        </div>
+    </section>
+    {% endif %}
+
+    <div id="rs-record-readonly">
+    {% for section in sections %}
+    <section class="rs-detail-card">
+        <h2>{{ section.title|capfirst }}</h2>
+        <dl class="rs-detail-fields">
+            {% for field in section.fields %}
+            <div class="rs-detail-field{% if field.wide %} rs-detail-field--wide{% endif %}">
+                <dt>{{ field.label|capfirst }}</dt>
+                <dd>{{ field.value }}</dd>
+            </div>
+            {% endfor %}
+        </dl>
+    </section>
+    {% endfor %}
+
+    {% for section in related_sections %}
+    <section class="rs-detail-card">
+        <h2>{{ section.title|capfirst }}</h2>
+        {% for record in section.records %}
+        <article class="rs-detail-related">
+            <h3>{{ record.name }}</h3>
+            {% for image in record.images %}
+            {% include 'admin/includes/image_preview.html' %}
+            {% endfor %}
+            <dl class="rs-detail-fields">
+                {% for field in record.fields %}
+                <div class="rs-detail-field{% if field.wide %} rs-detail-field--wide{% endif %}">
+                    <dt>{{ field.label|capfirst }}</dt><dd>{{ field.value }}</dd>
+                </div>
+                {% endfor %}
+            </dl>
+        </article>
+        {% endfor %}
+        {% if section.truncated %}<p class="rs-detail-caption">Showing the first 25 records. Open the corresponding admin list to see all records.</p>{% endif %}
+    </section>
+    {% endfor %}
+    </div>
+
+    {% if editor %}
+    <div id="rs-record-editor" hidden>
+        {% include 'admin/includes/record_editor.html' with adminform=editor.adminform inline_admin_formsets=editor.inline_admin_formsets %}
+    </div>
+    <noscript><style>#rs-record-editor[hidden] { display: block !important; } [data-record-edit] { display: none; }</style><p>JavaScript is disabled. The editing form is shown below the saved details.</p></noscript>
+    {% endif %}
+</div>
+{% endblock %}

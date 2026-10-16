@@ -10,12 +10,17 @@
 
 {% block content %}
 <div id="content-main">
+    {% if app_label %}
+    <a class="rs-section-back" href="{% url 'admin:index' %}">&larr; Back to dashboard</a>
+    {% endif %}
     <section class="rs-dashboard-intro" aria-labelledby="dashboard-title">
         <div>
-            <h1 id="dashboard-title">{{ title }}</h1>
+            <h1 id="dashboard-title">{% if app_label %}{{ app_list.0.name }}{% else %}{{ title }}{% endif %}</h1>
             <p class="rs-dashboard-description">
                 {% if app_label %}
-                    Choose a section below to view or update your records.
+                    {% if app_label == 'catalog' %}Manage your products, categories, promotions and customer carts.
+                    {% elif app_label == 'accounts' or app_label == 'users' or app_label == 'auth' or app_label == 'userProfile' %}Manage customer accounts, profiles and access permissions.
+                    {% else %}Choose a section to view or manage your records.{% endif %}
                 {% else %}
                     Manage your catalog and accounts from one place.
                 {% endif %}
@@ -31,63 +36,7 @@
     <div class="rs-dashboard-layout{% if app_label %} rs-dashboard-layout--app{% endif %}">
         <div class="rs-management-sections">
             {% for app in app_list %}
-            {% if not app_label %}
             {% include "admin/management_cards.html" %}
-            {% else %}
-            <section id="app-{{ app.app_label }}" class="rs-card" aria-labelledby="title-{{ app.app_label }}">
-                <header class="rs-card-header">
-                    <span class="rs-section-icon" aria-hidden="true">
-                        {% if app.app_label == 'catalog' %}
-                        <svg width="25" height="25" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="1.7">
-                            <path d="m12 3 9 5-9 5-9-5 9-5Z M3 8v9l9 5 9-5V8 M12 13v9" />
-                        </svg>
-                        {% else %}
-                        <svg width="25" height="25" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="1.7">
-                            <circle cx="9" cy="8" r="3" />
-                            <path d="M3 21v-3a6 6 0 0 1 12 0v3 M16 5a3 3 0 0 1 0 6 M21 21v-3a6 6 0 0 0-4-5.65" />
-                        </svg>
-                        {% endif %}
-                    </span>
-                    <div>
-                        <h2 id="title-{{ app.app_label }}">{{ app.name }}</h2>
-                        <p>
-                            {% if app.app_label == 'catalog' %}Products, stock and catalog settings.
-                            {% elif app.app_label == 'accounts' %}People, profiles and access permissions.
-                            {% else %}Manage your {{ app.name|lower }} records.{% endif %}
-                        </p>
-                    </div>
-                </header>
-                <ul class="rs-model-list">
-                    {% for model in app.models %}
-                    <li class="rs-model-row">
-                        <div class="rs-model-info">
-                            {% if model.admin_url %}
-                            <a class="rs-model-name" href="{{ model.admin_url }}">{{ model.name }}</a>
-                            {% else %}
-                            <span class="rs-model-name">{{ model.name }}</span>
-                            {% endif %}
-                            <p>
-                                {% include "admin/model_description.html" %}
-                            </p>
-                        </div>
-                        <div class="rs-model-actions">
-                            {% if model.add_url %}
-                            <a class="rs-button rs-button--small" href="{{ model.add_url }}" aria-label="Add {{ model.name }}">
-                                <span aria-hidden="true">+</span> Add
-                            </a>
-                            {% endif %}
-                            {% if model.admin_url %}
-                            <a class="rs-manage-link" href="{{ model.admin_url }}" aria-label="{% if model.view_only %}View{% else %}Manage{% endif %} {{ model.name }}">
-                                {% if model.view_only %}View{% else %}Manage{% endif %}
-                                <span aria-hidden="true">&rarr;</span>
-                            </a>
-                            {% endif %}
-                        </div>
-                    </li>
-                    {% endfor %}
-                </ul>
-            </section>
-            {% endif %}
             {% empty %}
             <section class="rs-card rs-empty-state">
                 <h2>No management sections available</h2>
@@ -97,10 +46,9 @@
         </div>
 
         {% if not app_label %}
-        <section class="rs-card rs-recent-activity" aria-labelledby="activity-title">
-            <header class="rs-card-header">
-                <h2 id="activity-title">Recent activity</h2>
-            </header>
+        <section class="rs-activity-group" aria-labelledby="activity-title">
+            <h2 id="activity-title">Recent activity</h2>
+            <div class="rs-card rs-recent-activity">
             {% get_admin_log 6 as admin_log for_user user %}
             {% if admin_log %}
             <ul class="rs-activity-list">
@@ -126,6 +74,7 @@
                 <p>No recent changes yet.</p>
             </div>
             {% endif %}
+            </div>
         </section>
         {% endif %}
     </div>

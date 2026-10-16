@@ -312,3 +312,41 @@ Investigated carts missing from admin: read-only checks confirmed migrations 000
 ### Readable admin cart and product IDs
 Replaced raw cart JSON with a full-width product table: linked product names, product IDs, SKU, quantities, current BDT unit prices, line totals and stock/publication warnings. Added product/unit/subtotal summary cards and readable empty/deleted-product states. Cart details stay view-only, and prices explicitly reflect the current catalog rather than an order. Product admin now shows read-only IDs on detail pages and an ID column in the list, with ID search. Updated shared view-only page wording. Django system check and a small template-render check passed; no test files, database edits or migrations were needed. Manual visual review remains with the owner.
 
+
+### 2026-10-16 - Admin details before editing
+All registered admin records now open a shared details page when selected from a list. Grouped saved fields, record IDs, related inline records and uploaded Cloudinary/image previews are displayed without edit widgets. A pencil Edit button opens the existing form only for staff allowed to edit; carts remain view-only. Added image enlargement links, History, Back to list and View details navigation from edit forms. Save and continue editing remains in edit mode. Popup widgets and normal POST validation keep Django handling. Future models automatically inherit this through the shared admin registration setup. Passwords and credential fields are omitted from previews. Django system check and small read-only rendering checks passed for saved Cart, Category, SubCategory, Product, Deal, DealProduct, User and Profile records; Product edit form and HTTPS image URL also checked. No database records changed, no migrations or test files added. Manual visual review remains pending.
+
+
+### 2026-10-16 - Edit directly inside admin details
+Replaced navigation from the pencil button with an in-place editor on the same details page. Images/header stay visible while the saved fields switch to native Django widgets, including image uploads, autocomplete and related inline forms. Added Save changes and Cancel at the top/bottom, saving feedback, duplicate-submit protection and unsaved-change confirmation. Save uses the existing permission checks, CSRF protection, validation and inline saving; success returns to the current record details and invalid submissions keep edit mode open with field errors. View-only carts have no embedded editor. Avoided repeated record lookups when preparing the editor. Essential Django/JavaScript syntax and small read-only rendering/invalid-submission checks covered Product, Category, Profile, User and Cart. No data changes, migrations or test files added. Manual browser interaction review remains pending.
+
+
+### 2026-10-16 - Modern admin section pages
+Catalog, Accounts and future section pages now reuse the dashboard's responsive management cards instead of long full-width rows. Simplified the section heading, removed the duplicated visible group heading, added Back to dashboard, and retained permission-aware View/Manage/Add links. Added distinct cart/category/subcategory icons and a clearer cart description. Recent activity stays on the main dashboard only. Small read-only render checks passed for Catalog and Accounts; no database changes, migrations or test files added.
+
+
+### 2026-10-16 - Consistent admin card heights
+Set shared management cards to a consistent minimum height, equal grid-row sizing and equal action-area height so Catalog and Accounts cards align, including view-only Carts. Content can still grow without clipping on narrow screens. Updated the stylesheet version for browser refresh. No tests or database changes needed for this CSS-only adjustment.
+
+
+Admin card spacing refined: reduced minimum height from 244px to 208px, padding to 18px, and description/action spacing while retaining equal grid rows and bottom-aligned actions.
+
+
+Admin cards made slightly more compact: 188px minimum height, 16px padding and tighter description/action spacing. Equal grid rows and bottom-aligned controls retained.
+
+
+Admin cards reduced in both dimensions: four columns on wide screens, scaling to three/two/one on smaller screens; 176px minimum height, 14px padding and smaller icons. Cards retain equal rows and readable controls.
+
+
+Aligned dashboard Catalog and Recent activity headings by placing both above their cards with shared heading spacing and line height. Both card sections now begin at the same level on desktop; the activity section remains stacked below on mobile.
+
+
+Catalog and other section pages now use the same card-area width as the admin home, preserving its right-side column space on desktop so shared card widths and heights match at the same screen size. Mobile continues to use the full available width.
+
+
+### 2026-10-16 - Missing and broken admin images
+Added a shared branded image placeholder using the record's initials, a soft blue background and clear loading/empty/unavailable messages. Empty image fields now show this preview rather than a plain field message. Image load failures keep the placeholder and disable enlargement; valid images reveal normally with enlargement links. Applied to main and related-record previews, including view-only detail pages. Uses browser load/error events without network probes or database changes. Essential Django/JavaScript and in-memory template checks passed; no test files added. Manual visual review remains pending.
+
+
+Catalog and other section pages now use the full available width rather than reserving an empty activity column. Shared card grids automatically fit as many roughly 280px-wide cards as the available area allows, preserving compact height and responsive wrapping. Home retains its actual Recent activity sidebar. This replaces the previous empty-column approach to matching card size.
+

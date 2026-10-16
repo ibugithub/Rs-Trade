@@ -114,6 +114,11 @@
 .rs-form-heading h1 {
   margin: 0 0 8px;
 }
+.rs-form-navigation {
+  display: flex;
+  flex-wrap: wrap;
+  gap: 12px;
+}
 .rs-form-heading p {
   margin: 0;
   color: var(--body-quiet-color);
