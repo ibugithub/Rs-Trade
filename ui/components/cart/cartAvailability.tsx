@@ -6,14 +6,20 @@ import { CatalogStatus } from '@/components/ready-stock/catalogStatus';
 import { invalidCartItems } from '@/content/pricing';
 import type { CartItem } from '@/configs/redux/cart/cartSlice';
 
-export function CartAvailability({ items }: { items: CartItem[] }) {
+export function CartAvailability({
+  items,
+  retryItems = items,
+}: {
+  items: CartItem[];
+  retryItems?: CartItem[];
+}) {
   const { products, cartStatus } = useAppSelector((state) => state.catalog);
   const dispatch = useAppDispatch();
   if (cartStatus === 'failed') {
     return (
       <CatalogStatus
         message="We could not check current prices and availability."
-        onRetry={() => dispatch(fetchCartProducts(items.map((item) => item.productId)))}
+        onRetry={() => dispatch(fetchCartProducts(retryItems.map((item) => item.productId)))}
       />
     );
   }

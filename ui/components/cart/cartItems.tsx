@@ -13,12 +13,28 @@ export function CartItems({
   items,
   onChange,
   onRemove,
+  selectedIds,
+  onToggle,
 }: {
   items: CartItem[];
   onChange: (item: CartItem) => void;
   onRemove?: (id: string) => void;
+  selectedIds?: string[];
+  onToggle?: (id: string, selected: boolean) => void;
 }) {
   const { products, cartStatus } = useAppSelector((state) => state.catalog);
+  const selectionControl = (item: CartItem, name: string) =>
+    onToggle && (
+      <label className="inline-flex min-h-11 min-w-11 shrink-0 cursor-pointer items-center justify-center self-start">
+        <input
+          type="checkbox"
+          checked={selectedIds?.includes(item.productId) ?? false}
+          onChange={(event) => onToggle(item.productId, event.target.checked)}
+          aria-label={`Select ${name} for checkout`}
+          className="h-5 w-5 rounded border-gray-300 accent-blue-600 focus-visible:outline focus-visible:outline-2 focus-visible:outline-offset-4 focus-visible:outline-blue-600"
+        />
+      </label>
+    );
   return (
     <ul className="divide-y divide-gray-200 rounded-2xl border border-gray-200 bg-white">
       {items.map((item) => {
@@ -29,6 +45,7 @@ export function CartItems({
               key={item.productId}
               className="p-5 text-sm text-gray-600"
             >
+              {selectionControl(item, `product #${item.productId}`)}
               <p>
                 {cartStatus === 'succeeded'
                   ? `Product #${item.productId} is unavailable.`
@@ -50,6 +67,7 @@ export function CartItems({
             key={item.productId}
             className="flex flex-col gap-5 p-5 sm:flex-row sm:p-6"
           >
+            {selectionControl(item, product.name)}
             <Link
               href={productPath(product.id)}
               className="relative h-24 w-24 shrink-0 rounded-lg bg-gray-50"

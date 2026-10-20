@@ -350,3 +350,7 @@ Added a shared branded image placeholder using the record's initials, a soft blu
 
 Catalog and other section pages now use the full available width rather than reserving an empty activity column. Shared card grids automatically fit as many roughly 280px-wide cards as the available area allows, preserving compact height and responsive wrapping. Home retains its actual Recent activity sidebar. This replaces the previous empty-column approach to matching card size.
 
+
+### 2026-10-18 - Select products in the cart
+Added individual product checkboxes and Select All with partial-selection indication. Summary totals, stock checks and checkout request contents use only selected products; unchecked products remain in the cart and at least one selection is required to continue. Existing/newly added products start selected. Selection preferences are stored per account in this browser (guest selections transfer on sign-in) and survive cart refreshes; account cart products continue syncing normally. Buy Now remains independent. Selecting products does not change backend cart data or the navbar's distinct-product count. No database migration or test files needed. Changed-source lint passed; frontend rebuild includes TypeScript validation and refreshes Django's exported UI. Manual UI review remains pending.
+

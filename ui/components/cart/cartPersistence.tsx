@@ -16,6 +16,7 @@ import {
   cartStorageStatus,
   sanitizeCartItems,
   sanitizeOperations,
+  sanitizeUnselectedIds,
 } from '@/configs/redux/cart/cartSlice';
 import { getAccountCart, sendCartOperation } from '@/lib/accountCartApi';
 import { catalogReviewPath } from '@/lib/orderNavigation';
@@ -92,6 +93,7 @@ export function CartPersistence() {
           session,
           items: guest.items,
           buyNow: guest.buyNow,
+          unselectedIds: guest.unselectedIds,
           storageAvailable: available,
         }),
       );
@@ -106,13 +108,21 @@ export function CartPersistence() {
       before.owner === null && before.hydrated ? before.items : guest.items,
     );
     const guestBuyNow = before.owner === null && before.hydrated ? before.buyNow : guest.buyNow;
+    const unselectedIds = sanitizeUnselectedIds([
+      ...sanitizeUnselectedIds(
+        before.owner === owner && before.hydrated ? before.unselectedIds : cached.unselectedIds,
+      ),
+      ...sanitizeUnselectedIds(
+        before.owner === null && before.hydrated ? before.unselectedIds : guest.unselectedIds,
+      ).filter((id) => guestItems.some((item) => item.productId === id)),
+    ]);
     const buyNow =
       guestBuyNow ?? (before.owner === owner && before.hydrated ? before.buyNow : cached.buyNow);
     if (guestItems.length && !pending.some((operation) => operation.id === storedGuestId)) {
       pending.push({ id: storedGuestId, kind: 'merge', items: guestItems });
     }
     // Persist the transfer before removing guest data. Pending operations survive reloads.
-    const available = writeStorage(accountCartKey(owner), { pending, buyNow });
+    const available = writeStorage(accountCartKey(owner), { pending, buyNow, unselectedIds });
     if (available) writeStorage(CART_STORAGE_KEY, { items: [], buyNow: null, mergeId: nanoid() });
 
     let running = false;
@@ -124,7 +134,11 @@ export function CartPersistence() {
           const current = store.getState().cart;
           const operation = current.pending[0];
           if (!current.hydrated || current.syncStatus === 'error' || !operation) break;
-          writeStorage(accountCartKey(owner), { pending: current.pending, buyNow: current.buyNow });
+          writeStorage(accountCartKey(owner), {
+            pending: current.pending,
+            buyNow: current.buyNow,
+            unselectedIds: current.unselectedIds,
+          });
           try {
             const response = await sendCartOperation(operation, controller.signal);
             if (!matches()) break;
@@ -157,6 +171,7 @@ export function CartPersistence() {
             items: response.items,
             buyNow,
             pending,
+            unselectedIds,
             storageAvailable: available,
           }),
         );
@@ -181,14 +196,29 @@ export function CartPersistence() {
   useEffect(() => {
     if (!cart.hydrated || scope === 'pending' || cart.owner !== owner) return;
     const available = owner
-      ? writeStorage(accountCartKey(owner), { pending: cart.pending, buyNow: cart.buyNow })
+      ? writeStorage(accountCartKey(owner), {
+          pending: cart.pending,
+          buyNow: cart.buyNow,
+          unselectedIds: cart.unselectedIds,
+        })
       : writeStorage(CART_STORAGE_KEY, {
           items: cart.items,
           buyNow: cart.buyNow,
+          unselectedIds: cart.unselectedIds,
           mergeId: guestId.current,
         });
     dispatch(cartStorageStatus(available));
-  }, [dispatch, scope, owner, cart.owner, cart.hydrated, cart.items, cart.pending, cart.buyNow]);
+  }, [
+    dispatch,
+    scope,
+    owner,
+    cart.owner,
+    cart.hydrated,
+    cart.items,
+    cart.pending,
+    cart.buyNow,
+    cart.unselectedIds,
+  ]);
 
   useEffect(() => {
     if (

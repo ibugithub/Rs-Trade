@@ -11,6 +11,7 @@ export type CartOperation = {
 };
 export type CartState = {
   items: CartItem[];
+  unselectedIds: string[];
   buyNow: CartItem | null;
   hydrated: boolean;
   owner: string | null;
@@ -27,6 +28,20 @@ export const accountCartKey = (owner: string) =>
 export const MAX_QUANTITY = 9999;
 export const MAX_CART_ITEMS = 100;
 const validProductId = (id: string) => /^[1-9]\d{0,18}$/.test(id);
+
+export function sanitizeUnselectedIds(value: unknown): string[] {
+  return Array.isArray(value)
+    ? [
+        ...new Set(
+          value.filter((id): id is string => typeof id === 'string' && validProductId(id)),
+        ),
+      ].slice(0, MAX_CART_ITEMS)
+    : [];
+}
+
+export function selectedCartItems(cart: Pick<CartState, 'items' | 'unselectedIds'>) {
+  return cart.items.filter((item) => !cart.unselectedIds.includes(item.productId));
+}
 
 export function validQuantity(value: unknown): number | null {
   return typeof value === 'number' && Number.isInteger(value) && value > 0
@@ -102,6 +117,7 @@ export function replayCartOperations(items: CartItem[], operations: CartOperatio
 
 const initialState: CartState = {
   items: [],
+  unselectedIds: [],
   buyNow: null,
   hydrated: false,
   owner: null,
@@ -114,6 +130,7 @@ const initialState: CartState = {
 };
 function beginSession(state: CartState, owner: string | null) {
   state.items = [];
+  state.unselectedIds = [];
   state.buyNow = null;
   state.pending = [];
   state.hydrated = false;
@@ -125,6 +142,12 @@ function beginSession(state: CartState, owner: string | null) {
 function mutate(state: CartState, operation: CartOperation) {
   if (!state.hydrated) return;
   state.items = replayCartOperations(state.items, [operation]);
+  state.unselectedIds = state.unselectedIds.filter((id) =>
+    state.items.some((item) => item.productId === id),
+  );
+  if (operation.kind === 'add') {
+    state.unselectedIds = state.unselectedIds.filter((id) => id !== operation.productId);
+  }
   if (state.owner) {
     state.pending.push(operation);
     state.syncStatus = 'saving';
@@ -135,6 +158,19 @@ const slice = createSlice({
   name: 'cart',
   initialState,
   reducers: {
+    setItemSelected(state, action: PayloadAction<{ productId: string; selected: boolean }>) {
+      if (
+        !state.hydrated ||
+        !state.items.some((item) => item.productId === action.payload.productId)
+      )
+        return;
+      state.unselectedIds = state.unselectedIds.filter((id) => id !== action.payload.productId);
+      if (!action.payload.selected) state.unselectedIds.push(action.payload.productId);
+    },
+    setAllSelected(state, action: PayloadAction<boolean>) {
+      if (!state.hydrated) return;
+      state.unselectedIds = action.payload ? [] : state.items.map((item) => item.productId);
+    },
     beginCartSession(state, action: PayloadAction<string | null>) {
       beginSession(state, action.payload);
     },
@@ -146,6 +182,7 @@ const slice = createSlice({
         items: unknown;
         buyNow?: unknown;
         pending?: unknown;
+        unselectedIds?: unknown;
         storageAvailable: boolean;
       }>,
     ) {
@@ -153,6 +190,9 @@ const slice = createSlice({
       if (state.owner !== payload.owner || state.session !== payload.session) return;
       state.pending = sanitizeOperations(payload.pending);
       state.items = replayCartOperations(sanitizeCartItems(payload.items), state.pending);
+      state.unselectedIds = sanitizeUnselectedIds(payload.unselectedIds).filter((id) =>
+        state.items.some((item) => item.productId === id),
+      );
       state.buyNow = sanitizeCartItems([payload.buyNow])[0] ?? null;
       state.hydrated = true;
       state.storageAvailable = payload.storageAvailable;
@@ -258,6 +298,8 @@ const slice = createSlice({
   },
 });
 export const {
+  setItemSelected,
+  setAllSelected,
   beginCartSession,
   loadCartSession,
   acknowledgeCartOperation,

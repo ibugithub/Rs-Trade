@@ -5,7 +5,13 @@ import Link from 'next/link';
 import { useRouter } from 'next/navigation';
 import { Clipboard, LoaderCircle, ShoppingBag } from 'lucide-react';
 import { useAppDispatch, useAppSelector } from '@/configs/redux/hooks';
-import { setQuantity, setBuyNow, removeItem, clearBuyNow } from '@/configs/redux/cart/cartSlice';
+import {
+  setQuantity,
+  setBuyNow,
+  removeItem,
+  clearBuyNow,
+  selectedCartItems,
+} from '@/configs/redux/cart/cartSlice';
 import { formatOrderRequest, type OrderContact } from '@/content/orderRequest';
 import { CartItems } from '@/components/cart/cartItems';
 import { CartAvailability } from '@/components/cart/cartAvailability';
@@ -29,6 +35,7 @@ export function OrderReview({ mode }: { mode: 'cart' | 'buyNow' }) {
     hydrated,
     owner: cartOwner,
     syncStatus,
+    unselectedIds,
   } = useAppSelector((state) => state.cart);
   const { products, cartStatus } = useAppSelector((state) => state.catalog);
   const dispatch = useAppDispatch();
@@ -43,7 +50,12 @@ export function OrderReview({ mode }: { mode: 'cart' | 'buyNow' }) {
   } = useAddressBook();
   const orderPath = mode === 'buyNow' ? '/buy_now' : '/checkout';
   const addressPage = profileAddressPath(orderPath);
-  const items = mode === 'buyNow' ? (buyNow ? [buyNow] : []) : cartItems;
+  const items =
+    mode === 'buyNow'
+      ? buyNow
+        ? [buyNow]
+        : []
+      : selectedCartItems({ items: cartItems, unselectedIds });
   const [selectedId, setSelectedId] = useState<string | null>(null);
   const [notes, setNotes] = useState('');
   const selectedAddress = selectDeliveryAddress(addresses, selectedId, defaultId);
@@ -59,7 +71,7 @@ export function OrderReview({ mode }: { mode: 'cart' | 'buyNow' }) {
   useEffect(() => {
     setReviewed(false);
     setCopyStatus('');
-  }, [cartItems, buyNow, selectedAddress, notes, owner, products]);
+  }, [cartItems, buyNow, unselectedIds, selectedAddress, notes, owner, products]);
   useEffect(() => {
     setSelectedId(null);
     setNotes('');
@@ -131,12 +143,16 @@ export function OrderReview({ mode }: { mode: 'cart' | 'buyNow' }) {
             aria-hidden="true"
           />
           <h2 className="mt-4 text-xl font-semibold">No product selected</h2>
-          <p className="mt-3 text-sm text-gray-500">Choose a Ready Stock product to continue.</p>
+          <p className="mt-3 text-sm text-gray-500">
+            {mode === 'cart' && cartItems.length
+              ? 'Select the products you want to include from your cart.'
+              : 'Choose a Ready Stock product to continue.'}
+          </p>
           <Link
-            href="/ready-stock"
+            href={mode === 'cart' && cartItems.length ? '/cart' : '/ready-stock'}
             className="mt-6 inline-flex min-h-11 items-center rounded-lg bg-yellow-300 px-5 text-sm font-semibold"
           >
-            Browse Ready Stock
+            {mode === 'cart' && cartItems.length ? 'Select Cart Products' : 'Browse Ready Stock'}
           </Link>
         </div>
       ) : (cartOwner && syncStatus !== 'saved') ||
