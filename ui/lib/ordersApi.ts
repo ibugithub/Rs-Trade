@@ -21,8 +21,31 @@ export type OrderReceipt = {
   subtotal: string;
   phone: string;
   createdAt: string;
-  items: { productId: string; name: string; quantity: number; unitPrice: string }[];
+  updatedAt: string;
+  customerName: string;
+  deliveryAddress: string;
+  notes: string;
+  customerUpdate: string;
+  items: {
+    productId: string;
+    name: string;
+    quantity: number;
+    unitPrice: string;
+    image: string;
+    sku: string;
+  }[];
 };
+
+export type OrderPage = { results: OrderReceipt[]; page: number; pages: number; count: number };
+
+export async function listOrders(page: number, signal: AbortSignal): Promise<OrderPage> {
+  const response = await AxiosReqInstance().get('/api/orders/', {
+    params: { page },
+    signal,
+    timeout: 30000,
+  });
+  return response.data;
+}
 
 export async function submitOrder(
   payload: OrderPayload,

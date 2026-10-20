@@ -65,6 +65,12 @@ export function OrderConfirmation({ order }: { order: OrderReceipt }) {
         Keep your order number for follow-up. Delivery charges are excluded from this subtotal.
       </p>
       <Link
+        href="/accounts/orders/"
+        className="mr-3 mt-6 inline-flex min-h-11 items-center rounded-lg border border-gray-200 px-5 text-sm font-semibold text-blue-700 hover:bg-blue-50"
+      >
+        View my orders
+      </Link>
+      <Link
         href="/ready-stock"
         className="mt-6 inline-flex min-h-11 items-center rounded-lg bg-yellow-300 px-5 text-sm font-semibold hover:bg-yellow-500"
       >

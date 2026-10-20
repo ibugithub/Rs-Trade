@@ -11,7 +11,7 @@ from .services import ALLOWED_TRANSITIONS, confirmation_stock, save_order_status
 class OrderAdminForm(forms.ModelForm):
     class Meta:
         model = Order
-        fields = ('status', 'admin_notes')
+        fields = ('status', 'customer_update', 'admin_notes')
 
     def __init__(self, *args, **kwargs):
         super().__init__(*args, **kwargs)
@@ -51,7 +51,7 @@ class OrderAdmin(admin.ModelAdmin):
         ('Customer contact', {'fields': ('customer_name', 'call_customer', 'customer_email', 'user')}),
         ('Delivery', {'fields': ('delivery_address', 'customer_notes')}),
         ('Ordered products', {'fields': ('order_items',), 'classes': ('rs-cart-products',)}),
-        ('Follow-up', {'fields': ('status', 'admin_notes', 'confirmed_at', 'created_at', 'updated_at')}),
+        ('Follow-up', {'fields': ('status', 'customer_update', 'admin_notes', 'confirmed_at', 'created_at', 'updated_at')}),
     )
 
     @admin.display(description='Order number', ordering='id')

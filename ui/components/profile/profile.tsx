@@ -222,10 +222,10 @@ export const Profile = () => {
                   </div>
                 </div>
                 <Link
-                  href="/ready-stock/"
+                  href="/accounts/orders/"
                   className="inline-flex min-h-11 items-center gap-2 rounded-lg bg-yellow-300 px-4 text-sm font-semibold hover:bg-yellow-500 focus-visible:outline-blue-600"
                 >
-                  Browse products{' '}
+                  My orders{' '}
                   <ArrowRight
                     size={16}
                     aria-hidden="true"

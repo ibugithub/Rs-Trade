@@ -1,4 +1,5 @@
 from django.db import OperationalError, ProgrammingError
+from django.core.paginator import Paginator
 from django.shortcuts import get_object_or_404
 from rest_framework.permissions import IsAuthenticated
 from rest_framework.response import Response
@@ -19,11 +20,18 @@ def order_data(order):
         'subtotal': str(order.subtotal),
         'phone': order.phone,
         'createdAt': order.created_at.isoformat(),
+        'updatedAt': order.updated_at.isoformat(),
+        'customerName': order.customer_name,
+        'deliveryAddress': order.delivery_address,
+        'notes': order.customer_notes,
+        'customerUpdate': order.customer_update,
         'items': [{
             'productId': line.product_reference,
             'name': line.product_name,
             'quantity': line.quantity,
             'unitPrice': str(line.unit_price),
+            'image': line.image_url,
+            'sku': line.sku,
         } for line in order.items.all()],
     }
 
@@ -44,6 +52,17 @@ class PrivateOrderView(APIView):
 
 
 class CreateOrderView(PrivateOrderView):
+    def get(self, request):
+        orders = Order.objects.filter(user=request.user).prefetch_related('items')
+        paginator = Paginator(orders, 10)
+        page = paginator.get_page(request.query_params.get('page', 1))
+        return Response({
+            'results': [order_data(order) for order in page],
+            'page': page.number,
+            'pages': paginator.num_pages,
+            'count': paginator.count,
+        })
+
     def post(self, request):
         serializer = CreateOrderSerializer(data=request.data)
         serializer.is_valid(raise_exception=True)

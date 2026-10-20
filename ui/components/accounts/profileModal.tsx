@@ -3,7 +3,7 @@
 import Link from 'next/link';
 import { usePathname, useRouter } from 'next/navigation';
 import { useEffect, useId, useRef, useState } from 'react';
-import { ChevronDown, LogOut, UserRound } from 'lucide-react';
+import { ChevronDown, LogOut, Package, UserRound } from 'lucide-react';
 import { useAppSelector, useAppDispatch } from '@/configs/redux/hooks';
 import { signOut } from '@/configs/redux/auth/authSlice';
 
@@ -129,6 +129,17 @@ export const ProfileModal = ({ mobile = false, onNavigate }: ProfileModalProps) 
               aria-hidden="true"
             />
             My Profile
+          </Link>
+          <Link
+            href="/accounts/orders/"
+            onClick={close}
+            className="flex min-h-11 items-center gap-2 rounded-lg px-3 py-2 text-sm text-gray-700 hover:bg-blue-50 hover:text-blue-700 focus-visible:outline-blue-600"
+          >
+            <Package
+              size={16}
+              aria-hidden="true"
+            />
+            My Orders
           </Link>
           <button
             type="button"

@@ -29,6 +29,7 @@ class Order(models.Model):
     subtotal = models.DecimalField(max_digits=16, decimal_places=2)
     status = models.CharField(max_length=20, choices=Status.choices, default=Status.PENDING, db_index=True)
     admin_notes = models.TextField(blank=True, help_text='Private notes about calls, confirmation and fulfilment.')
+    customer_update = models.TextField(blank=True, max_length=2000, help_text='Visible to the customer on My orders. Do not include private staff notes.')
     stock_reserved = models.BooleanField(default=False, editable=False)
     confirmed_at = models.DateTimeField(null=True, blank=True, editable=False)
     created_at = models.DateTimeField(auto_now_add=True)
