@@ -370,3 +370,7 @@ Orders now show the status selector and admin notes directly in the Follow-up se
 
 Removed the automatically generated Record information card that only repeated the ID. The record ID remains in the details header; IDs explicitly included in a feature's own fieldsets remain available. Shared admin details now start with the meaningful feature overview.
 
+
+### 2026-10-20 - Profile phone validation
+Added shared frontend phone validation to the address form and Redux save action, with phone-field blur/save errors and international-format normalization. Bangladesh mobile numbers accept local 01-format or +880; other international numbers require + and a country code. Rejects letters, misplaced plus signs, malformed parentheses/separators and invalid digit lengths. Existing saved addresses are not deleted: invalid numbers are flagged for editing. Checkout blocks invalid selected phone numbers and backend order delivery validation enforces matching formatting rules. Essential representative format/normalization checks passed on frontend/backend, along with changed-source lint and Django checks. No database migration or test files added. Frontend export rebuilt for the Django-served UI; manual profile/checkout interaction review remains pending.
+

@@ -15,6 +15,7 @@ import {
 } from '@/configs/redux/cart/cartSlice';
 import { useOrderSubmission } from './useOrderSubmission';
 import { OrderConfirmation } from './orderConfirmation';
+import { validatePhoneNumber } from '@/lib/phoneNumber';
 import { CartItems } from '@/components/cart/cartItems';
 import { CartAvailability } from '@/components/cart/cartAvailability';
 import { ShopShell } from './shopShell';
@@ -61,6 +62,7 @@ export function OrderReview({ mode }: { mode: 'cart' | 'buyNow' }) {
   const [selectedId, setSelectedId] = useState<string | null>(null);
   const [notes, setNotes] = useState('');
   const selectedAddress = selectDeliveryAddress(addresses, selectedId, defaultId);
+  const phone = validatePhoneNumber(selectedAddress?.phone ?? '', selectedAddress?.country);
   const onOrderSaved = useCallback(() => {
     if (mode === 'buyNow') dispatch(clearBuyNow());
     dispatch(retryCartSync());
@@ -95,12 +97,12 @@ export function OrderReview({ mode }: { mode: 'cart' | 'buyNow' }) {
     order.recovering,
   ]);
   const placeOrder = () => {
-    if (!selectedAddress || !owner || !items.length || order.submitting) return;
+    if (!selectedAddress || !owner || !items.length || order.submitting || phone.error) return;
     void order.place({
       requestId: crypto.randomUUID(),
       source: mode,
       items: items.map((item) => ({ ...item, unitPrice: products[item.productId].price })),
-      address: selectedAddress,
+      address: { ...selectedAddress, phone: phone.number },
       notes,
     });
   };
@@ -296,6 +298,15 @@ export function OrderReview({ mode }: { mode: 'cart' | 'buyNow' }) {
               >
                 Add or Edit Addresses
               </Link>
+              {phone.error && (
+                <p
+                  role="alert"
+                  className="text-sm leading-6 text-red-700"
+                >
+                  {phone.error} Edit the selected address to correct its phone number before
+                  ordering.
+                </p>
+              )}
               {!storageAvailable && (
                 <p
                   role="alert"
@@ -326,7 +337,8 @@ export function OrderReview({ mode }: { mode: 'cart' | 'buyNow' }) {
               </p>
               <button
                 type="submit"
-                className="min-h-12 w-full rounded-lg bg-yellow-300 px-5 text-sm font-semibold hover:bg-yellow-500"
+                disabled={Boolean(phone.error)}
+                className="min-h-12 w-full rounded-lg bg-yellow-300 px-5 text-sm font-semibold hover:bg-yellow-500 disabled:cursor-not-allowed disabled:opacity-50"
               >
                 Place Order
               </button>

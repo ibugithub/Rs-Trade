@@ -1,4 +1,5 @@
 import { createSlice, type PayloadAction } from '@reduxjs/toolkit';
+import { validatePhoneNumber } from '@/lib/phoneNumber';
 
 export type DeliveryAddress = {
   id: string;
@@ -107,6 +108,9 @@ const addressSlice = createSlice({
       if (!state.hydrated || state.owner !== action.payload.owner) return;
       const address = normalizeAddress(action.payload.address);
       if (!address) return;
+      const phone = validatePhoneNumber(address.phone, address.country);
+      if (phone.error) return;
+      address.phone = phone.number;
       const index = state.items.findIndex((item) => item.id === address.id);
       if (index === -1) state.items.push(address);
       else state.items[index] = address;

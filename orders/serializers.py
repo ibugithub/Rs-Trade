@@ -1,4 +1,5 @@
 from decimal import Decimal
+import re
 
 from rest_framework import serializers
 
@@ -17,13 +18,31 @@ class DeliverySerializer(serializers.Serializer):
     postalCode = serializers.CharField(max_length=30, allow_blank=True, required=False, default='')
     country = serializers.CharField(max_length=120)
 
-    def validate_phone(self, value):
-        if any(character not in '+0123456789 ()-' for character in value):
-            raise serializers.ValidationError('Enter a valid phone number, including country code.')
-        digits = ''.join(character for character in value if character.isdigit())
-        if not 7 <= len(digits) <= 15:
-            raise serializers.ValidationError('Enter a phone number with 7 to 15 digits.')
-        return value
+    def validate(self, data):
+        phone = data['phone'].strip()
+        without_groups = re.sub(r'\([0-9]+\)', '', phone)
+        valid_format = (
+            re.fullmatch(r'\+?[0-9 ()-]+', phone)
+            and not re.search(r'[()]', without_groups)
+            and not re.search(r'[ -]{2}|^-|-$|^\+[ -]', phone)
+        )
+        if not valid_format:
+            raise serializers.ValidationError({'phone': 'Use digits with optional spaces, hyphens or parentheses. Put + only at the start.'})
+        number = re.sub(r'[ ()-]', '', phone)
+        bangladesh = data['country'].strip().lower() in ('bangladesh', 'bd', 'বাংলাদেশ')
+        if not number.startswith('+'):
+            if bangladesh and re.fullmatch(r'01[3-9][0-9]{8}', number):
+                number = '+880' + number[1:]
+            elif bangladesh and re.fullmatch(r'8801[3-9][0-9]{8}', number):
+                number = '+' + number
+            else:
+                raise serializers.ValidationError({'phone': 'Enter a valid Bangladesh mobile number or include + and the country code.'})
+        if not re.fullmatch(r'\+[1-9][0-9]{6,14}', number):
+            raise serializers.ValidationError({'phone': 'Use a country code and 7 to 15 digits in total.'})
+        if number.startswith('+880') and not re.fullmatch(r'\+8801[3-9][0-9]{8}', number):
+            raise serializers.ValidationError({'phone': 'Enter a Bangladesh mobile number such as 01712345678 or +8801712345678.'})
+        data['phone'] = number
+        return data
 
 
 class CreateOrderSerializer(serializers.Serializer):

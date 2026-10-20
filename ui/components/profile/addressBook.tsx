@@ -13,6 +13,7 @@ import {
 } from '@/configs/redux/addresses/addressSlice';
 import { orderReturnPath, type OrderPath } from '@/lib/orderNavigation';
 import { useAddressBook } from './useAddressBook';
+import { validatePhoneNumber } from '@/lib/phoneNumber';
 
 const emptyAddress: DeliveryAddress = {
   id: '',
@@ -43,9 +44,9 @@ const fields = [
   {
     key: 'phone',
     label: 'Phone / WhatsApp number',
-    placeholder: '+880...',
+    placeholder: '01712345678 or +8801712345678',
     autocomplete: 'shipping tel',
-    limit: 40,
+    limit: 30,
   },
   {
     key: 'street',
@@ -85,6 +86,7 @@ export function AddressBook() {
   const [makeDefault, setMakeDefault] = useState(false);
   const [removingId, setRemovingId] = useState<string | null>(null);
   const [message, setMessage] = useState('');
+  const [phoneError, setPhoneError] = useState('');
   const [returnTo, setReturnTo] = useState<OrderPath | null>(null);
   const labelInput = useRef<HTMLInputElement>(null);
 
@@ -103,6 +105,7 @@ export function AddressBook() {
     setMakeDefault(address ? address.id === defaultId : items.length === 0);
     setRemovingId(null);
     setMessage('');
+    setPhoneError('');
     setEditing(true);
   }
 
@@ -113,7 +116,13 @@ export function AddressBook() {
       setMessage('Please fill in all required address details.');
       return;
     }
-    const address = { ...draft, id: draft.id || window.crypto.randomUUID() };
+    const phone = validatePhoneNumber(draft.phone, draft.country);
+    if (phone.error) {
+      setPhoneError(phone.error);
+      document.getElementById('address-phone')?.focus();
+      return;
+    }
+    const address = { ...draft, phone: phone.number, id: draft.id || window.crypto.randomUUID() };
     dispatch(saveAddress({ owner, address, makeDefault }));
     setEditing(false);
     setDraft(emptyAddress);
@@ -229,6 +238,11 @@ export function AddressBook() {
                 {formatDeliveryAddress(address)}
               </p>
               <p className="mt-1 text-sm text-gray-600">{address.phone}</p>
+              {validatePhoneNumber(address.phone, address.country).error && (
+                <p className="mt-2 text-xs text-red-700">
+                  This phone number needs correction. Edit this address before placing an order.
+                </p>
+              )}
               <div className="mt-3 flex flex-wrap gap-3">
                 <button
                   type="button"
@@ -321,16 +335,45 @@ export function AddressBook() {
                 ref={field.key === 'label' ? labelInput : undefined}
                 id={`address-${field.key}`}
                 type={field.key === 'phone' ? 'tel' : 'text'}
+                inputMode={field.key === 'phone' ? 'tel' : undefined}
+                aria-invalid={field.key === 'phone' && Boolean(phoneError)}
+                aria-describedby={
+                  field.key === 'phone' ? 'address-phone-help address-phone-error' : undefined
+                }
                 required={field.key !== 'postalCode'}
                 maxLength={field.limit}
                 autoComplete={field.autocomplete}
                 placeholder={field.placeholder}
                 value={draft[field.key]}
-                onChange={(event) =>
-                  setDraft((value) => ({ ...value, [field.key]: event.target.value }))
+                onChange={(event) => {
+                  setDraft((value) => ({ ...value, [field.key]: event.target.value }));
+                  if (field.key === 'phone' || field.key === 'country') setPhoneError('');
+                }}
+                onBlur={
+                  field.key === 'phone'
+                    ? () => setPhoneError(validatePhoneNumber(draft.phone, draft.country).error)
+                    : undefined
                 }
                 className="min-h-12 w-full rounded-lg border border-gray-300 bg-white px-4 py-3 text-sm focus:border-blue-600 focus:outline-none focus:ring-2 focus:ring-blue-100"
               />
+              {field.key === 'phone' && (
+                <>
+                  <p
+                    id="address-phone-help"
+                    className="mt-2 text-xs leading-6 text-gray-500"
+                  >
+                    Bangladesh mobile: 01712345678. For other countries, include + and the country
+                    code.
+                  </p>
+                  <p
+                    id="address-phone-error"
+                    role="alert"
+                    className="mt-1 text-sm text-red-700"
+                  >
+                    {phoneError}
+                  </p>
+                </>
+              )}
             </div>
           ))}
           <label className="flex min-h-11 items-center gap-3 text-sm">
