@@ -381,3 +381,17 @@ Removed Joined and Last updated from the customer profile page at the owner's re
 ### 2026-10-20 - First and last name in profile
 Added separate first_name and last_name account fields, a profile Edit name form and an authenticated own-account PATCH endpoint. First name is required; last name is optional. Compound names are preserved in their selected fields and the combined name remains compatible with existing signup, account labels and order history. Saving updates the profile heading and navbar immediately. New account creation initializes the fields from the supplied full name; migration 0012_user_first_last_name backfills existing names by taking the first word as first name and the remaining words as last name, preserving the original combined name until edited. Users can correct that split in the profile. Admin displays both fields and keeps them synchronized when an existing full name is edited. Removed plaintext password debug logging in the touched authentication/profile handlers. Essential migration/validation/account-isolation checks passed in an isolated in-memory database, along with Django checks and changed-source lint. No test files or live database changes. The users migration remains PENDING and must be applied before using the updated account/profile code. Frontend export rebuilt; manual name-save/navbar review remains pending.
 
+
+
+### 2026-10-20 - Separate password settings page
+Moved the inline profile password form to /accounts/change-password/. The profile now shows a compact Change password link with an arrow under Account security. The dedicated page includes current/new/confirm password fields, mismatch errors, saving/success feedback and links back to the profile, using the existing authenticated password endpoint. Guests return to sign-in; social accounts receive provider-specific guidance. Requests abort on navigation, sign-out or account changes. Changed-source lint and frontend build/type checks passed; Django-served frontend export rebuilt. No backend, database, migration or test-file changes. Manual interaction review remains pending.
+
+
+### 2026-10-20 - Profile layout refresh
+Replaced the narrow stacked profile with a wider responsive account layout: a compact identity header with photo/initials, personal details with an aligned Edit name action, and a separate security panel linking to the dedicated password page. Name fields use subtle inset backgrounds; email is grouped with personal details and sign-in method with security. Saved addresses remain below, using the available page width. Mobile panels stack. Existing profile fetching, account guards, name editing and address behavior remain connected. Changed-source lint and production build/type checks passed; frontend export rebuilt for Django. No backend, migration or test-file changes; manual UI review remains pending.
+
+Profile personal details and security panels now stretch to equal height in their shared desktop grid, with natural heights when stacked on mobile. Frontend export rebuilt; no database changes.
+
+Profile name labels and their values now appear inline within each name field, replacing the label-above-value layout. Frontend export rebuilt.
+
+Fixed password settings misclassifying legacy Email accounts as social logins: normalize sign-in method casing/whitespace and reject unknown methods as a load error. Corrected UserManager's default to lowercase email for future accounts. Existing records need no migration. Changed-source lint and frontend build/type checks passed; frontend export rebuilt.

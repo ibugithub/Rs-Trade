@@ -5,7 +5,7 @@ import axios from 'axios';
 import Image from 'next/image';
 import Link from 'next/link';
 import { useRouter } from 'next/navigation';
-import { ArrowLeft, KeyRound, LoaderCircle, UserRound } from 'lucide-react';
+import { ArrowLeft, ArrowRight, KeyRound, LoaderCircle, ShieldCheck } from 'lucide-react';
 import { AxiosReqInstance } from '../accounts/utils/axiosInstance';
 import { useAppDispatch, useAppSelector } from '@/configs/redux/hooks';
 import { updateAccountName } from '@/configs/redux/auth/authSlice';
@@ -25,12 +25,6 @@ export const Profile = () => {
   const [fetching, setFetching] = useState(true);
   const [fetchError, setFetchError] = useState<string | null>(null);
   const [imageFailed, setImageFailed] = useState(false);
-  const [showPasswordForm, setShowPasswordForm] = useState(false);
-  const [oldPassword, setOldPassword] = useState('');
-  const [newPassword, setNewPassword] = useState('');
-  const [confirmPassword, setConfirmPassword] = useState('');
-  const [saving, setSaving] = useState(false);
-  const [result, setResult] = useState<{ type: 'success' | 'error'; message: string } | null>(null);
 
   const fetchProfile = useCallback(async (signal?: AbortSignal) => {
     const version = ++requestVersion.current;
@@ -83,11 +77,6 @@ export const Profile = () => {
     if (!isAuthenticated) {
       requestVersion.current++;
       setProfile(null);
-      setShowPasswordForm(false);
-      setOldPassword('');
-      setNewPassword('');
-      setConfirmPassword('');
-      setResult(null);
       if (status === 'unauthenticated') {
         const returnTo = orderReturnPath(window.location.search);
         if (returnTo) rememberAddressSignIn(returnTo);
@@ -99,39 +88,6 @@ export const Profile = () => {
     void fetchProfile(controller.signal);
     return () => controller.abort();
   }, [fetchProfile, isAuthenticated, status, router, owner]);
-
-  const handleChangePassword = async (event: React.FormEvent) => {
-    event.preventDefault();
-    if (saving) return;
-    setResult(null);
-    if (newPassword !== confirmPassword) {
-      setResult({ type: 'error', message: 'The new passwords do not match.' });
-      return;
-    }
-    setSaving(true);
-    try {
-      await AxiosReqInstance().post(
-        `${process.env.NEXT_PUBLIC_BACKEND_BASE_URL}/api/profile/changePassword/`,
-        { old_password: oldPassword, new_password: newPassword },
-        { timeout: 30000 },
-      );
-      setResult({ type: 'success', message: 'Your password has been changed.' });
-      setOldPassword('');
-      setNewPassword('');
-      setConfirmPassword('');
-      setShowPasswordForm(false);
-    } catch (error) {
-      const message = axios.isAxiosError<{ message?: string }>(error)
-        ? error.response?.data?.message
-        : undefined;
-      setResult({
-        type: 'error',
-        message: message || 'Could not change your password. Please try again.',
-      });
-    } finally {
-      setSaving(false);
-    }
-  };
 
   const name =
     profile?.user?.name?.trim() ||
@@ -148,8 +104,6 @@ export const Profile = () => {
         email: 'Email and password',
       } as Record<string, string>
     )[method ?? ''] || 'Not available';
-  const inputClass =
-    'min-h-12 w-full rounded-lg border border-gray-300 bg-white px-4 py-3 text-sm focus:border-blue-600 focus:outline-none focus:ring-2 focus:ring-blue-100 disabled:bg-gray-50';
 
   if (!isAuthenticated)
     return (
@@ -169,8 +123,8 @@ export const Profile = () => {
     );
 
   return (
-    <main className="min-h-[calc(100svh_-_64px)] bg-gray-50 px-4 py-8 text-gray-900 sm:py-12 lg:min-h-[calc(100svh_-_90px)]">
-      <div className="mx-auto max-w-2xl">
+    <main className="min-h-[calc(100svh_-_64px)] bg-gray-50 px-4 py-6 text-gray-900 sm:px-6 sm:py-10 lg:min-h-[calc(100svh_-_90px)]">
+      <div className="mx-auto max-w-6xl">
         <Link
           href="/"
           className="mb-5 inline-flex min-h-11 items-center gap-2 text-sm text-gray-500 hover:text-blue-700 focus-visible:outline-blue-600"
@@ -178,263 +132,185 @@ export const Profile = () => {
           <ArrowLeft
             size={16}
             aria-hidden="true"
-          />
+          />{' '}
           Back to website
         </Link>
-        <section
-          aria-labelledby="profile-title"
-          className="overflow-hidden rounded-2xl border border-gray-200 bg-white shadow-sm"
-        >
-          <div className="h-1 bg-blue-600" />
-          <div className="p-6 sm:p-8">
-            <h1
-              id="profile-title"
-              className="text-2xl font-bold tracking-tight"
-            >
-              My Profile
-            </h1>
-            <p className="mt-2 text-sm text-gray-500">Your RS Trade account details.</p>
-            {fetching ? (
-              <div
-                role="status"
-                className="flex items-center justify-center gap-3 py-16 text-sm text-gray-600"
-              >
-                <LoaderCircle
-                  size={22}
-                  className="text-blue-600 motion-safe:animate-spin"
-                  aria-hidden="true"
-                />
-                Loading your profile...
-              </div>
-            ) : fetchError ? (
-              <div className="mt-7 rounded-xl border border-gray-200 bg-gray-50 p-5">
-                <p
-                  role="alert"
-                  className="text-sm leading-6 text-gray-700"
-                >
-                  {fetchError}
-                </p>
-                <div className="mt-4 flex flex-wrap gap-3">
-                  <button
-                    type="button"
-                    onClick={() => void fetchProfile()}
-                    className="min-h-11 rounded-lg bg-yellow-300 px-4 text-sm font-semibold hover:bg-yellow-500"
-                  >
-                    Try Again
-                  </button>
-                  <Link
-                    href="/accounts/signin"
-                    className="inline-flex min-h-11 items-center rounded-lg px-4 text-sm font-semibold text-blue-700 hover:bg-blue-50"
-                  >
-                    Sign In
-                  </Link>
-                </div>
-              </div>
-            ) : (
-              profile &&
-              profile.user.email.trim().toLowerCase() === owner && (
-                <>
-                  <div className="mt-7 flex items-center gap-4 border-b border-gray-200 pb-6">
-                    {profile.profile_picture && !imageFailed ? (
-                      <Image
-                        src={profile.profile_picture}
-                        alt="Your profile photo"
-                        width={64}
-                        height={64}
-                        unoptimized
-                        onError={() => setImageFailed(true)}
-                        className="h-16 w-16 shrink-0 rounded-full object-cover"
-                      />
-                    ) : (
-                      <span className="flex h-16 w-16 shrink-0 items-center justify-center rounded-full bg-blue-50 text-blue-700">
-                        <UserRound
-                          size={28}
-                          aria-hidden="true"
-                        />
-                      </span>
-                    )}
-                    <div className="min-w-0">
-                      <h2 className="break-words text-xl font-semibold">{name}</h2>
-                      <p className="mt-1 break-all text-sm text-gray-500">{profile.user.email}</p>
-                    </div>
-                  </div>
-                  <ProfileName
-                    key={profile.user.email}
-                    profile={profile}
-                    onSaved={(updated) => {
-                      if (updated.user.email.trim().toLowerCase() !== owner) return;
-                      setProfile(updated);
-                      dispatch(
-                        updateAccountName({
-                          email: updated.user.email,
-                          name: updated.user.name ?? '',
-                          first_name: updated.user.first_name ?? '',
-                          last_name: updated.user.last_name ?? '',
-                        }),
-                      );
-                    }}
-                  />
-                  <dl className="mt-6 grid gap-6 sm:grid-cols-2">
-                    {[
-                      ['Email address', profile.user.email],
-                      ['Sign-in method', provider],
-                    ].map(([label, value]) => (
-                      <div key={label}>
-                        <dt className="text-xs font-medium text-gray-500">{label}</dt>
-                        <dd className="mt-2 break-words text-sm font-medium text-gray-900">
-                          {value}
-                        </dd>
-                      </div>
-                    ))}
-                  </dl>
-                  <div className="mt-8 border-t border-gray-200 pt-6">
-                    <h2 className="flex items-center gap-2 text-base font-semibold">
-                      <KeyRound
-                        size={18}
-                        className="text-blue-700"
-                        aria-hidden="true"
-                      />
-                      Account security
-                    </h2>
-                    {method === 'email' ? (
-                      <>
-                        <p className="mt-2 text-sm leading-6 text-gray-500">
-                          Update the password you use to sign in.
-                        </p>
-                        {!showPasswordForm && (
-                          <button
-                            type="button"
-                            onClick={() => {
-                              setShowPasswordForm(true);
-                              setResult(null);
-                            }}
-                            className="mt-4 min-h-11 rounded-lg border border-gray-300 px-4 text-sm font-semibold text-blue-700 hover:bg-blue-50 focus-visible:outline-blue-600"
-                          >
-                            Change Password
-                          </button>
-                        )}
-                        {showPasswordForm && (
-                          <form
-                            onSubmit={handleChangePassword}
-                            aria-busy={saving}
-                            className="mt-5 space-y-4"
-                          >
-                            {[
-                              {
-                                id: 'current-password',
-                                label: 'Current password',
-                                value: oldPassword,
-                                set: setOldPassword,
-                                autoComplete: 'current-password',
-                              },
-                              {
-                                id: 'new-password',
-                                label: 'New password',
-                                value: newPassword,
-                                set: setNewPassword,
-                                autoComplete: 'new-password',
-                              },
-                              {
-                                id: 'confirm-password',
-                                label: 'Confirm new password',
-                                value: confirmPassword,
-                                set: setConfirmPassword,
-                                autoComplete: 'new-password',
-                              },
-                            ].map((field) => (
-                              <div key={field.id}>
-                                <label
-                                  htmlFor={field.id}
-                                  className="mb-2 block text-sm font-medium"
-                                >
-                                  {field.label}
-                                </label>
-                                <input
-                                  id={field.id}
-                                  type="password"
-                                  value={field.value}
-                                  onChange={(event) => field.set(event.target.value)}
-                                  autoComplete={field.autoComplete}
-                                  required
-                                  minLength={field.id === 'current-password' ? undefined : 8}
-                                  disabled={saving}
-                                  aria-describedby={
-                                    field.id === 'new-password'
-                                      ? 'profile-password-hint'
-                                      : undefined
-                                  }
-                                  className={inputClass}
-                                />
-                                {field.id === 'new-password' && (
-                                  <p
-                                    id="profile-password-hint"
-                                    className="mt-2 text-xs text-gray-500"
-                                  >
-                                    Use at least 8 characters.
-                                  </p>
-                                )}
-                              </div>
-                            ))}
-                            <div className="flex flex-wrap gap-3">
-                              <button
-                                type="submit"
-                                disabled={saving}
-                                className="inline-flex min-h-11 items-center gap-2 rounded-lg bg-yellow-300 px-5 text-sm font-semibold hover:bg-yellow-500 disabled:cursor-wait disabled:opacity-60"
-                              >
-                                {saving ? (
-                                  <>
-                                    <LoaderCircle
-                                      size={16}
-                                      className="motion-safe:animate-spin"
-                                      aria-hidden="true"
-                                    />
-                                    Saving...
-                                  </>
-                                ) : (
-                                  'Save Password'
-                                )}
-                              </button>
-                              <button
-                                type="button"
-                                disabled={saving}
-                                onClick={() => {
-                                  setShowPasswordForm(false);
-                                  setOldPassword('');
-                                  setNewPassword('');
-                                  setConfirmPassword('');
-                                  setResult(null);
-                                }}
-                                className="min-h-11 rounded-lg px-4 text-sm text-gray-600 hover:bg-gray-50 disabled:opacity-60"
-                              >
-                                Cancel
-                              </button>
-                            </div>
-                          </form>
-                        )}
-                      </>
-                    ) : (
-                      <p className="mt-2 text-sm leading-6 text-gray-500">
-                        {method && method !== 'email'
-                          ? `You sign in with ${provider}. Manage your password through that account.`
-                          : 'Password settings are unavailable until your sign-in method is confirmed.'}
-                      </p>
-                    )}
-                    <div aria-live="polite">
-                      {result && (
-                        <p
-                          role={result.type === 'error' ? 'alert' : undefined}
-                          className={`mt-4 rounded-lg border px-4 py-3 text-sm leading-6 ${result.type === 'success' ? 'border-green-200 bg-green-50 text-green-800' : 'border-red-200 bg-red-50 text-red-700'}`}
-                        >
-                          {result.message}
-                        </p>
-                      )}
-                    </div>
-                  </div>
-                </>
-              )
-            )}
+        <header className="mb-7">
+          <h1 className="text-3xl font-bold tracking-tight">My account</h1>
+          <p className="mt-2 text-sm leading-6 text-gray-500">
+            Your personal details, security and delivery addresses.
+          </p>
+        </header>
+        {fetching ? (
+          <div
+            role="status"
+            className="flex items-center justify-center gap-3 rounded-2xl border border-gray-200 bg-white py-20 text-sm text-gray-600"
+          >
+            <LoaderCircle
+              size={22}
+              className="text-blue-600 motion-safe:animate-spin"
+              aria-hidden="true"
+            />
+            Loading your profile...
           </div>
-        </section>
+        ) : fetchError ? (
+          <div className="rounded-2xl border border-gray-200 bg-white p-6">
+            <p
+              role="alert"
+              className="text-sm leading-6 text-gray-700"
+            >
+              {fetchError}
+            </p>
+            <div className="mt-4 flex flex-wrap gap-3">
+              <button
+                type="button"
+                onClick={() => void fetchProfile()}
+                className="min-h-11 rounded-lg bg-yellow-300 px-4 text-sm font-semibold hover:bg-yellow-500"
+              >
+                Try again
+              </button>
+              <Link
+                href="/accounts/signin"
+                className="inline-flex min-h-11 items-center rounded-lg px-4 text-sm font-semibold text-blue-700 hover:bg-blue-50"
+              >
+                Sign in
+              </Link>
+            </div>
+          </div>
+        ) : profile && profile.user.email.trim().toLowerCase() === owner ? (
+          <>
+            <section
+              aria-label="Account summary"
+              className="relative overflow-hidden rounded-2xl border border-blue-100 bg-white p-6 sm:p-8"
+            >
+              <div
+                aria-hidden="true"
+                className="pointer-events-none absolute -right-12 -top-24 h-64 w-64 rounded-full border-[36px] border-blue-50"
+              />
+              <div className="relative flex flex-wrap items-center justify-between gap-5">
+                <div className="flex min-w-0 items-center gap-4 sm:gap-5">
+                  {profile.profile_picture && !imageFailed ? (
+                    <Image
+                      src={profile.profile_picture}
+                      alt="Your profile photo"
+                      width={72}
+                      height={72}
+                      unoptimized
+                      onError={() => setImageFailed(true)}
+                      className="h-[72px] w-[72px] shrink-0 rounded-2xl object-cover"
+                    />
+                  ) : (
+                    <span
+                      aria-hidden="true"
+                      className="flex h-[72px] w-[72px] shrink-0 items-center justify-center rounded-2xl bg-blue-600 text-2xl font-semibold text-white"
+                    >
+                      {name
+                        .split(/\s+/)
+                        .filter(Boolean)
+                        .slice(0, 2)
+                        .map((part) => part[0])
+                        .join('')
+                        .toUpperCase()}
+                    </span>
+                  )}
+                  <div className="min-w-0">
+                    <p className="mb-1 text-xs font-semibold uppercase tracking-widest text-blue-700">
+                      Personal account
+                    </p>
+                    <h2 className="break-words text-xl font-semibold sm:text-2xl">{name}</h2>
+                    <p className="mt-1 break-all text-sm text-gray-500">{profile.user.email}</p>
+                  </div>
+                </div>
+                <Link
+                  href="/ready-stock/"
+                  className="inline-flex min-h-11 items-center gap-2 rounded-lg bg-yellow-300 px-4 text-sm font-semibold hover:bg-yellow-500 focus-visible:outline-blue-600"
+                >
+                  Browse products{' '}
+                  <ArrowRight
+                    size={16}
+                    aria-hidden="true"
+                  />
+                </Link>
+              </div>
+            </section>
+            <div className="mt-6 grid items-stretch gap-6 lg:grid-cols-[minmax(0,1fr)_340px]">
+              <section
+                aria-labelledby="personal-details-title"
+                className="min-w-0 rounded-2xl border border-gray-200 bg-white p-6 sm:p-7"
+              >
+                <ProfileName
+                  key={profile.user.email}
+                  profile={profile}
+                  onSaved={(updated) => {
+                    if (updated.user.email.trim().toLowerCase() !== owner) return;
+                    setProfile(updated);
+                    dispatch(
+                      updateAccountName({
+                        email: updated.user.email,
+                        name: updated.user.name ?? '',
+                        first_name: updated.user.first_name ?? '',
+                        last_name: updated.user.last_name ?? '',
+                      }),
+                    );
+                  }}
+                />
+                <div className="mt-6 border-t border-gray-100 pt-5">
+                  <p className="text-xs font-medium text-gray-500">Email address</p>
+                  <p className="mt-2 break-all text-sm font-medium">{profile.user.email}</p>
+                </div>
+              </section>
+              <section
+                aria-labelledby="security-title"
+                className="rounded-2xl border border-gray-200 bg-white p-6 sm:p-7"
+              >
+                <div className="mb-4 inline-flex h-10 w-10 items-center justify-center rounded-xl bg-blue-50 text-blue-700">
+                  <ShieldCheck
+                    size={22}
+                    aria-hidden="true"
+                  />
+                </div>
+                <h2
+                  id="security-title"
+                  className="text-lg font-semibold"
+                >
+                  Account security
+                </h2>
+                <p className="mt-2 text-sm leading-6 text-gray-500">
+                  Manage how you sign in to your account.
+                </p>
+                <div className="mt-5 border-t border-gray-100 pt-5">
+                  <p className="text-xs font-medium text-gray-500">Sign-in method</p>
+                  <p className="mt-2 text-sm font-medium">{provider}</p>
+                </div>
+                {method === 'email' ? (
+                  <Link
+                    href="/accounts/change-password/"
+                    className="mt-5 flex min-h-12 items-center justify-between gap-3 rounded-lg border border-gray-200 px-4 py-3 text-sm font-semibold text-blue-700 transition hover:border-blue-200 hover:bg-blue-50 focus-visible:outline-blue-600"
+                  >
+                    <span className="flex items-center gap-2">
+                      <KeyRound
+                        size={16}
+                        aria-hidden="true"
+                      />{' '}
+                      Change password
+                    </span>
+                    <ArrowRight
+                      size={16}
+                      className="shrink-0"
+                      aria-hidden="true"
+                    />
+                  </Link>
+                ) : (
+                  <p className="mt-4 text-sm leading-6 text-gray-500">
+                    {method
+                      ? `You sign in with ${provider}. Manage your password through that account.`
+                      : 'Password settings are unavailable until your sign-in method is confirmed.'}
+                  </p>
+                )}
+              </section>
+            </div>
+          </>
+        ) : null}
         <AddressBook key={owner ?? 'signed-out'} />
       </div>
     </main>

@@ -2,7 +2,7 @@ from django.contrib.auth.models import AbstractBaseUser, BaseUserManager
 from django.db import models
 
 class UserManager(BaseUserManager):
-  def create_user(self, email, name, password=None, signUp_by='Email', **extra_fields):
+  def create_user(self, email, name, password=None, signUp_by='email', **extra_fields):
     if not email:
         raise ValueError('Users must have an email address')
     parts = name.strip().split(maxsplit=1)

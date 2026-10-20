@@ -89,29 +89,24 @@ export function ProfileName({
 
   return (
     <section
-      className="mt-6"
+      className="min-w-0"
       aria-label="Your name"
     >
-      {!editing ? (
-        <>
-          <dl className="grid gap-6 sm:grid-cols-2">
-            <div>
-              <dt className="text-xs font-medium text-gray-500">First name</dt>
-              <dd className="mt-2 break-words text-sm font-medium">
-                {profile.user.first_name || 'Not set'}
-              </dd>
-            </div>
-            <div>
-              <dt className="text-xs font-medium text-gray-500">Last name</dt>
-              <dd className="mt-2 break-words text-sm font-medium">
-                {profile.user.last_name || 'Not set'}
-              </dd>
-            </div>
-          </dl>
+      <div className="mb-6 flex flex-wrap items-center justify-between gap-3">
+        <div>
+          <h2
+            id="personal-details-title"
+            className="text-lg font-semibold"
+          >
+            Personal details
+          </h2>
+          <p className="mt-1 text-sm text-gray-500">The name associated with your account.</p>
+        </div>
+        {!editing && (
           <button
             type="button"
             onClick={start}
-            className="mt-3 inline-flex min-h-11 items-center gap-2 text-sm font-semibold text-blue-700 hover:underline"
+            className="inline-flex min-h-11 shrink-0 items-center gap-2 rounded-lg border border-gray-200 px-3 text-sm font-semibold text-blue-700 hover:bg-blue-50 focus-visible:outline-blue-600"
           >
             <Pencil
               size={15}
@@ -119,6 +114,24 @@ export function ProfileName({
             />
             Edit name
           </button>
+        )}
+      </div>
+      {!editing ? (
+        <>
+          <dl className="grid gap-5 sm:grid-cols-2">
+            <div className="flex min-w-0 items-baseline gap-3 rounded-xl bg-gray-50 p-4">
+              <dt className="shrink-0 text-xs font-medium text-gray-500">First name</dt>
+              <dd className="min-w-0 break-words text-sm font-medium">
+                {profile.user.first_name || 'Not set'}
+              </dd>
+            </div>
+            <div className="flex min-w-0 items-baseline gap-3 rounded-xl bg-gray-50 p-4">
+              <dt className="shrink-0 text-xs font-medium text-gray-500">Last name</dt>
+              <dd className="min-w-0 break-words text-sm font-medium">
+                {profile.user.last_name || 'Not set'}
+              </dd>
+            </div>
+          </dl>
         </>
       ) : (
         <form
