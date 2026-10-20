@@ -1,4 +1,4 @@
-import { createSlice, createAsyncThunk } from '@reduxjs/toolkit';
+import { createSlice, createAsyncThunk, type PayloadAction } from '@reduxjs/toolkit';
 import { AxiosReqInstance } from '@/components/accounts/utils/axiosInstance';
 import { ProfileInterface } from '@/types/interface';
 
@@ -44,6 +44,14 @@ const authSlice = createSlice({
   name: 'auth',
   initialState,
   reducers: {
+    updateAccountName(
+      state,
+      action: PayloadAction<{ email: string; name: string; first_name: string; last_name: string }>,
+    ) {
+      const current = state.loogedInUser.user ?? state.loogedInUser;
+      if (!state.isAuthenticated || current.email !== action.payload.email) return;
+      Object.assign(current, action.payload);
+    },
     signOut(state) {
       state.isAuthenticated = false;
       state.loogedInUser = {} as ProfileInterface;
@@ -83,5 +91,5 @@ const authSlice = createSlice({
   },
 });
 
-export const { setUnVerified, signOut } = authSlice.actions;
+export const { setUnVerified, signOut, updateAccountName } = authSlice.actions;
 export const authReducer = authSlice.reducer;

@@ -7,23 +7,18 @@ import Link from 'next/link';
 import { useRouter } from 'next/navigation';
 import { ArrowLeft, KeyRound, LoaderCircle, UserRound } from 'lucide-react';
 import { AxiosReqInstance } from '../accounts/utils/axiosInstance';
-import { useAppSelector } from '@/configs/redux/hooks';
+import { useAppDispatch, useAppSelector } from '@/configs/redux/hooks';
+import { updateAccountName } from '@/configs/redux/auth/authSlice';
 import type { ProfileInterface } from '@/types/interface';
 import { AddressBook } from './addressBook';
+import { ProfileName } from './profileName';
 import { useAddressBook } from './useAddressBook';
 import { orderReturnPath, rememberAddressSignIn } from '@/lib/orderNavigation';
-
-export function formatProfileDate(value?: string | null) {
-  if (!value) return 'Not available';
-  const date = new Date(value);
-  return Number.isNaN(date.getTime())
-    ? 'Not available'
-    : date.toLocaleDateString('en-GB', { day: 'numeric', month: 'short', year: 'numeric' });
-}
 
 export const Profile = () => {
   const { loogedInUser: account, isAuthenticated, status } = useAppSelector((state) => state.auth);
   const router = useRouter();
+  const dispatch = useAppDispatch();
   const { owner } = useAddressBook();
   const requestVersion = useRef(0);
   const [profile, setProfile] = useState<ProfileInterface | null>(null);
@@ -103,7 +98,7 @@ export const Profile = () => {
     const controller = new AbortController();
     void fetchProfile(controller.signal);
     return () => controller.abort();
-  }, [fetchProfile, isAuthenticated, status, router]);
+  }, [fetchProfile, isAuthenticated, status, router, owner]);
 
   const handleChangePassword = async (event: React.FormEvent) => {
     event.preventDefault();
@@ -139,8 +134,8 @@ export const Profile = () => {
   };
 
   const name =
-    profile?.Display_name?.trim() ||
     profile?.user?.name?.trim() ||
+    profile?.Display_name?.trim() ||
     account?.name?.trim() ||
     'My Account';
   const method = profile?.user?.signUp_by?.toLowerCase();
@@ -236,7 +231,8 @@ export const Profile = () => {
                 </div>
               </div>
             ) : (
-              profile && (
+              profile &&
+              profile.user.email.trim().toLowerCase() === owner && (
                 <>
                   <div className="mt-7 flex items-center gap-4 border-b border-gray-200 pb-6">
                     {profile.profile_picture && !imageFailed ? (
@@ -262,12 +258,26 @@ export const Profile = () => {
                       <p className="mt-1 break-all text-sm text-gray-500">{profile.user.email}</p>
                     </div>
                   </div>
+                  <ProfileName
+                    key={profile.user.email}
+                    profile={profile}
+                    onSaved={(updated) => {
+                      if (updated.user.email.trim().toLowerCase() !== owner) return;
+                      setProfile(updated);
+                      dispatch(
+                        updateAccountName({
+                          email: updated.user.email,
+                          name: updated.user.name ?? '',
+                          first_name: updated.user.first_name ?? '',
+                          last_name: updated.user.last_name ?? '',
+                        }),
+                      );
+                    }}
+                  />
                   <dl className="mt-6 grid gap-6 sm:grid-cols-2">
                     {[
                       ['Email address', profile.user.email],
                       ['Sign-in method', provider],
-                      ['Joined', formatProfileDate(profile.created_at)],
-                      ['Last updated', formatProfileDate(profile.updated_at)],
                     ].map(([label, value]) => (
                       <div key={label}>
                         <dt className="text-xs font-medium text-gray-500">{label}</dt>

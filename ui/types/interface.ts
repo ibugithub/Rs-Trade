@@ -1,9 +1,13 @@
 interface User {
   name?: string;
+  first_name?: string;
+  last_name?: string;
   email: string;
   signUp_by: 'email' | 'google' | 'facebook' | 'microsoft';
 }
 export interface ProfileInterface {
+  first_name?: string;
+  last_name?: string;
   email?: string;
   user: User;
   name: string;
