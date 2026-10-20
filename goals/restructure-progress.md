@@ -405,3 +405,5 @@ Diagnosed My orders 503 with a read-only migration-status check: orders/0002_ord
 Removed app-specific Catalog/Orders/Accounts groupings from the admin dashboard. All permitted model cards now render in one continuous responsive grid under All features, with the existing card sizes/actions and right-hand Recent activity retained. Future registered models use the same loop automatically; individual app pages retain their scoped cards. Admin templates compiled successfully. Template-only change; no frontend rebuild, database changes or test files needed.
 
 Removed the All features heading from the unified admin card grid at the owner's request.
+
+Fixed low-contrast text in the chosen-permissions blue header on admin add/edit forms. Scoped white text to the selector heading, label and help text; bumped shared form stylesheet version on add/edit and details templates. No database changes or frontend build needed.

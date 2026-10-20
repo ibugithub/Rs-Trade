@@ -360,6 +360,12 @@
   float: none;
   margin: 0 0 16px;
 }
+/* Keep the chosen-permissions heading readable over Django's blue header. */
+.rs-admin-form .selector .selector-chosen-title,
+.rs-admin-form .selector .selector-chosen-title label,
+.rs-admin-form .selector .selector-chosen-title .helptext {
+  color: #fff;
+}
 @media (max-width: 767px) {
   .rs-admin-form #content {
     padding: 24px 20px;
