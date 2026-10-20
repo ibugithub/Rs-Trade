@@ -229,3 +229,77 @@
   color: var(--body-quiet-color);
   font-size: 12px;
 }
+.rs-order-product {
+  display: flex;
+  align-items: center;
+  gap: 12px;
+}
+.rs-order-thumbnail {
+  width: 72px;
+  flex-shrink: 0;
+}
+.rs-order-thumbnail .rs-image-stage {
+  height: 64px;
+}
+.rs-order-thumbnail .rs-image-placeholder,
+.rs-order-thumbnail .rs-image-link {
+  padding: 6px;
+}
+.rs-order-thumbnail .rs-image-initials {
+  width: 36px;
+  height: 36px;
+  margin: 0;
+  border-radius: 9px;
+  font-size: 16px;
+}
+.rs-order-thumbnail figcaption,
+.rs-order-thumbnail .rs-image-placeholder strong,
+.rs-order-thumbnail .rs-image-placeholder > span:last-child {
+  display: none;
+}
+.rs-followup-form {
+  margin-bottom: 24px;
+  padding-bottom: 24px;
+  border-bottom: 1px solid var(--hairline-color);
+}
+.rs-followup-control label {
+  display: block;
+  margin-bottom: 8px;
+  font-size: 13px;
+  font-weight: 600;
+}
+.rs-followup-control select,
+.rs-followup-control textarea {
+  box-sizing: border-box;
+  width: 100%;
+  min-height: 44px;
+  padding: 12px;
+  border: 1px solid var(--border-color);
+  border-radius: 8px;
+  background: #f8fafc;
+  color: var(--body-fg);
+  font: inherit;
+  font-size: 14px;
+}
+.rs-followup-control textarea {
+  height: 120px;
+  resize: vertical;
+}
+.rs-followup-control .rs-detail-caption {
+  margin-top: 8px;
+  font-size: 12px;
+}
+.rs-followup-actions {
+  display: flex;
+  align-items: center;
+  flex-wrap: wrap;
+  gap: 16px;
+  margin-top: 20px;
+}
+.rs-followup-actions button {
+  font-family: inherit;
+  cursor: pointer;
+}
+#order-followup {
+  scroll-margin-top: 24px;
+}

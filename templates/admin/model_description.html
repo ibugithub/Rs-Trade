@@ -1,4 +1,5 @@
 {% if model.object_name == 'Product' %}Manage product details, prices and available stock.
+{% elif model.object_name == 'Order' %}Review orders, call customers and update fulfilment status.
 {% elif model.object_name == 'Cart' %}View customer selections, quantities and current product totals.
 {% elif model.object_name == 'Category' %}Organize the main groups in your catalog.
 {% elif model.object_name == 'SubCategory' %}Organize products within each category.

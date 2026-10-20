@@ -1,9 +1,9 @@
 'use client';
 
-import { useEffect, useState } from 'react';
+import { useCallback, useEffect, useState } from 'react';
 import Link from 'next/link';
 import { useRouter } from 'next/navigation';
-import { Clipboard, LoaderCircle, ShoppingBag } from 'lucide-react';
+import { LoaderCircle, ShoppingBag } from 'lucide-react';
 import { useAppDispatch, useAppSelector } from '@/configs/redux/hooks';
 import {
   setQuantity,
@@ -11,8 +11,10 @@ import {
   removeItem,
   clearBuyNow,
   selectedCartItems,
+  retryCartSync,
 } from '@/configs/redux/cart/cartSlice';
-import { formatOrderRequest, type OrderContact } from '@/content/orderRequest';
+import { useOrderSubmission } from './useOrderSubmission';
+import { OrderConfirmation } from './orderConfirmation';
 import { CartItems } from '@/components/cart/cartItems';
 import { CartAvailability } from '@/components/cart/cartAvailability';
 import { ShopShell } from './shopShell';
@@ -59,25 +61,17 @@ export function OrderReview({ mode }: { mode: 'cart' | 'buyNow' }) {
   const [selectedId, setSelectedId] = useState<string | null>(null);
   const [notes, setNotes] = useState('');
   const selectedAddress = selectDeliveryAddress(addresses, selectedId, defaultId);
-  const contact: OrderContact = {
-    name: selectedAddress?.recipient ?? '',
-    phone: selectedAddress?.phone ?? '',
-    address: selectedAddress ? formatDeliveryAddress(selectedAddress) : '',
-    notes,
-  };
-  const [reviewed, setReviewed] = useState(false);
-  const [copyStatus, setCopyStatus] = useState('');
-  const [copying, setCopying] = useState(false);
-  useEffect(() => {
-    setReviewed(false);
-    setCopyStatus('');
-  }, [cartItems, buyNow, unselectedIds, selectedAddress, notes, owner, products]);
+  const onOrderSaved = useCallback(() => {
+    if (mode === 'buyNow') dispatch(clearBuyNow());
+    dispatch(retryCartSync());
+  }, [dispatch, mode]);
+  const order = useOrderSubmission(owner, mode, onOrderSaved);
   useEffect(() => {
     setSelectedId(null);
     setNotes('');
   }, [owner]);
   useEffect(() => {
-    if (!hydrated || !items.length) return;
+    if (!hydrated || !items.length || order.receipt || order.pending || order.recovering) return;
     const destination = orderAddressDestination(
       authStatus,
       addressesReady,
@@ -96,27 +90,76 @@ export function OrderReview({ mode }: { mode: 'cart' | 'buyNow' }) {
     orderPath,
     addressPage,
     router,
+    order.receipt,
+    order.pending,
+    order.recovering,
   ]);
-  const summary = formatOrderRequest(items, contact, products);
-  const copy = async () => {
-    setCopying(true);
-    try {
-      await navigator.clipboard.writeText(summary);
-      setCopyStatus('Request copied. Share it with our team to confirm your order.');
-    } catch {
-      setCopyStatus('Could not copy automatically. Select and copy the request below.');
-    } finally {
-      setCopying(false);
-    }
+  const placeOrder = () => {
+    if (!selectedAddress || !owner || !items.length || order.submitting) return;
+    void order.place({
+      requestId: crypto.randomUUID(),
+      source: mode,
+      items: items.map((item) => ({ ...item, unitPrice: products[item.productId].price })),
+      address: selectedAddress,
+      notes,
+    });
   };
   const inputClass =
     'min-h-12 w-full rounded-lg border border-gray-300 bg-white px-4 py-3 text-sm focus:border-blue-600 focus:outline-none focus:ring-2 focus:ring-blue-100';
   return (
     <ShopShell
-      title={mode === 'buyNow' ? 'Buy Now' : 'Review Your Request'}
-      description="Confirm your selection and prepare a request for our team. Final price and delivery are agreed before an order is confirmed."
+      title={mode === 'buyNow' ? 'Buy Now' : 'Review Your Order'}
+      description="Review your products and delivery details, then place your order. Our team will call you to confirm delivery and the next steps."
     >
-      {!hydrated && syncStatus === 'error' ? null : !hydrated ||
+      {order.error && (
+        <p
+          role="alert"
+          className="mt-6 rounded-xl border border-red-200 bg-red-50 p-4 text-sm leading-6 text-red-800"
+        >
+          {order.error}
+        </p>
+      )}
+      {order.receipt ? (
+        <OrderConfirmation order={order.receipt} />
+      ) : order.recovering ? (
+        <p
+          role="status"
+          className="mt-8 text-sm text-gray-600"
+        >
+          Checking your order...
+        </p>
+      ) : order.pending ? (
+        <section className="mt-8 rounded-2xl border border-gray-200 bg-white p-6 sm:p-8">
+          <h2 className="text-xl font-semibold">
+            {order.submitting ? 'Submitting your order...' : 'Confirm your order submission'}
+          </h2>
+          <p className="mt-3 text-sm leading-7 text-gray-600">
+            {order.pending.items.length} products for {order.pending.address.recipient}. Contact
+            number: {order.pending.address.phone}.
+          </p>
+          <p className="mt-2 text-sm leading-7 text-gray-600">
+            If your connection was interrupted, retry this same submission. An order that was
+            already received will be shown without placing it twice.
+          </p>
+          <button
+            type="button"
+            disabled={order.submitting}
+            onClick={() => {
+              if (order.pending) void order.place(order.pending);
+            }}
+            className="mt-5 inline-flex min-h-12 items-center gap-2 rounded-lg bg-yellow-300 px-5 text-sm font-semibold disabled:opacity-60"
+          >
+            {order.submitting && (
+              <LoaderCircle
+                size={16}
+                className="animate-spin"
+                aria-hidden="true"
+              />
+            )}
+            {order.submitting ? 'Submitting...' : 'Retry Order Submission'}
+          </button>
+        </section>
+      ) : !hydrated && syncStatus === 'error' ? null : !hydrated ||
         (items.length > 0 && (!addressesReady || !selectedAddress)) ? (
         <p
           role="status"
@@ -182,7 +225,8 @@ export function OrderReview({ mode }: { mode: 'cart' | 'buyNow' }) {
                 Delivery charges are excluded and will be confirmed separately.
               </p>
               <p className="mt-2">
-                Preparing a request does not reserve stock, place an order or take payment.
+                Submitting an order does not reserve stock. Our team will call you, and stock is
+                allocated only after admin confirmation. No online payment is collected.
               </p>
             </div>
             <Link
@@ -210,8 +254,7 @@ export function OrderReview({ mode }: { mode: 'cart' | 'buyNow' }) {
               onSubmit={(event) => {
                 event.preventDefault();
                 if (!selectedAddress) return;
-                setReviewed(true);
-                setCopyStatus('');
+                placeOrder();
               }}
             >
               <fieldset className="space-y-3">
@@ -228,8 +271,6 @@ export function OrderReview({ mode }: { mode: 'cart' | 'buyNow' }) {
                       checked={selectedAddress?.id === address.id}
                       onChange={() => {
                         setSelectedId(address.id);
-                        setReviewed(false);
-                        setCopyStatus('');
                       }}
                       className="mt-1 h-4 w-4 shrink-0 accent-blue-600"
                     />
@@ -264,58 +305,32 @@ export function OrderReview({ mode }: { mode: 'cart' | 'buyNow' }) {
                 </p>
               )}
 
+              <label
+                className="block text-sm font-medium"
+                htmlFor="order-notes"
+              >
+                Notes for our team <span className="font-normal text-gray-500">(optional)</span>
+              </label>
+              <textarea
+                id="order-notes"
+                value={notes}
+                onChange={(event) => setNotes(event.target.value)}
+                rows={3}
+                maxLength={2000}
+                className={inputClass}
+                placeholder="Delivery instructions or anything we should know"
+              />
+              <p className="text-xs leading-6 text-gray-500">
+                Please check your phone number. Our team will use it to contact you about this
+                order. Delivery charges will be confirmed separately.
+              </p>
               <button
                 type="submit"
                 className="min-h-12 w-full rounded-lg bg-yellow-300 px-5 text-sm font-semibold hover:bg-yellow-500"
               >
-                Prepare Order Request
+                Place Order
               </button>
             </form>
-            {reviewed && (
-              <div className="mt-6 border-t border-gray-200 pt-6">
-                <p
-                  role="status"
-                  className="text-sm font-semibold text-blue-700"
-                >
-                  Your request is ready to review. It has not been sent.
-                </p>
-                <label
-                  htmlFor="order-summary"
-                  className="mb-2 mt-4 block text-sm font-medium"
-                >
-                  Request summary
-                </label>
-                <textarea
-                  id="order-summary"
-                  readOnly
-                  rows={10}
-                  value={summary}
-                  className={`${inputClass} leading-6`}
-                />
-                <button
-                  type="button"
-                  onClick={() => void copy()}
-                  disabled={copying}
-                  className="mt-3 inline-flex min-h-11 items-center gap-2 rounded-lg border border-gray-300 px-4 text-sm font-semibold text-blue-700 disabled:opacity-50"
-                >
-                  <Clipboard
-                    size={16}
-                    aria-hidden="true"
-                  />
-                  {copying ? 'Copying...' : 'Copy Request'}
-                </button>
-                <p className="mt-3 text-xs leading-6 text-gray-500">
-                  Direct WhatsApp/phone ordering will be connected once the official contact details
-                  are confirmed.
-                </p>
-                <p
-                  role="status"
-                  className="mt-3 text-sm text-gray-600"
-                >
-                  {copyStatus}
-                </p>
-              </div>
-            )}
           </section>
         </div>
       )}

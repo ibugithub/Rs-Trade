@@ -12,7 +12,8 @@ ACCOUNT_MODEL_ORDER = {
 }
 APP_ORDER = {
     'catalog': 1,
-    'accounts': 2,
+    'orders': 2,
+    'accounts': 3,
 }
 
 

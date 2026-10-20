@@ -19,10 +19,11 @@
             <p class="rs-dashboard-description">
                 {% if app_label %}
                     {% if app_label == 'catalog' %}Manage your products, categories, promotions and customer carts.
+                    {% elif app_label == 'orders' %}Review orders, contact customers and track fulfilment.
                     {% elif app_label == 'accounts' or app_label == 'users' or app_label == 'auth' or app_label == 'userProfile' %}Manage customer accounts, profiles and access permissions.
                     {% else %}Choose a section to view or manage your records.{% endif %}
                 {% else %}
-                    Manage your catalog and accounts from one place.
+                    Manage your products, orders and customer accounts from one place.
                 {% endif %}
             </p>
         </div>

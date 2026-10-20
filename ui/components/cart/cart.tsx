@@ -31,7 +31,7 @@ export const Cart = () => {
   return (
     <ShopShell
       title="Your Cart"
-      description="Keep your selected products together, adjust quantities and prepare an order request."
+      description="Select your products, adjust quantities and continue to checkout."
     >
       {!hydrated && syncStatus === 'error' ? null : !hydrated ? (
         <p
@@ -108,7 +108,7 @@ export const Cart = () => {
             </button>
           </div>
           <aside className="rounded-2xl border border-gray-200 bg-white p-6">
-            <h2 className="text-xl font-semibold">Request summary</h2>
+            <h2 className="text-xl font-semibold">Order summary</h2>
             <p className="mt-2 text-xs leading-6 text-gray-500">
               Only checked products are included. Unchecked products stay in your cart.
             </p>
@@ -146,7 +146,7 @@ export const Cart = () => {
                 href="/checkout"
                 className="mt-5 flex min-h-12 items-center justify-center rounded-lg bg-yellow-300 px-4 text-sm font-semibold hover:bg-yellow-500"
               >
-                Review Order Request
+                Continue to Checkout
               </Link>
             ) : (
               <button
@@ -154,7 +154,7 @@ export const Cart = () => {
                 disabled
                 className="mt-5 flex min-h-12 w-full items-center justify-center rounded-lg bg-gray-100 px-4 text-sm font-semibold text-gray-400"
               >
-                Review Order Request
+                Continue to Checkout
               </button>
             )}
             <Link

@@ -1,0 +1,27 @@
+<div class="rs-cart-table-scroll" role="region" aria-label="Ordered products" tabindex="0">
+    <table class="rs-cart-table">
+        <thead><tr>
+            <th scope="col">Product</th><th scope="col">Product ID</th>
+            <th scope="col">Unit price</th><th scope="col">Quantity</th><th scope="col">Line total</th>
+        </tr></thead>
+        <tbody>
+            {% for row in rows %}
+            <tr>
+                <td>
+                    <div class="rs-order-product">
+                        <div class="rs-order-thumbnail">{% include 'admin/includes/image_preview.html' with image=row.image %}</div>
+                        <div><strong>{{ row.item.product_name }}</strong>
+                        {% if row.item.sku %}<small>SKU: {{ row.item.sku }}</small>{% endif %}</div>
+                    </div>
+                </td>
+                <td>#{{ row.item.product_reference }}</td>
+                <td>BDT {{ row.item.unit_price|floatformat:"2g" }}</td>
+                <td>{{ row.item.quantity }}</td>
+                <td>BDT {{ row.item.line_total|floatformat:"2g" }}</td>
+            </tr>
+            {% endfor %}
+        </tbody>
+        <tfoot><tr><th colspan="4" scope="row">Product subtotal</th><td>BDT {{ subtotal|floatformat:"2g" }}</td></tr></tfoot>
+    </table>
+</div>
+<p class="rs-cart-note">These are the product details and prices saved when the order was submitted. Delivery charges are excluded. No online payment was collected.</p>

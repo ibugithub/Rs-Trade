@@ -59,7 +59,7 @@ def detail_fields(model_admin, obj, names):
             'label': readonly.field['label'],
             'value': readonly.contents(),
             'wide': isinstance(model_field, (models.TextField, models.JSONField))
-                    or field_name == 'cart_contents',
+                    or field_name in ('cart_contents', 'order_items'),
         })
     return fields, images
 
@@ -77,16 +77,18 @@ def record_details(
 
     sections = []
     images = []
+    direct_section = getattr(model_admin, 'details_form_section', None)
+    follow_up_form = editor_context['adminform'].form if direct_section and editor_context else None
     fieldsets = model_admin.get_fieldsets(request, obj)
-    visible_names = flatten([options['fields'] for _, options in fieldsets])
-    if opts.pk.name not in visible_names:
-        fields, _ = detail_fields(model_admin, obj, [opts.pk.name])
-        sections.append({'title': 'Record information', 'fields': fields})
     for title, options in fieldsets:
-        fields, section_images = detail_fields(model_admin, obj, flatten(options['fields']))
+        names = flatten(options['fields'])
+        show_form = follow_up_form is not None and title == direct_section
+        if show_form:
+            names = [name for name in names if name not in follow_up_form.fields]
+        fields, section_images = detail_fields(model_admin, obj, names)
         images.extend(section_images)
-        if fields:
-            sections.append({'title': title or 'Details', 'fields': fields})
+        if fields or show_form:
+            sections.append({'title': title or 'Details', 'fields': fields, 'follow_up': show_form})
 
     related_sections = []
     for inline in model_admin.get_inline_instances(request, obj):
@@ -117,9 +119,11 @@ def record_details(
         'sections': sections,
         'images': images,
         'related_sections': related_sections,
-        'can_edit': model_admin.has_change_permission(request, obj),
-        'editor': editor_context,
-        'editing': editing,
+        'can_edit': model_admin.has_change_permission(request, obj) and not direct_section,
+        'editor': editor_context if not direct_section else None,
+        'follow_up_form': follow_up_form,
+        'direct_follow_up': bool(direct_section),
+        'editing': editing and not direct_section,
         'history_url': reverse(
             f'{model_admin.admin_site.name}:{opts.app_label}_{opts.model_name}_history',
             args=[quote(obj.pk)],
@@ -169,7 +173,8 @@ def enable_record_details(model_admin):
                 query = request.GET.copy()
                 query.pop('edit', None)
                 suffix = f'?{query.urlencode()}' if query else ''
-                return HttpResponseRedirect(f'{request.path}{suffix}')
+                anchor = '#order-followup' if getattr(model_admin, 'details_form_section', None) else ''
+                return HttpResponseRedirect(f'{request.path}{suffix}{anchor}')
         return response
 
     model_admin.change_view = change_view

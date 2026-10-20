@@ -18,7 +18,7 @@
 {% block responsive %}
 {{ block.super }}
 <link rel="stylesheet" href="{% static 'admin/css/admin_forms.css' %}?v=20261016-1">
-<link rel="stylesheet" href="{% static 'admin/css/admin_details.css' %}?v=20261016-3">
+<link rel="stylesheet" href="{% static 'admin/css/admin_details.css' %}?v=20261020-2">
 {% endblock %}
 {% block bodyclass %}{{ block.super }} rs-admin-form rs-record-details{% endblock %}
 {% block nav-sidebar %}{% endblock %}
@@ -40,7 +40,7 @@
         <div>
             <p class="rs-detail-eyebrow">{{ opts.verbose_name|capfirst }} details &middot; #{{ original.pk }}</p>
             <h1>{{ original }}</h1>
-            <p class="rs-detail-caption">{% if can_edit %}Review this record. Choose Edit to make changes.{% else %}View the saved details for this record.{% endif %}</p>
+            <p class="rs-detail-caption">{% if follow_up_form %}Review the order and update its status or notes in Follow-up below.{% elif can_edit %}Review this record. Choose Edit to make changes.{% else %}View the saved details for this record.{% endif %}</p>
             <p class="rs-detail-caption rs-editor-message" role="status" hidden>Editing this record. Save your changes or cancel to return to the saved details.</p>
         </div>
         <div class="rs-detail-actions">
@@ -69,8 +69,11 @@
 
     <div id="rs-record-readonly">
     {% for section in sections %}
-    <section class="rs-detail-card">
+    <section class="rs-detail-card"{% if section.follow_up %} id="order-followup"{% endif %}>
         <h2>{{ section.title|capfirst }}</h2>
+        {% if section.follow_up %}
+        {% include 'admin/orders/follow_up.html' %}
+        {% endif %}
         <dl class="rs-detail-fields">
             {% for field in section.fields %}
             <div class="rs-detail-field{% if field.wide %} rs-detail-field--wide{% endif %}">
