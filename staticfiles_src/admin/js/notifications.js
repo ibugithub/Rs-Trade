@@ -19,6 +19,24 @@
   let reading = false;
   let refreshPending = false;
   let latestOrderId = null;
+  let stopped = false;
+  let pageActive = true;
+  let feedController = null;
+  const requests = new Set();
+
+  function canPoll() {
+    return (
+      !stopped && pageActive && !document.hidden && navigator.onLine !== false
+    );
+  }
+
+  function pausePolling() {
+    clearTimeout(timer);
+    refreshPending = false;
+    feedController?.abort();
+    clearTimeout(toastTimer);
+    toast.hidden = true;
+  }
 
   function toggle(open, restoreFocus = false) {
     panel.hidden = !open;
@@ -105,21 +123,27 @@
     }
   }
 
-  async function request(url, options = {}) {
+  async function request(url, options = {}, isFeed = false) {
     const controller = new AbortController();
+    requests.add(controller);
+    if (isFeed) feedController = controller;
     const timeout = setTimeout(() => controller.abort(), 15000);
     try {
       const response = await fetch(url, {
         credentials: "same-origin",
         cache: "no-store",
+        redirect: "manual",
         ...options,
         signal: controller.signal,
       });
       if (
+        response.type === "opaqueredirect" ||
         response.redirected ||
         response.status === 401 ||
         response.status === 403
       ) {
+        stopped = true;
+        pausePolling();
         throw new Error(
           "Your session may have expired. Reload this admin page to sign in again.",
         );
@@ -134,11 +158,13 @@
       return result;
     } finally {
       clearTimeout(timeout);
+      requests.delete(controller);
+      if (feedController === controller) feedController = null;
     }
   }
 
   async function refresh() {
-    if (document.hidden) return;
+    if (!canPoll()) return;
     if (loading || reading) {
       refreshPending = true;
       return;
@@ -149,7 +175,8 @@
       const feedUrl = new URL(root.dataset.feed, window.location.origin);
       if (document.querySelector("[data-dashboard-count]"))
         feedUrl.searchParams.set("counts", "1");
-      const result = await request(feedUrl);
+      const result = await request(feedUrl, {}, true);
+      if (!canPoll()) return;
       if (latestOrderId !== null && result.latestOrderId > latestOrderId) {
         toast.hidden = false;
         clearTimeout(toastTimer);
@@ -170,19 +197,20 @@
       });
       error = "";
     } catch (failure) {
+      if (failure.name === "AbortError" && !canPoll()) return;
       error =
         failure.message || "Could not load notifications. Please try again.";
     } finally {
       loading = false;
       render();
-      if (!document.hidden)
-        timer = setTimeout(refresh, refreshPending ? 0 : error ? 60000 : 30000);
+      if (canPoll())
+        timer = setTimeout(refresh, refreshPending ? 0 : error ? 300000 : 180000);
       refreshPending = false;
     }
   }
 
   async function markRead(payload) {
-    if (reading) return false;
+    if (reading || stopped || !pageActive) return false;
     const csrf = document.querySelector(
       'input[name="csrfmiddlewaretoken"]',
     )?.value;
@@ -248,8 +276,25 @@
     if (event.key === "Escape" && !panel.hidden) toggle(false, true);
   });
   document.addEventListener("visibilitychange", () => {
-    clearTimeout(timer);
-    if (!document.hidden) void refresh();
+    if (document.hidden) pausePolling();
+    else void refresh();
+  });
+  window.addEventListener("offline", pausePolling);
+  window.addEventListener("online", () => void refresh());
+  window.addEventListener("pagehide", () => {
+    pageActive = false;
+    pausePolling();
+    requests.forEach((controller) => controller.abort());
+  });
+  window.addEventListener("pageshow", (event) => {
+    if (!event.persisted) return;
+    pageActive = true;
+    void refresh();
+  });
+  document.querySelector("#logout-form")?.addEventListener("submit", () => {
+    stopped = true;
+    pausePolling();
+    requests.forEach((controller) => controller.abort());
   });
   void refresh();
 })();
