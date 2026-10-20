@@ -50,6 +50,7 @@ export function OrderReview({ mode }: { mode: 'cart' | 'buyNow' }) {
     items: addresses,
     defaultId,
     storageAvailable,
+    error: addressLoadError,
   } = useAddressBook();
   const orderPath = mode === 'buyNow' ? '/buy_now' : '/checkout';
   const addressPage = profileAddressPath(orderPath);
@@ -161,6 +162,19 @@ export function OrderReview({ mode }: { mode: 'cart' | 'buyNow' }) {
             {order.submitting ? 'Submitting...' : 'Retry Order Submission'}
           </button>
         </section>
+      ) : addressLoadError ? (
+        <div
+          role="alert"
+          className="mt-8 rounded-xl border border-red-200 bg-red-50 p-5 text-sm text-red-700"
+        >
+          {addressLoadError}
+          <Link
+            href={addressPage}
+            className="ml-2 font-semibold underline"
+          >
+            Open saved addresses to retry
+          </Link>
+        </div>
       ) : !hydrated && syncStatus === 'error' ? null : !hydrated ||
         (items.length > 0 && (!addressesReady || !selectedAddress)) ? (
         <p
@@ -312,7 +326,7 @@ export function OrderReview({ mode }: { mode: 'cart' | 'buyNow' }) {
                   role="alert"
                   className="text-sm leading-6 text-gray-600"
                 >
-                  These addresses may not survive a reload because browser storage is unavailable.
+                  Browser caching is unavailable. Your addresses are saved to your account.
                 </p>
               )}
 

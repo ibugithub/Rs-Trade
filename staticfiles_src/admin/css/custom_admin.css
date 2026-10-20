@@ -195,6 +195,27 @@ div.breadcrumbs {
 .rs-dashboard-layout--app {
   grid-template-columns: minmax(0, 1fr);
 }
+.rs-dashboard-layout > .rs-dashboard-intro {
+  grid-column: 1;
+  grid-row: 1;
+  margin-bottom: 0;
+}
+.rs-dashboard-layout > .rs-management-group {
+  grid-column: 1;
+  grid-row: 2;
+}
+.rs-dashboard-layout > .rs-activity-heading {
+  grid-column: 2;
+  grid-row: 1;
+  margin: 0;
+  font-size: 18px;
+  font-weight: 700;
+  line-height: 36.4px;
+}
+.rs-dashboard-layout > .rs-activity-group {
+  grid-column: 2;
+  grid-row: 2;
+}
 .rs-management-sections {
   display: grid;
   grid-template-columns: minmax(0, 1fr);
@@ -564,6 +585,23 @@ textarea:focus-visible {
   }
   .rs-dashboard-layout {
     grid-template-columns: minmax(0, 1fr);
+  }
+  .rs-dashboard-layout > .rs-dashboard-intro,
+  .rs-dashboard-layout > .rs-management-group,
+  .rs-dashboard-layout > .rs-activity-heading,
+  .rs-dashboard-layout > .rs-activity-group {
+    grid-column: 1;
+    grid-row: auto;
+  }
+  .rs-dashboard-layout > .rs-management-group {
+    order: 1;
+  }
+  .rs-dashboard-layout > .rs-activity-heading {
+    order: 2;
+    margin-bottom: -8px;
+  }
+  .rs-dashboard-layout > .rs-activity-group {
+    order: 3;
   }
   #header {
     align-items: flex-start;

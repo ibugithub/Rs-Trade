@@ -18,7 +18,7 @@
 {% block responsive %}
 {{ block.super }}
 <link rel="stylesheet" href="{% static 'admin/css/admin_forms.css' %}?v=20261020-2">
-<link rel="stylesheet" href="{% static 'admin/css/admin_details.css' %}?v=20261020-2">
+<link rel="stylesheet" href="{% static 'admin/css/admin_details.css' %}?v=20261020-3">
 {% endblock %}
 {% block bodyclass %}{{ block.super }} rs-admin-form rs-record-details{% endblock %}
 {% block nav-sidebar %}{% endblock %}
@@ -88,6 +88,9 @@
     {% for section in related_sections %}
     <section class="rs-detail-card">
         <h2>{{ section.title|capfirst }}</h2>
+        {% if section.template %}
+        {% include section.template %}
+        {% else %}
         {% for record in section.records %}
         <article class="rs-detail-related">
             <h3>{{ record.name }}</h3>
@@ -102,8 +105,10 @@
                 {% endfor %}
             </dl>
         </article>
+        {% empty %}<p class="rs-detail-caption">{{ section.empty_message }}</p>
         {% endfor %}
-        {% if section.truncated %}<p class="rs-detail-caption">Showing the first 25 records. Open the corresponding admin list to see all records.</p>{% endif %}
+        {% endif %}
+        {% if section.truncated %}<p class="rs-detail-caption">Showing the first {{ section.limit }} records. Open the corresponding admin list to see all records.</p>{% endif %}
     </section>
     {% endfor %}
     </div>

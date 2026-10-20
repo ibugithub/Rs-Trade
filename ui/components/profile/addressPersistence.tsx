@@ -4,10 +4,13 @@ import { useEffect } from 'react';
 import { useAppDispatch, useAppSelector } from '@/configs/redux/hooks';
 import {
   addressStorageKey,
+  beginAddressLoad,
+  addressLoadFailed,
   addressStorageStatus,
   loadAddresses,
 } from '@/configs/redux/addresses/addressSlice';
 import { useAddressBook } from './useAddressBook';
+import { fetchAddressBook, addressError } from '@/lib/addressBookApi';
 
 export function AddressPersistence() {
   const dispatch = useAppDispatch();
@@ -15,23 +18,20 @@ export function AddressPersistence() {
   const addresses = useAppSelector((state) => state.addresses);
 
   useEffect(() => {
-    let saved: unknown = {};
-    let storageAvailable = true;
-    if (owner) {
-      try {
-        const stored = localStorage.getItem(addressStorageKey(owner));
-        // Corrupt data starts an empty address book; blocked storage is reported separately.
-        try {
-          saved = stored ? JSON.parse(stored) : {};
-        } catch {
-          saved = {};
-        }
-      } catch {
-        storageAvailable = false;
-      }
-    }
-    dispatch(loadAddresses({ owner, saved, storageAvailable }));
-  }, [dispatch, owner]);
+    const controller = new AbortController();
+    dispatch(beginAddressLoad(owner));
+    if (!owner) return () => controller.abort();
+    void fetchAddressBook(owner, controller.signal)
+      .then((saved) => {
+        if (!controller.signal.aborted)
+          dispatch(loadAddresses({ owner, saved, storageAvailable: true }));
+      })
+      .catch((error) => {
+        if (!controller.signal.aborted)
+          dispatch(addressLoadFailed({ owner, error: addressError(error) }));
+      });
+    return () => controller.abort();
+  }, [dispatch, owner, addresses.reload]);
 
   useEffect(() => {
     // Never save one account's addresses under another account's key during a session change.

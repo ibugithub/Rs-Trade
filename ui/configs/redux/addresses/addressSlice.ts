@@ -1,5 +1,4 @@
 import { createSlice, type PayloadAction } from '@reduxjs/toolkit';
-import { validatePhoneNumber } from '@/lib/phoneNumber';
 
 export type DeliveryAddress = {
   id: string;
@@ -18,6 +17,8 @@ type AddressState = {
   items: DeliveryAddress[];
   defaultId: string | null;
   storageAvailable: boolean;
+  error: string | null;
+  reload: number;
 };
 
 const initialState: AddressState = {
@@ -26,6 +27,8 @@ const initialState: AddressState = {
   items: [],
   defaultId: null,
   storageAvailable: true,
+  error: null,
+  reload: 0,
 };
 
 export function addressStorageKey(owner: string) {
@@ -79,11 +82,25 @@ const addressSlice = createSlice({
   name: 'addresses',
   initialState,
   reducers: {
+    beginAddressLoad(state, action: PayloadAction<string | null>) {
+      state.owner = action.payload;
+      state.hydrated = false;
+      state.items = [];
+      state.defaultId = null;
+      state.error = null;
+    },
+    addressLoadFailed(state, action: PayloadAction<{ owner: string; error: string }>) {
+      if (state.owner === action.payload.owner) state.error = action.payload.error;
+    },
+    retryAddressLoad(state) {
+      state.reload++;
+    },
     loadAddresses(
       state,
       action: PayloadAction<{ owner: string | null; saved: unknown; storageAvailable: boolean }>,
     ) {
       state.owner = action.payload.owner;
+      state.error = null;
       state.hydrated = !!action.payload.owner;
       state.storageAvailable = action.payload.storageAvailable;
       state.items = [];
@@ -101,31 +118,6 @@ const addressSlice = createSlice({
         ? (saved.defaultId as string)
         : (state.items[0]?.id ?? null);
     },
-    saveAddress(
-      state,
-      action: PayloadAction<{ owner: string; address: DeliveryAddress; makeDefault: boolean }>,
-    ) {
-      if (!state.hydrated || state.owner !== action.payload.owner) return;
-      const address = normalizeAddress(action.payload.address);
-      if (!address) return;
-      const phone = validatePhoneNumber(address.phone, address.country);
-      if (phone.error) return;
-      address.phone = phone.number;
-      const index = state.items.findIndex((item) => item.id === address.id);
-      if (index === -1) state.items.push(address);
-      else state.items[index] = address;
-      if (!state.defaultId || action.payload.makeDefault) state.defaultId = address.id;
-    },
-    removeAddress(state, action: PayloadAction<{ owner: string; id: string }>) {
-      if (state.owner !== action.payload.owner) return;
-      state.items = state.items.filter((item) => item.id !== action.payload.id);
-      if (state.defaultId === action.payload.id) state.defaultId = state.items[0]?.id ?? null;
-    },
-    setDefaultAddress(state, action: PayloadAction<{ owner: string; id: string }>) {
-      if (state.owner !== action.payload.owner) return;
-      if (state.items.some((item) => item.id === action.payload.id))
-        state.defaultId = action.payload.id;
-    },
     addressStorageStatus(state, action: PayloadAction<{ owner: string; available: boolean }>) {
       if (state.owner === action.payload.owner) state.storageAvailable = action.payload.available;
     },
@@ -133,10 +125,10 @@ const addressSlice = createSlice({
 });
 
 export const {
+  beginAddressLoad,
+  addressLoadFailed,
+  retryAddressLoad,
   loadAddresses,
-  saveAddress,
-  removeAddress,
-  setDefaultAddress,
   addressStorageStatus,
 } = addressSlice.actions;
 export const addressReducer = addressSlice.reducer;

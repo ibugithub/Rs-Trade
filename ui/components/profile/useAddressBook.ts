@@ -17,5 +17,6 @@ export function useAddressBook() {
     items: ready ? addresses.items : [],
     defaultId: ready ? addresses.defaultId : null,
     storageAvailable: ready ? addresses.storageAvailable : true,
+    error: addresses.owner === owner ? addresses.error : null,
   };
 }

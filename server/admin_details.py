@@ -101,14 +101,19 @@ def record_details(
             if name != formset.fk.name
         ]
         records = []
-        for related in queryset[:26]:
+        limit = getattr(inline, 'details_limit', 25)
+        for related in queryset[:limit + 1]:
             fields, related_images = detail_fields(inline, related, names)
-            records.append({'name': str(related), 'fields': fields, 'images': related_images})
-        if records:
+            records.append({'name': str(related), 'fields': fields, 'images': related_images, 'original': related})
+        empty_message = getattr(inline, 'details_empty_message', None)
+        if records or empty_message:
             related_sections.append({
-                'title': inline.opts.verbose_name_plural,
-                'records': records[:25],
-                'truncated': len(records) > 25,
+                'title': inline.verbose_name_plural,
+                'records': records[:limit],
+                'truncated': len(records) > limit,
+                'limit': limit,
+                'empty_message': empty_message,
+                'template': getattr(inline, 'details_template', None),
             })
 
     context = {
