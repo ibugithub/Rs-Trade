@@ -35,16 +35,18 @@
     </section>
 
     <div class="rs-dashboard-layout{% if app_label %} rs-dashboard-layout--app{% endif %}">
-        <div class="rs-management-sections">
-            {% for app in app_list %}
-            {% include "admin/management_cards.html" %}
-            {% empty %}
-            <section class="rs-card rs-empty-state">
-                <h2>No management sections available</h2>
-                <p>Your account does not have permission to manage records. Contact your administrator for access.</p>
-            </section>
-            {% endfor %}
-        </div>
+        <section class="rs-management-group" aria-label="Admin features">
+            <div class="rs-model-grid">
+                {% for app in app_list %}
+                {% include "admin/management_cards.html" %}
+                {% empty %}
+                <section class="rs-card rs-empty-state">
+                    <h2>No management sections available</h2>
+                    <p>Your account does not have permission to manage records. Contact your administrator for access.</p>
+                </section>
+                {% endfor %}
+            </div>
+        </section>
 
         {% if not app_label %}
         <section class="rs-activity-group" aria-labelledby="activity-title">
