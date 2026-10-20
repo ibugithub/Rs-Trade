@@ -2,6 +2,7 @@ from types import MethodType
 from django.contrib.admin import ShowFacets
 from django.urls import path, reverse
 from .admin_details import enable_record_details
+from notifications.views import feed, mark_read
 
 
 ACCOUNT_APP_LABELS = {'auth', 'users', 'userProfile', 'userprofile'}
@@ -97,6 +98,8 @@ def configure_admin_site(site):
 
     def get_urls(self):
         return [
+            path('notifications/', self.admin_view(lambda request: feed(request, self)), name='notification-feed'),
+            path('notifications/read/', self.admin_view(lambda request: mark_read(request, self)), name='notification-read'),
             path('accounts/', self.admin_view(accounts_view), name='accounts'),
             *original_get_urls(),
         ]

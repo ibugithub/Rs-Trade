@@ -9,7 +9,11 @@
 {% block responsive %}
 {{ block.super }}
 {# Bump the version when this stylesheet changes so browsers fetch the new theme. #}
-<link rel="stylesheet" href="{% static 'admin/css/custom_admin.css' %}?v=20261020-1">
+<link rel="stylesheet" href="{% static 'admin/css/custom_admin.css' %}?v=20261020-3">
+{% if has_permission and not is_popup %}
+<link rel="stylesheet" href="{% static 'admin/css/notifications.css' %}?v=20261020-1">
+<script src="{% static 'admin/js/notifications.js' %}?v=20261020-3" defer></script>
+{% endif %}
 {% endblock %}
 
 {% block branding %}
@@ -28,6 +32,7 @@
 {% endblock %}
 
 {% block userlinks %}
+{% if has_permission and not is_popup %}{% include 'admin/includes/notifications.html' %}{% endif %}
 {% if user.has_usable_password %}
 <a href="{% url 'admin:password_change' %}">Change password</a>
 {% endif %}

@@ -264,6 +264,8 @@ div.breadcrumbs {
   height: 21px;
 }
 .rs-model-card__heading h3 {
+  min-width: 0;
+  overflow-wrap: anywhere;
   margin: 0;
   color: var(--body-fg);
   font-size: 16px;
@@ -274,6 +276,17 @@ div.breadcrumbs {
 }
 .rs-model-card__heading a:hover {
   color: var(--primary);
+}
+.rs-model-card__count {
+  flex-shrink: 0;
+  margin-left: auto;
+  padding: 5px 9px;
+  border-radius: 20px;
+  background: #edf4ff;
+  color: var(--primary);
+  font-size: 12px;
+  font-weight: 700;
+  white-space: nowrap;
 }
 .rs-model-card__description {
   margin: 6px 0 8px;

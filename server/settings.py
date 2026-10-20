@@ -44,6 +44,7 @@ INSTALLED_APPS = [
     'cloudinary_storage',
     'catalog',
     'orders',
+    'notifications',
     'users',
     'userProfile',
     'rest_framework',

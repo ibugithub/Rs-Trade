@@ -40,6 +40,9 @@
             {{ model.name }}
             {% endif %}
         </h3>
+        {% if model.admin_url %}
+            <span class="rs-model-card__count" data-dashboard-count="{{ model.admin_url }}" data-count-name="{{ model.name }}" aria-label="Loading {{ model.name|lower }} count">&mdash;</span>
+        {% endif %}
     </div>
     <p class="rs-model-card__description">{% include "admin/model_description.html" %}</p>
     <div class="rs-model-card__actions">

@@ -10,6 +10,7 @@ from rest_framework.exceptions import ValidationError as APIValidationError
 from catalog.models import Cart, Product
 from catalog.views import product_data, public_products
 from .models import Order, OrderItem
+from notifications.services import clear_cart_alert, new_order
 
 
 @transaction.atomic
@@ -75,6 +76,8 @@ def submit_order(user, data):
             if item['quantity'] > ordered.get(item['productId'], 0)
         ]
         cart.save(update_fields=['items', 'updated_at'])
+        clear_cart_alert(cart)
+    new_order(order)
     return order, True
 
 

@@ -1,0 +1,30 @@
+<div class="rs-notifications" data-notifications data-feed="{% url 'admin:notification-feed' %}" data-read="{% url 'admin:notification-read' %}">
+    <button type="button" class="rs-notifications__bell" aria-label="Notifications" aria-expanded="false" aria-controls="rs-notification-panel">
+        <svg width="21" height="21" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="1.7" aria-hidden="true"><path d="M18 8a6 6 0 0 0-12 0c0 7-3 7-3 9h18c0-2-3-2-3-9M10 21h4" /></svg>
+        <span class="rs-notifications__badge" hidden></span>
+    </button>
+    <section id="rs-notification-panel" class="rs-notifications__panel" aria-labelledby="rs-notification-title" hidden>
+        <div class="rs-notifications__heading">
+            <h2 id="rs-notification-title">Notifications</h2>
+            <button type="button" data-notification-close aria-label="Close notifications">&times;</button>
+        </div>
+        <div class="rs-notifications__filters" role="group" aria-label="Filter notifications">
+            <button type="button" data-notification-filter="all" aria-pressed="true">All</button>
+            <button type="button" data-notification-filter="order" aria-pressed="false">Orders</button>
+            <button type="button" data-notification-filter="cart" aria-pressed="false">Carts</button>
+        </div>
+        <p class="rs-notifications__status" role="status">Loading notifications...</p>
+        <ul class="rs-notifications__list"></ul>
+        <div class="rs-notifications__footer">
+            <button type="button" data-notification-refresh>Refresh</button>
+            <button type="button" data-notification-read-all disabled>Mark all as read</button>
+        </div>
+        <p class="rs-notifications__hint">Latest 40 updates. Refreshes every 30 seconds while this page is visible.</p>
+    </section>
+</div>
+<div class="rs-notification-toast" role="status" aria-live="polite" hidden>
+    <strong>New order received</strong>
+    <p>A customer placed an order. Open notifications to review it.</p>
+    <button type="button" data-notification-view>View notifications</button>
+    <button type="button" data-notification-dismiss aria-label="Dismiss order alert">&times;</button>
+</div>

@@ -7,6 +7,7 @@ from rest_framework_simplejwt.authentication import JWTAuthentication
 
 from .models import Cart, CartOperation
 from .views import public_products
+from notifications.services import cart_updated
 
 
 MAX_ITEMS = 100
@@ -118,7 +119,10 @@ class AccountCartView(APIView):
                 items, notice = apply_operation(cart.items, operation)
             except serializers.ValidationError as error:
                 return Response({'items': cart.items, 'detail': error.detail}, status=400)
+            changed = cart.items != items
             cart.items = items
             cart.save(update_fields=['items', 'updated_at'])
             CartOperation.objects.create(cart=cart, operation_id=operation['id'])
+            if changed:
+                cart_updated(cart)
         return Response({'items': items, 'notice': notice})
