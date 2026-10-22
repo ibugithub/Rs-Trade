@@ -1,5 +1,10 @@
 from django.conf import settings
 from django.db import models
+from cloudinary.models import CloudinaryField
+
+
+def reference_image_id(instance):
+    return f'service-requests/{instance.request_id}-{instance.submission_hash[:16]}'
 
 
 class Service(models.TextChoices):
@@ -28,6 +33,7 @@ class ServiceRequest(models.Model):
     description = models.TextField(max_length=5000)
     quantity = models.CharField(max_length=100, blank=True)
     reference_url = models.URLField(max_length=1000, blank=True)
+    image = CloudinaryField('Reference image', null=True, blank=True, public_id=reference_image_id, overwrite=False, allowed_formats=['jpg', 'png', 'webp'])
     destination = models.CharField(max_length=255, blank=True)
     source_page = models.CharField(max_length=120, blank=True)
     status = models.CharField(max_length=20, choices=Status.choices, default=Status.NEW, db_index=True)

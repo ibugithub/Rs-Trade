@@ -19,8 +19,8 @@ export default function RequestQuotePage() {
           </p>
           <h1 className="mt-4 text-4xl font-bold tracking-tight sm:text-5xl">Request a Quote</h1>
           <p className="mt-5 max-w-2xl text-lg leading-8 text-gray-600">
-            Ask about one or more of our four services. Share your requirements and our team will
-            contact you to discuss the details.
+            Choose one of our four services. Share your requirements and our team will contact you
+            to discuss the details.
           </p>
         </div>
       </section>

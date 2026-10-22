@@ -6,7 +6,8 @@ from .models import Service
 
 class CreateServiceRequestSerializer(serializers.Serializer):
     requestId = serializers.UUIDField()
-    services = serializers.ListField(child=serializers.ChoiceField(choices=Service.choices), max_length=4, allow_empty=True)
+    services = serializers.ListField(child=serializers.ChoiceField(choices=Service.choices), min_length=1, max_length=1, allow_empty=False)
+    image = serializers.ImageField(required=False)
     name = serializers.CharField(max_length=120)
     phone = serializers.CharField(max_length=30)
     email = serializers.EmailField(allow_blank=True, required=False, default='')
@@ -26,3 +27,12 @@ class CreateServiceRequestSerializer(serializers.Serializer):
         # Use the same Bangladesh/international phone rules as order delivery.
         data = DeliverySerializer().validate({'phone': value, 'country': 'Bangladesh'})
         return data['phone']
+
+    def validate_image(self, value):
+        if value.size > 5 * 1024 * 1024:
+            raise serializers.ValidationError('The image must be 5 MB or smaller.')
+        if value.image.format not in ('JPEG', 'PNG', 'WEBP'):
+            raise serializers.ValidationError('Upload a JPG, PNG or WebP image.')
+        if value.image.width * value.image.height > 25_000_000:
+            raise serializers.ValidationError('The image must be 25 megapixels or smaller.')
+        return value

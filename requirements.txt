@@ -3,6 +3,7 @@ certifi==2024.8.30
 cffi==1.17.1
 charset-normalizer==3.4.0
 cloudinary==1.44.0
+Pillow==13.0.0
 cryptography==43.0.3
 defusedxml==0.8.0rc2
 dj-database-url==2.3.0

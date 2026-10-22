@@ -18,13 +18,13 @@ class ServiceRequestAdmin(admin.ModelAdmin):
     search_help_text = 'Search by request number, customer name, phone, email or requirements'
     readonly_fields = (
         'request_number', 'requested_services', 'name', 'call_customer', 'email',
-        'company', 'user', 'description', 'quantity', 'reference_url', 'destination',
+        'company', 'user', 'description', 'quantity', 'reference_url', 'image', 'destination',
         'source_page', 'created_at', 'updated_at',
     )
     fieldsets = (
         ('Request overview', {'fields': ('request_number', 'requested_services', 'created_at', 'updated_at')}),
         ('Customer contact', {'fields': ('name', 'call_customer', 'email', 'company', 'user')}),
-        ('Requirements', {'fields': ('description', 'quantity', 'reference_url', 'destination', 'source_page')}),
+        ('Requirements', {'fields': ('description', 'quantity', 'reference_url', 'image', 'destination', 'source_page')}),
         ('Follow-up', {'fields': ('status', 'admin_notes')}),
     )
 

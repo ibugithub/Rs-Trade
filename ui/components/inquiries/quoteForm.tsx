@@ -2,6 +2,7 @@
 
 import { useEffect, useRef, useState, type FormEvent } from 'react';
 import axios from 'axios';
+import Image from 'next/image';
 import { useSearchParams } from 'next/navigation';
 import { ArrowRight, CheckCircle2, LoaderCircle } from 'lucide-react';
 import { validatePhoneNumber } from '@/lib/phoneNumber';
@@ -15,7 +16,7 @@ import {
 const services = [
   { value: 'china-product-sourcing', label: 'China Product Sourcing' },
   { value: 'supplier-verification', label: 'Supplier Verification' },
-  { value: 'quality-control', label: 'Quality Control & Inspection' },
+  { value: 'quality-control', label: 'Quality Inspection' },
   { value: 'door-to-door-import', label: 'Shipping & Door-to-Door Import' },
 ];
 const empty = {
@@ -35,7 +36,10 @@ const inputStyle =
 export function QuoteForm() {
   const params = useSearchParams();
   const preselected = params.get('service');
-  const [selected, setSelected] = useState<string[]>([]);
+  const [selected, setSelected] = useState('');
+  const [image, setImage] = useState<File | null>(null);
+  const [preview, setPreview] = useState<string | null>(null);
+  const [imageError, setImageError] = useState('');
   const [fields, setFields] = useState<Fields>(empty);
   const [sending, setSending] = useState(false);
   const [uncertain, setUncertain] = useState(false);
@@ -46,11 +50,29 @@ export function QuoteForm() {
   const request = useRef<AbortController | null>(null);
   useEffect(() => () => request.current?.abort(), []);
 
+  useEffect(() => {
+    if (!image) {
+      setPreview(null);
+      return;
+    }
+    const url = URL.createObjectURL(image);
+    setPreview(url);
+    return () => URL.revokeObjectURL(url);
+  }, [image]);
+
   async function submit(event: FormEvent<HTMLFormElement>) {
     event.preventDefault();
     if (busy.current) return;
     setError('');
     if (!pending.current) {
+      if (!selected) {
+        setError('Choose one service for this inquiry.');
+        return;
+      }
+      if (imageError) {
+        setError(imageError);
+        return;
+      }
       const phone = validatePhoneNumber(fields.phone);
       if (phone.error) {
         setError(phone.error);
@@ -60,7 +82,8 @@ export function QuoteForm() {
       pending.current = {
         ...fields,
         phone: phone.number,
-        services: selected,
+        services: [selected],
+        image,
         requestId: crypto.randomUUID(),
         source_page: services.some((service) => service.value === preselected)
           ? `/services/${preselected}/`
@@ -91,15 +114,11 @@ export function QuoteForm() {
   }
 
   useEffect(() => {
-    setSelected(services.some((service) => service.value === preselected) ? [preselected!] : []);
+    setSelected(services.some((service) => service.value === preselected) ? preselected! : '');
   }, [preselected]);
 
   const change = (key: keyof Fields, value: string) =>
     setFields((current) => ({ ...current, [key]: value }));
-  const toggle = (value: string) =>
-    setSelected((current) =>
-      current.includes(value) ? current.filter((item) => item !== value) : [...current, value],
-    );
 
   const field = (
     key: keyof Fields,
@@ -157,9 +176,7 @@ export function QuoteForm() {
           Our team will contact you using the details you provided to discuss your requirements and
           quotation.
         </p>
-        <p className="mt-4 text-sm font-semibold">
-          {receipt.services.join(' ? ') || 'General inquiry'}
-        </p>
+        <p className="mt-4 text-sm font-semibold">{receipt.services[0]}</p>
         <p className="mt-4 text-sm leading-6 text-gray-500">
           Keep your reference number for follow-up. This is an inquiry; no order or payment has been
           created.
@@ -169,6 +186,8 @@ export function QuoteForm() {
           onClick={() => {
             setReceipt(null);
             setFields(empty);
+            setImage(null);
+            setImageError('');
             setError('');
           }}
           className="mt-6 min-h-11 rounded-lg border border-gray-300 px-4 text-sm font-semibold text-blue-700 hover:bg-blue-50"
@@ -185,23 +204,23 @@ export function QuoteForm() {
       className="min-w-0"
     >
       <fieldset disabled={sending || uncertain}>
-        <legend className="text-xl font-bold">Which services do you need?</legend>
+        <legend className="text-xl font-bold">Which service do you need?</legend>
         <p className="mt-2 text-sm leading-7 text-gray-600">
-          Select one or more. If you are unsure, leave these unchecked and describe your needs
-          below.
+          Choose one service for this inquiry. Send a separate inquiry for another service.
         </p>
         <div className="mt-4 grid gap-3 sm:grid-cols-2">
           {services.map((service) => (
             <label
               key={service.value}
-              className={`flex cursor-pointer items-start gap-3 rounded-xl border p-4 text-sm leading-6 ${selected.includes(service.value) ? 'border-blue-600 bg-blue-50' : 'border-gray-200 bg-white'}`}
+              className={`flex cursor-pointer items-start gap-3 rounded-xl border p-4 text-sm leading-6 ${selected === service.value ? 'border-blue-600 bg-blue-50' : 'border-gray-200 bg-white'}`}
             >
               <input
-                type="checkbox"
-                name="services"
+                type="radio"
+                name="service"
+                required
                 value={service.value}
-                checked={selected.includes(service.value)}
-                onChange={() => toggle(service.value)}
+                checked={selected === service.value}
+                onChange={() => setSelected(service.value)}
                 className="mt-1 h-4 w-4 shrink-0 accent-blue-700"
               />
               <span className="font-medium">{service.label}</span>
@@ -234,6 +253,90 @@ export function QuoteForm() {
             maxLength: 1000,
             placeholder: 'https://',
           })}
+        </div>
+        <div className="mt-6">
+          <label
+            htmlFor="quote-image"
+            className="text-sm font-semibold"
+          >
+            Reference image (optional)
+          </label>
+          <p
+            id="quote-image-hint"
+            className="mt-2 text-sm text-gray-500"
+          >
+            Upload a product or reference photo. JPG, PNG or WebP, up to 5 MB.
+          </p>
+          <input
+            id="quote-image"
+            name="image"
+            type="file"
+            accept="image/jpeg,image/png,image/webp"
+            aria-describedby="quote-image-hint quote-image-error"
+            aria-invalid={!!imageError}
+            onChange={(event) => {
+              const file = event.target.files?.[0] ?? null;
+              setImageError('');
+              if (
+                file &&
+                (!['image/jpeg', 'image/png', 'image/webp'].includes(file.type) ||
+                  file.size > 5 * 1024 * 1024)
+              ) {
+                setImage(null);
+                setImageError('Choose a JPG, PNG or WebP image of 5 MB or smaller.');
+                event.target.value = '';
+                return;
+              }
+              setImage(file);
+            }}
+            className="mt-3 block w-full rounded-lg border border-dashed border-gray-300 bg-gray-50 p-3 text-sm file:mr-4 file:rounded-lg file:border-0 file:bg-blue-50 file:px-4 file:py-2 file:font-semibold file:text-blue-700"
+          />
+          <p
+            id="quote-image-error"
+            role={imageError ? 'alert' : undefined}
+            className="mt-2 text-sm text-red-700"
+          >
+            {imageError}
+          </p>
+          {imageError && (
+            <button
+              type="button"
+              onClick={() => {
+                setImageError('');
+                setError('');
+              }}
+              className="min-h-11 text-sm font-semibold text-blue-700 hover:underline"
+            >
+              Continue without an image
+            </button>
+          )}
+          {preview && (
+            <div className="mt-4 flex items-start gap-4">
+              <Image
+                src={preview}
+                alt="Selected reference image"
+                width={120}
+                height={120}
+                unoptimized
+                className="h-28 w-28 rounded-xl border border-gray-200 object-contain"
+              />
+              <div className="min-w-0">
+                <p className="break-all text-sm text-gray-600">{image?.name}</p>
+                <button
+                  type="button"
+                  onClick={() => {
+                    setImage(null);
+                    setImageError('');
+                    const input = document.getElementById('quote-image') as HTMLInputElement | null;
+                    if (input) input.value = '';
+                  }}
+                  className="mt-2 min-h-11 text-sm font-semibold text-blue-700 hover:underline"
+                >
+                  Remove image
+                </button>
+              </div>
+            </div>
+          )}
         </div>
         <div className="mt-6">
           <label
