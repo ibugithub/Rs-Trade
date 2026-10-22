@@ -19,8 +19,8 @@ export default function RequestQuotePage() {
           </p>
           <h1 className="mt-4 text-4xl font-bold tracking-tight sm:text-5xl">Request a Quote</h1>
           <p className="mt-5 max-w-2xl text-lg leading-8 text-gray-600">
-            Ask about one or more of our four services. Online inquiry submission will be available
-            soon.
+            Ask about one or more of our four services. Share your requirements and our team will
+            contact you to discuss the details.
           </p>
         </div>
       </section>
@@ -30,13 +30,12 @@ export default function RequestQuotePage() {
         </Suspense>
         <aside>
           <div className="rounded-2xl border border-gray-200 bg-gray-50 p-6 sm:p-8">
-            <h2 className="text-xl font-bold">How inquiries will work</h2>
+            <h2 className="text-xl font-bold">What happens next</h2>
             <ol className="mt-6 space-y-5 text-sm leading-7 text-gray-600">
               <li>
                 <span className="font-semibold text-blue-700">1. Share your requirements.</span>
                 <br />
-                Once submissions are available, you can send your product and service needs to our
-                team.
+                Send your product and service needs to our team using this form.
               </li>
               <li>
                 <span className="font-semibold text-blue-700">2. Discuss the details.</span>

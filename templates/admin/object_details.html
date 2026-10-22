@@ -72,7 +72,7 @@
     <section class="rs-detail-card"{% if section.follow_up %} id="order-followup"{% endif %}>
         <h2>{{ section.title|capfirst }}</h2>
         {% if section.follow_up %}
-        {% include 'admin/orders/follow_up.html' %}
+        {% include follow_up_template %}
         {% endif %}
         <dl class="rs-detail-fields">
             {% for field in section.fields %}

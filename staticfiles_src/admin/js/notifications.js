@@ -19,6 +19,7 @@
   let reading = false;
   let refreshPending = false;
   let latestOrderId = null;
+  let latestServiceId = null;
   let stopped = false;
   let pageActive = true;
   let feedController = null;
@@ -63,13 +64,19 @@
     list.replaceChildren();
     filters.forEach((button) => {
       const kind = button.dataset.notificationFilter;
-      const count =
-        kind === "order"
-          ? data?.orderUnread
-          : kind === "cart"
-            ? data?.cartUnread
-            : unread;
-      button.textContent = `${kind === "order" ? "Orders" : kind === "cart" ? "Carts" : "All"}${count ? ` (${count})` : ""}`;
+      const count = {
+        order: data?.orderUnread,
+        cart: data?.cartUnread,
+        service: data?.serviceUnread,
+        all: unread,
+      }[kind];
+      const label = {
+        order: "Orders",
+        cart: "Carts",
+        service: "Services",
+        all: "All",
+      }[kind];
+      button.textContent = `${label}${count ? ` (${count})` : ""}`;
       button.setAttribute("aria-pressed", String(kind === filter));
     });
     const items = (data?.items || []).filter(
@@ -80,7 +87,7 @@
       (!data
         ? "Loading notifications..."
         : !items.length
-          ? "No notifications yet. New orders and cart updates will appear here."
+          ? "No notifications yet. New orders, service requests and cart updates will appear here."
           : `${unread} unread notification${unread === 1 ? "" : "s"}`);
     items.forEach((item) => {
       const li = document.createElement("li");
@@ -90,7 +97,11 @@
       link.href = item.url;
       const kind = document.createElement("span");
       kind.className = "rs-notifications__kind";
-      kind.textContent = item.kind === "order" ? "NEW ORDER" : "CART UPDATE";
+      kind.textContent = {
+        order: "NEW ORDER",
+        cart: "CART UPDATE",
+        service: "SERVICE REQUEST",
+      }[item.kind];
       const title = document.createElement("strong");
       title.textContent = item.title;
       const description = document.createElement("span");
@@ -177,7 +188,17 @@
         feedUrl.searchParams.set("counts", "1");
       const result = await request(feedUrl, {}, true);
       if (!canPoll()) return;
-      if (latestOrderId !== null && result.latestOrderId > latestOrderId) {
+      const newOrder =
+        latestOrderId !== null && result.latestOrderId > latestOrderId;
+      const newService =
+        latestServiceId !== null && result.latestServiceId > latestServiceId;
+      if (newOrder || newService) {
+        toast.querySelector("strong").textContent = newOrder
+          ? "New order received"
+          : "New service request received";
+        toast.querySelector("p").textContent = newOrder
+          ? "A customer placed an order. Open notifications to review it."
+          : "A customer sent a service inquiry. Open notifications to review it.";
         toast.hidden = false;
         clearTimeout(toastTimer);
         toastTimer = setTimeout(() => {
@@ -185,6 +206,7 @@
         }, 12000);
       }
       latestOrderId = result.latestOrderId;
+      latestServiceId = result.latestServiceId;
       data = result;
       document.querySelectorAll("[data-dashboard-count]").forEach((element) => {
         const metric = result.counts?.[element.dataset.dashboardCount];
@@ -204,7 +226,10 @@
       loading = false;
       render();
       if (canPoll())
-        timer = setTimeout(refresh, refreshPending ? 0 : error ? 300000 : 180000);
+        timer = setTimeout(
+          refresh,
+          refreshPending ? 0 : error ? 300000 : 180000,
+        );
       refreshPending = false;
     }
   }

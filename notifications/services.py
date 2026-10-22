@@ -25,3 +25,11 @@ def cart_updated(cart):
 def clear_cart_alert(cart):
     # Checkout has its own order alert; don't keep an outdated cart reminder.
     Notification.objects.filter(cart=cart).delete()
+
+
+def new_service_request(inquiry):
+    Notification.objects.get_or_create(service_request=inquiry, defaults={
+        'kind': Notification.Kind.SERVICE,
+        'title': f'New service request {inquiry.request_number}',
+        'description': f'{inquiry.name} sent a service inquiry. Review the requirements and contact the customer.',
+    })

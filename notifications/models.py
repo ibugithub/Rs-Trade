@@ -6,10 +6,12 @@ class Notification(models.Model):
     class Kind(models.TextChoices):
         ORDER = 'order', 'New order'
         CART = 'cart', 'Cart updated'
+        SERVICE = 'service', 'Service request'
 
     kind = models.CharField(max_length=10, choices=Kind.choices)
     order = models.OneToOneField('orders.Order', null=True, blank=True, on_delete=models.CASCADE)
     cart = models.OneToOneField('catalog.Cart', null=True, blank=True, on_delete=models.CASCADE)
+    service_request = models.OneToOneField('service_requests.ServiceRequest', null=True, blank=True, on_delete=models.CASCADE)
     title = models.CharField(max_length=255)
     description = models.CharField(max_length=500)
     created_at = models.DateTimeField(auto_now_add=True)

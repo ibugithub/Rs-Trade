@@ -127,6 +127,7 @@ def record_details(
         'can_edit': model_admin.has_change_permission(request, obj) and not direct_section,
         'editor': editor_context if not direct_section else None,
         'follow_up_form': follow_up_form,
+        'follow_up_template': getattr(model_admin, 'details_follow_up_template', 'admin/orders/follow_up.html'),
         'direct_follow_up': bool(direct_section),
         'editing': editing and not direct_section,
         'history_url': reverse(

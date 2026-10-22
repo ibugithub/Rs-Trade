@@ -45,6 +45,7 @@ INSTALLED_APPS = [
     'catalog',
     'orders',
     'notifications',
+    'service_requests',
     'users',
     'userProfile',
     'rest_framework',

@@ -1,8 +1,16 @@
 ﻿'use client';
 
-import { useEffect, useState } from 'react';
+import { useEffect, useRef, useState, type FormEvent } from 'react';
+import axios from 'axios';
 import { useSearchParams } from 'next/navigation';
-import { ArrowRight } from 'lucide-react';
+import { ArrowRight, CheckCircle2, LoaderCircle } from 'lucide-react';
+import { validatePhoneNumber } from '@/lib/phoneNumber';
+import {
+  inquiryError,
+  sendServiceInquiry,
+  type ServiceInquiry,
+  type InquiryReceipt,
+} from '@/lib/serviceRequestsApi';
 
 const services = [
   { value: 'china-product-sourcing', label: 'China Product Sourcing' },
@@ -29,6 +37,59 @@ export function QuoteForm() {
   const preselected = params.get('service');
   const [selected, setSelected] = useState<string[]>([]);
   const [fields, setFields] = useState<Fields>(empty);
+  const [sending, setSending] = useState(false);
+  const [uncertain, setUncertain] = useState(false);
+  const [error, setError] = useState('');
+  const [receipt, setReceipt] = useState<InquiryReceipt | null>(null);
+  const pending = useRef<ServiceInquiry | null>(null);
+  const busy = useRef(false);
+  const request = useRef<AbortController | null>(null);
+  useEffect(() => () => request.current?.abort(), []);
+
+  async function submit(event: FormEvent<HTMLFormElement>) {
+    event.preventDefault();
+    if (busy.current) return;
+    setError('');
+    if (!pending.current) {
+      const phone = validatePhoneNumber(fields.phone);
+      if (phone.error) {
+        setError(phone.error);
+        document.getElementById('quote-phone')?.focus();
+        return;
+      }
+      pending.current = {
+        ...fields,
+        phone: phone.number,
+        services: selected,
+        requestId: crypto.randomUUID(),
+        source_page: services.some((service) => service.value === preselected)
+          ? `/services/${preselected}/`
+          : '/request-a-quote/',
+      };
+    }
+    const controller = new AbortController();
+    request.current = controller;
+    busy.current = true;
+    setSending(true);
+    try {
+      const result = await sendServiceInquiry(pending.current, controller.signal);
+      if (controller.signal.aborted) return;
+      setReceipt(result);
+      pending.current = null;
+      setUncertain(false);
+    } catch (failure) {
+      if (controller.signal.aborted) return;
+      const rejected =
+        axios.isAxiosError(failure) && !!failure.response && failure.response.status < 500;
+      if (rejected) pending.current = null;
+      setUncertain(!rejected);
+      setError(inquiryError(failure));
+    } finally {
+      busy.current = false;
+      if (!controller.signal.aborted) setSending(false);
+    }
+  }
+
   useEffect(() => {
     setSelected(services.some((service) => service.value === preselected) ? [preselected!] : []);
   }, [preselected]);
@@ -74,12 +135,56 @@ export function QuoteForm() {
     </div>
   );
 
+  if (receipt)
+    return (
+      <section
+        aria-labelledby="inquiry-received-title"
+        className="rounded-2xl border border-gray-200 bg-white p-6 sm:p-8"
+      >
+        <CheckCircle2
+          size={40}
+          className="text-green-600"
+          aria-hidden="true"
+        />
+        <p className="mt-5 text-sm font-semibold text-blue-700">Request {receipt.number}</p>
+        <h2
+          id="inquiry-received-title"
+          className="mt-2 text-2xl font-bold"
+        >
+          Your inquiry has been received
+        </h2>
+        <p className="mt-3 text-sm leading-7 text-gray-600">
+          Our team will contact you using the details you provided to discuss your requirements and
+          quotation.
+        </p>
+        <p className="mt-4 text-sm font-semibold">
+          {receipt.services.join(' ? ') || 'General inquiry'}
+        </p>
+        <p className="mt-4 text-sm leading-6 text-gray-500">
+          Keep your reference number for follow-up. This is an inquiry; no order or payment has been
+          created.
+        </p>
+        <button
+          type="button"
+          onClick={() => {
+            setReceipt(null);
+            setFields(empty);
+            setError('');
+          }}
+          className="mt-6 min-h-11 rounded-lg border border-gray-300 px-4 text-sm font-semibold text-blue-700 hover:bg-blue-50"
+        >
+          Send another inquiry
+        </button>
+      </section>
+    );
+
   return (
     <form
-      onSubmit={(event) => event.preventDefault()}
+      onSubmit={submit}
+      aria-busy={sending}
       className="min-w-0"
     >
-      <fieldset>
+      <fieldset disabled={sending || uncertain}>
         <legend className="text-xl font-bold">Which services do you need?</legend>
         <p className="mt-2 text-sm leading-7 text-gray-600">
           Select one or more. If you are unsure, leave these unchecked and describe your needs
@@ -108,7 +213,7 @@ export function QuoteForm() {
           {field('phone', 'Phone / WhatsApp', {
             required: true,
             type: 'tel',
-            maxLength: 40,
+            maxLength: 30,
             autoComplete: 'tel',
             placeholder: 'Include your country code',
           })}
@@ -150,25 +255,46 @@ export function QuoteForm() {
           />
         </div>
         <p
-          id="quote-preview-notice"
+          id="quote-submit-notice"
           className="mt-5 text-sm leading-7 text-gray-600"
         >
-          Online submissions are not available yet. Details entered here are not saved or sent.
-          Required fields are marked with *.
+          Our team uses these details to contact you about your inquiry. Required fields are marked
+          with *.
         </p>
-        <button
-          type="button"
-          disabled
-          aria-describedby="quote-preview-notice"
-          className="mt-5 inline-flex min-h-12 items-center justify-center gap-2 rounded-lg bg-yellow-300 px-6 py-3 text-sm font-semibold text-gray-900 hover:bg-yellow-500 focus-visible:outline focus-visible:outline-2 focus-visible:outline-offset-4 focus-visible:outline-blue-600 disabled:cursor-not-allowed disabled:opacity-60"
+      </fieldset>
+      {error && (
+        <p
+          role="alert"
+          className="mt-5 rounded-lg border border-red-200 bg-red-50 p-4 text-sm leading-6 text-red-700"
         >
-          Send Inquiry
+          {error}
+        </p>
+      )}
+      {uncertain && (
+        <p className="mt-3 text-sm leading-6 text-gray-600">
+          Your details are kept unchanged for this retry to prevent duplicate inquiries.
+        </p>
+      )}
+      <button
+        type="submit"
+        disabled={sending}
+        aria-describedby="quote-submit-notice"
+        className="mt-5 inline-flex min-h-12 items-center justify-center gap-2 rounded-lg bg-yellow-300 px-6 py-3 text-sm font-semibold text-gray-900 hover:bg-yellow-500 focus-visible:outline focus-visible:outline-2 focus-visible:outline-offset-4 focus-visible:outline-blue-600 disabled:cursor-not-allowed disabled:opacity-60"
+      >
+        {sending ? 'Sending...' : uncertain ? 'Retry inquiry' : 'Send Inquiry'}
+        {sending ? (
+          <LoaderCircle
+            size={18}
+            className="motion-safe:animate-spin"
+            aria-hidden="true"
+          />
+        ) : (
           <ArrowRight
             size={18}
             aria-hidden="true"
           />
-        </button>
-      </fieldset>
+        )}
+      </button>
     </form>
   );
 }

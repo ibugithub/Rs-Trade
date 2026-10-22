@@ -1,6 +1,6 @@
 ﻿# RS Trade International: restructuring progress
 
-Last updated: 2026-10-20 (Asia/Dhaka).
+Last updated: 2026-10-22 (Asia/Dhaka).
 
 Source plan: [Website restructuring plan](restructuring-plan.md).
 
@@ -14,9 +14,9 @@ This is the ongoing tracker for the full website restructuring. Planning decisio
 
 **Completed:** Business direction, service list, order approach, full door-to-door responsibility, restructuring roadmap and planned sitemap have been documented.
 
-**Next:** Apply the pending orders migration when the owner is ready, then manually review cart/Buy Now submission, customer contact details in Admin > Orders, confirmation stock deduction and cancellation. Continue collecting Projects, About Us and Contact content. Service inquiries and online payments remain deferred.
+**Next:** Apply the pending orders migration when the owner is ready, then manually review cart/Buy Now submission, customer contact details in Admin > Orders, confirmation stock deduction and cancellation. Continue collecting Projects, About Us and Contact content. Service inquiries are now implemented, pending migration and manual review. Online payments remain deferred.
 
-**Implementation status:** Corporate pages, shared admin design and database-backed Ready Stock are implemented. Account carts sync through authenticated requests; selected cart products and Buy Now now submit orders with saved delivery details and customer phone numbers. Orders retain product/price snapshots, have unique references, and appear in admin for follow-up and fulfilment. Submission does not deduct or reserve stock. Admin confirmation validates and deducts stock; pre-shipment cancellation restores deducted stock once. The new orders migration remains pending on the live database. Addresses remain browser-saved per account. No online payment is enabled; service quotation forms remain static.
+**Implementation status:** Corporate pages, shared admin design and database-backed Ready Stock are implemented. Account carts sync through authenticated requests; selected cart products and Buy Now now submit orders with saved delivery details and customer phone numbers. Orders retain product/price snapshots, have unique references, and appear in admin for follow-up and fulfilment. Submission does not deduct or reserve stock. Admin confirmation validates and deducts stock; pre-shipment cancellation restores deducted stock once. Saved addresses sync to accounts and appear on admin User pages. Service quotation forms now submit validated inquiries to service-specific admin sections. The new service-request and notification migrations remain pending owner application. No online payment is enabled.
 
 ## Visual roadmap
 
@@ -439,3 +439,13 @@ Audited and tightened polling lifecycle. Polls only when the admin widget exists
 Reduced notification/dashboard count polling to every 2 minutes while visible/online, with a 5-minute error retry. Manual refresh and opening notifications still refresh immediately; existing stop/resume rules remain in place. Updated panel hint and asset version. JS syntax check passed; no migration or frontend build needed.
 
 Changed notification/dashboard count polling to every 3 minutes at the owner's request. Updated the panel hint and asset version; 5-minute error retry, manual refresh and stop/resume rules remain. JS syntax check passed.
+
+
+### 2026-10-22 - Service request administration and working quote form
+Implemented RS Sourcing, Supplier Verification, Quality Assurance, Shipping & Import and General Inquiries dashboard cards. Service-specific proxy admins filter a shared inquiry with normalized selected-service rows, so a multi-service submission has one contact/reference/status/notes record shown in every relevant section. Canonical request details support direct Follow-up status and private staff notes; customer snapshots are read-only, phone is callable, request-number/contact search, status/date filters and generic feature counts are available. General inquiries cover customers selecting no service. Website service copy remains static as requested.
+
+Connected the existing Request a Quote form, including preselected services, contact/requirements validation, normalized phone, HTTP(S)-only reference URLs, guest/optional authenticated submission, reference-number confirmation, busy/error feedback and same-payload retry with stable request ID. Public POST is rate limited; there is no public inquiry-list/detail endpoint. One inquiry notification is created atomically per accepted submission, with a Services filter, unread count and on-page new-request alerts. Existing 3-minute polling/5-minute error backoff and stop/resume rules remain. No email or external messages are sent.
+
+Essential in-memory submission/validation/duplicate/conflict/transaction rollback checks passed, along with multi-service/general filtering, notification links/counts, admin detail/status/note saves and immutable snapshots. Django/migration consistency, changed-source lint/JS syntax and frontend build/type checks passed; frontend export rebuilt. No test files or live database writes. Pending migrations: service_requests/0001_initial and notifications/0002_notification_service_request_alter_notification_kind. Owner should run python manage.py migrate before use. Manual service-form/admin interaction review remains pending.
+
+Renamed the service's admin/receipt label from Quality Assurance to Quality Inspection and removed the separate General Inquiries proxy/admin card at the owner's request. Shared inquiry records remain intact, including older inquiries with no selected service. Django system check passed. Metadata/proxy migration service_requests/0002_delete_generalinquiry_alter_qualityassurance_options_and_more is pending owner application with python manage.py migrate. No frontend rebuild required.

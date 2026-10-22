@@ -46,6 +46,7 @@ urlpatterns = [
     path('api/catalog/', include('catalog.urls')),
     path('api/cart/', AccountCartView.as_view(), name='account-cart'),
     path('api/orders/', include('orders.urls')),
+    path('api/service-requests/', include('service_requests.urls')),
     path('api/users/', include('users.urls')),
     path('api/profile/', include('userProfile.urls')),
     # Swagger URLs

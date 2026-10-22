@@ -11,12 +11,13 @@ from django.views.decorators.http import require_GET, require_POST
 
 from catalog.models import Cart
 from orders.models import Order
+from service_requests.models import ServiceRequest
 from .models import Notification, NotificationRead
 
 
 def permitted_notifications(site, request):
     kinds = []
-    for model, kind in ((Order, 'order'), (Cart, 'cart')):
+    for model, kind in ((Order, 'order'), (Cart, 'cart'), (ServiceRequest, 'service')):
         model_admin = site._registry.get(model)
         if model_admin and model_admin.has_view_permission(request):
             kinds.append(kind)
@@ -32,7 +33,7 @@ def private_response(data, status=200):
 def dashboard_counts(site, request):
     counts = {}
     for model, model_admin in site._registry.items():
-        if model_admin.has_module_permission(request) and model_admin.has_view_permission(request):
+        if model_admin.has_module_permission(request) and model_admin.has_view_permission(request) and any(model_admin.get_model_perms(request).values()):
             queryset = model_admin.get_queryset(request)
             if model is Cart:
                 queryset = queryset.exclude(items=[])
@@ -53,18 +54,21 @@ def feed(request, site):
         entries = []
         for notification in notifications[:40]:
             kind = notification.kind
-            target_id = notification.order_id if kind == 'order' else notification.cart_id
+            target_id = {'order': notification.order_id, 'cart': notification.cart_id, 'service': notification.service_request_id}[kind]
+            route = {'order': 'orders_order_change', 'cart': 'catalog_cart_change', 'service': 'service_requests_servicerequest_change'}[kind]
             entries.append({
                 'id': notification.pk, 'kind': kind, 'title': notification.title,
                 'description': notification.description, 'read': notification.is_read,
                 'updatedAt': notification.updated_at.isoformat(),
-                'url': reverse(f'{site.name}:orders_order_change' if kind == 'order' else f'{site.name}:catalog_cart_change', args=[target_id]),
+                'url': reverse(f'{site.name}:{route}', args=[target_id]),
             })
         return private_response({
             'items': entries, 'unread': unread.count(),
             'orderUnread': unread.filter(kind='order').count(),
             'cartUnread': unread.filter(kind='cart').count(),
+            'serviceUnread': unread.filter(kind='service').count(),
             'latestOrderId': notifications.filter(kind='order').aggregate(value=Max('id'))['value'] or 0,
+            'latestServiceId': notifications.filter(kind='service').aggregate(value=Max('id'))['value'] or 0,
             'asOf': as_of.isoformat(),
             'counts': dashboard_counts(site, request) if request.GET.get('counts') == '1' else {},
         })
