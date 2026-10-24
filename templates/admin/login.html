@@ -1,0 +1,86 @@
+{% extends "admin/base_site.html" %}
+{% load i18n static %}
+
+{% block title %}{% if form.errors %}{% translate "Error:" %} {% endif %}Sign in | RS Trade Admin{% endblock %}
+
+{% block extrastyle %}
+{{ block.super }}
+<link rel="stylesheet" href="{% static 'admin/css/login.css' %}">
+{{ form.media }}
+{% endblock %}
+
+{% block responsive %}
+{{ block.super }}
+<link rel="stylesheet" href="{% static 'admin/css/rs_login.css' %}?v=20261024-7">
+{% endblock %}
+
+{% block bodyclass %}{{ block.super }} login rs-login{% endblock %}
+{% block usertools %}{% endblock %}
+{% block nav-global %}{% endblock %}
+{% block nav-sidebar %}{% endblock %}
+{% block content_title %}{% endblock %}
+{% block nav-breadcrumbs %}{% endblock %}
+
+{% block header %}
+<header id="header" class="rs-login-hero">
+    {% include 'admin/includes/access_hero.html' %}
+</header>
+{% endblock %}
+
+{% block content %}
+<div id="content-main">
+    <header class="rs-login__intro">
+        <span class="rs-login__eyebrow">Authorized entry</span>
+        <h2 id="login-title">Enter operations</h2>
+        <p>Use your staff account to continue.</p>
+    </header>
+
+    {% if form.errors and not form.non_field_errors %}
+    <p class="errornote" role="alert">
+        {% blocktranslate count counter=form.errors.items|length %}Please correct the error below.{% plural %}Please correct the errors below.{% endblocktranslate %}
+    </p>
+    {% endif %}
+
+    {% if form.non_field_errors %}
+        {% for error in form.non_field_errors %}<p class="errornote" role="alert">{{ error }}</p>{% endfor %}
+    {% endif %}
+
+    {% if user.is_authenticated %}
+    <p class="errornote" role="alert">
+        {% blocktranslate trimmed %}
+        You are authenticated as {{ username }}, but are not authorized to access this page. Sign in with another account.
+        {% endblocktranslate %}
+    </p>
+    {% endif %}
+
+    <form action="{{ app_path }}" method="post" id="login-form" aria-labelledby="login-title">
+        {% csrf_token %}
+        <div class="form-row">
+            {{ form.username.errors }}
+            <label for="{{ form.username.id_for_label }}">Email address</label>
+            {{ form.username }}
+        </div>
+        <div class="form-row">
+            {{ form.password.errors }}
+            <label for="{{ form.password.id_for_label }}">Password</label>
+            {{ form.password }}
+            <input type="hidden" name="next" value="{{ next }}">
+        </div>
+        {% url 'admin_password_reset' as password_reset_url %}
+        {% if password_reset_url %}
+        <div class="password-reset-link">
+            <a href="{{ password_reset_url }}">Forgot password?</a>
+        </div>
+        {% endif %}
+        <div class="submit-row">
+            <input type="submit" value="Enter dashboard">
+            <span aria-hidden="true">&rarr;</span>
+        </div>
+    </form>
+
+    <p class="rs-login__note">
+        <svg viewBox="0 0 24 24" aria-hidden="true"><path d="M12 3 5 6v5c0 4.6 2.9 8.8 7 10 4.1-1.2 7-5.4 7-10V6l-7-3Z"/><path d="m9 12 2 2 4-4"/></svg>
+        Protected staff workspace
+    </p>
+</div>
+{% endblock %}

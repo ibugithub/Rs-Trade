@@ -1,0 +1,38 @@
+{% extends "admin/base_site.html" %}
+{% load static %}
+
+{% block title %}Signed out | RS Trade Admin{% endblock %}
+
+{% block responsive %}
+{{ block.super }}
+<link rel="stylesheet" href="{% static 'admin/css/rs_login.css' %}?v=20261024-7">
+{% endblock %}
+
+{% block bodyclass %}{{ block.super }} login rs-login rs-logout{% endblock %}
+{% block usertools %}{% endblock %}
+{% block nav-global %}{% endblock %}
+{% block nav-sidebar %}{% endblock %}
+{% block content_title %}{% endblock %}
+{% block nav-breadcrumbs %}{% endblock %}
+
+{% block header %}
+<header id="header" class="rs-login-hero">
+    {% include 'admin/includes/access_hero.html' %}
+</header>
+{% endblock %}
+
+{% block content %}
+<div id="content-main" class="rs-logout__content">
+    <div class="rs-logout__status" aria-hidden="true">
+        <svg viewBox="0 0 24 24"><path d="M20 6 9 17l-5-5"/></svg>
+    </div>
+    <span class="rs-login__eyebrow">Session complete</span>
+    <h2>Your workspace<br>is secured.</h2>
+    <p>You have been signed out successfully. Your admin session is no longer active on this browser.</p>
+    <div class="rs-logout__closed"><span></span>Session closed</div>
+    <a class="rs-login__action" href="{% url 'admin:index' %}">
+        <span>Return to sign in</span>
+        <strong aria-hidden="true">&rarr;</strong>
+    </a>
+</div>
+{% endblock %}

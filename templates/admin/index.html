@@ -1,6 +1,11 @@
 {% extends "admin/base_site.html" %}
-{% load i18n log %}
+{% load i18n log static %}
 
+{% block responsive %}
+{{ block.super }}
+<link rel="stylesheet" href="{% static 'admin/css/rs_dashboard.css' %}?v=20261024-8">
+<script src="{% static 'admin/js/rs_dashboard.js' %}?v=20261024-1" defer></script>
+{% endblock %}
 {% block coltype %}colM{% endblock %}
 {% block bodyclass %}{{ block.super }} dashboard rs-dashboard{% endblock %}
 {% block nav-breadcrumbs %}{% endblock %}
@@ -8,77 +13,68 @@
 {% block content_title %}{% endblock %}
 {% block sidebar %}{% endblock %}
 
-{% block content %}
-<div id="content-main">
-    {% if app_label %}
-    <a class="rs-section-back" href="{% url 'admin:index' %}">&larr; Back to dashboard</a>
-    {% endif %}
-
-
-    <div class="rs-dashboard-layout{% if app_label %} rs-dashboard-layout--app{% endif %}">
-    <section class="rs-dashboard-intro" aria-labelledby="dashboard-title">
-        <div>
-            <h1 id="dashboard-title">{% if app_label %}{{ app_list.0.name }}{% else %}{{ title }}{% endif %}</h1>
-            <p class="rs-dashboard-description">
-                {% if app_label %}
-                    {% if app_label == 'catalog' %}Manage your products, categories, promotions and customer carts.
-                    {% elif app_label == 'orders' %}Review orders, contact customers and track fulfilment.
-                    {% elif app_label == 'accounts' or app_label == 'users' or app_label == 'auth' or app_label == 'userProfile' %}Manage customer accounts, profiles and access permissions.
-                    {% else %}Choose a section to view or manage your records.{% endif %}
-                {% else %}
-                    Manage your products, orders and customer accounts from one place.
-                {% endif %}
-            </p>
-        </div>
-        {% if site_url %}
-        <a class="rs-button rs-button--primary" href="{{ site_url }}">
-            View website <span aria-hidden="true">&nearr;</span>
-        </a>
-        {% endif %}
-    </section>
-        {% if not app_label %}<h2 id="activity-title" class="rs-activity-heading">Recent activity</h2>{% endif %}
-        <section class="rs-management-group" aria-label="Admin features">
-            <div class="rs-model-grid">
-                {% for app in app_list %}
-                {% include "admin/management_cards.html" %}
-                {% empty %}
-                <section class="rs-card rs-empty-state">
-                    <h2>No management sections available</h2>
-                    <p>Your account does not have permission to manage records. Contact your administrator for access.</p>
-                </section>
-                {% endfor %}
+{% block header %}
+<header id="rs-workspace-header">
+    <a class="rs-workspace-brand" href="{% url 'admin:index' %}"><span>RS</span><strong>Trade<small>Operations</small></strong></a>
+    <div class="rs-workspace-tools">
+        {% include 'admin/includes/notifications.html' %}
+        <details class="rs-account-menu">
+            <summary aria-label="Account menu"><svg viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="1.7" aria-hidden="true"><circle cx="12" cy="8" r="4"/><path d="M4 21v-2a8 8 0 0 1 16 0v2"/></svg></summary>
+            <div class="rs-account-menu__panel">
+                <small>Signed in as</small><strong>{{ user.get_username }}</strong>
+                {% if user.has_usable_password %}<a href="{% url 'admin:password_change' %}">Change password &rarr;</a>{% endif %}
+                <form id="logout-form" method="post" action="{% url 'admin:logout' %}">{% csrf_token %}<button type="submit">Sign out &rarr;</button></form>
             </div>
-        </section>
+        </details>
+    </div>
+</header>
+{% endblock %}
 
+{% block content %}
+<div class="rs-workspace">
+    <section class="rs-workspace-intro" aria-labelledby="dashboard-title">
+        <div class="rs-workspace-intro__top"><time datetime="{% now 'Y-m-d' %}">{% now 'd M Y' %}</time></div>
+        <h1 id="dashboard-title">{% if app_label %}{{ app_list.0.name }}{% else %}Ready for<br><span>what’s next.</span>{% endif %}</h1>
+        <div class="rs-workspace-intro__bottom"><p>Manage your business.<br>Keep things moving.</p>{% if site_url %}<a href="{{ site_url }}">Website <span aria-hidden="true">&nearr;</span></a>{% endif %}</div>
+    </section>
+    {% if app_label %}<a class="rs-workspace-back" href="{% url 'admin:index' %}">&larr; Back to dashboard</a>{% endif %}
+    <div class="rs-workspace-body">
+        <section class="rs-directory" aria-label="Management features">
+            <div class="rs-directory-search" hidden data-directory-search>
+                <svg viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="1.7" aria-hidden="true"><circle cx="10.5" cy="10.5" r="6.5"/><path d="m16 16 5 5"/></svg>
+                <input type="search" placeholder="Find a feature..." aria-label="Find a management feature" data-directory-input>
+            </div>
+            <div class="rs-directory-list">
+                {% for app in app_list %}{% for model in app.models %}
+                <article class="rs-feature" data-directory-feature data-feature-name="{{ model.name }}">
+                    <div class="rs-feature__icon" aria-hidden="true">{% include 'admin/includes/dashboard_icon.html' %}</div>
+                    <div class="rs-feature__body">
+                        <h2>{% if model.admin_url %}<a href="{{ model.admin_url }}">{{ model.name }}</a>{% else %}{{ model.name }}{% endif %}</h2>
+                        <p>{% include 'admin/model_description.html' %}</p>
+                        <div class="rs-feature__footer">
+                            {% if model.admin_url %}<span class="rs-feature__count" data-dashboard-count="{{ model.admin_url }}" data-count-name="{{ model.name }}" aria-label="Loading {{ model.name|lower }} count">&mdash;</span>{% endif %}
+                            {% if model.add_url %}<a class="rs-feature__add" href="{{ model.add_url }}" aria-label="Add {{ model.name }}">+ Add</a>{% endif %}
+                        </div>
+                    </div>
+                    {% if model.admin_url %}<a class="rs-feature__open" href="{{ model.admin_url }}" aria-label="{% if model.view_only %}View{% else %}Manage{% endif %} {{ model.name }}">&nearr;</a>{% endif %}
+                </article>
+                {% endfor %}{% empty %}<p class="rs-directory-empty">No management features are available for your account.</p>{% endfor %}
+            </div>
+            <p class="rs-directory-empty" data-directory-empty hidden role="status">No matching features. Try another name.</p>
+        </section>
         {% if not app_label %}
-        <section class="rs-activity-group" aria-labelledby="activity-title">
-            <div class="rs-card rs-recent-activity">
+        <section class="rs-workspace-activity" aria-labelledby="activity-title">
+            <div class="rs-workspace-activity__heading"><span aria-hidden="true">↳</span><h2 id="activity-title">Recent activity</h2></div>
             {% get_admin_log 6 as admin_log for_user user %}
-            {% if admin_log %}
-            <ul class="rs-activity-list">
+            <ol>
                 {% for entry in admin_log %}
                 <li>
-                    <div>
-                        <span class="rs-activity-type">
-                            {% if entry.is_addition %}Added{% elif entry.is_change %}Updated{% else %}Deleted{% endif %}
-                            {% if entry.content_type %} &middot; {{ entry.content_type.name }}{% endif %}
-                        </span>
-                        {% if entry.is_deletion or not entry.get_admin_url %}
-                        <span class="rs-activity-name">{{ entry.object_repr }}</span>
-                        {% else %}
-                        <a class="rs-activity-name" href="{{ entry.get_admin_url }}">{{ entry.object_repr }}</a>
-                        {% endif %}
-                    </div>
+                    <span class="rs-workspace-activity__type">{% if entry.is_addition %}Added{% elif entry.is_change %}Updated{% else %}Deleted{% endif %}{% if entry.content_type %} / {{ entry.content_type.name }}{% endif %}</span>
+                    {% if entry.is_deletion or not entry.get_admin_url %}<strong>{{ entry.object_repr }}</strong>{% else %}<a href="{{ entry.get_admin_url }}">{{ entry.object_repr }}</a>{% endif %}
                     <time datetime="{{ entry.action_time|date:'c' }}">{{ entry.action_time|date:'j M Y, H:i' }}</time>
                 </li>
-                {% endfor %}
-            </ul>
-            {% else %}
-            <div class="rs-empty-state">
-                <p>No recent changes yet.</p>
-            </div>
-            {% endif %}
-            </div>
+                {% empty %}<li>No recent changes yet.</li>{% endfor %}
+            </ol>
         </section>
         {% endif %}
     </div>

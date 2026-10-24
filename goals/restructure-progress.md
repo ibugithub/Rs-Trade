@@ -480,3 +480,29 @@ Replaced repeated permission fieldset cards with a compact feature/action table,
 
 ### 2026-10-24 - Select all permissions
 Added a permission-only Select all button that toggles to Clear selection when every available checkbox in the visible rows is checked. Respects search/Selected only filters, leaves hidden selections unchanged and skips disabled inputs. Updates the selected count and disables itself when no choices match. Versioned picker assets; JavaScript syntax and diff checks passed. No database changes or migrations.
+
+
+### 2026-10-24 - Mobile-first admin login
+Rebuilt the admin sign-in screen around a mobile-first card with a clearer welcome hierarchy, compact RS Trade branding, full-width 50px form controls, a prominent sign-in action, focused-field feedback and an authorized-staff note. The card centers within the viewport without the previous large mobile dead space and gains extra padding on wider screens. Django still owns authentication, validation, CSRF and password-reset behavior. The admin login rendered successfully with the override loaded after shared styles; required auth fields and CSRF remained present, Django system checks passed and no database changes or migrations were needed. Visual browser review remains pending because no controllable browser session was available.
+
+Replaced the conventional centered card with a distinctive full-screen operations gateway. Mobile now uses a navy trade-route hero flowing into an overlapping light sign-in surface; wider screens transform the same composition into an asymmetric split workspace. Added route nodes, cargo marker, operational labels, editorial typography, underlined inputs and a directional dashboard action without external image assets.
+
+Applied the gateway system to Django's signed-out page. It now confirms that the session is closed with a calm security state and provides one prominent route back to sign-in, while sharing the same responsive hero through a reusable template include.
+
+Removed the decorative route and yellow RS shipment marker from the shared login/logout hero at the owner's request.
+
+Fixed the 510–750px access-page breakpoint where Django's responsive login styles capped the container at 480px. The page container and light form surface now explicitly stretch to the viewport at all pre-desktop widths.
+
+Fixed the mobile dashboard header collapsing over the page title by replacing Django's inherited flex behavior with an explicit two-row header grid. Narrow phones place the account email on its own line above the notification, password and sign-out controls; wider mobile screens keep the compact single account row.
+
+### 2026-10-24 - New dashboard directory design
+Replaced the card dashboard with a cream-and-sage workspace, large editorial heading, numbered feature directory, search and a separate activity panel. A dedicated header now reserves its own height independently of Django's header styling. Notifications remain visible beside an accessible account disclosure containing password and CSRF-protected sign-out actions. Mobile uses one directory column; tablet uses two and desktop adds the activity rail. In-memory rendering checks verified all authorized manage/add URLs, staff visibility, count hooks and recent activity; Django and JavaScript syntax checks passed. No live data changes. Visual browser review remains pending.
+
+Replaced the rejected directory presentation with a navy-and-white app-style workspace matching the accepted login palette. The navy introduction flows into a floating search field and a two-column mobile tile grid with colored feature icons, prominent counts and add/open actions. Tablet uses three columns; desktop adds descriptions and the activity rail. Retained account menu, search, notification and permission behavior. Essential in-memory dashboard rendering and Django checks passed; visual browser review remains pending.
+
+Corrected desktop composition at 1100px and above: navy hero background now extends to both viewport edges beneath the header, the brand/account controls align with the centered content, and heading/website actions use a balanced two-column layout. Removed the disconnected rounded hero edges and excess desktop whitespace. Mobile/tablet rules are unchanged; versioned the stylesheet for refresh.
+
+
+
+### 2026-10-24 - Restrained mobile dashboard refinement
+After rejecting a more dramatic console concept, retained the existing dashboard structure and refined its presentation. Mobile now has a shorter white header with a compact account row, tighter feature cards, softer elevation, clearer type hierarchy and more compact recent activity. Tablet moves to two feature columns and desktop keeps the established dashboard/activity layout with an adaptive grid. Existing links, counts, permissions and notification behavior remain unchanged.
