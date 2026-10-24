@@ -1,0 +1,15 @@
+<svg viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="1.7" stroke-linecap="round" stroke-linejoin="round">
+{% if model.object_name == 'Cart' %}
+<path d="M3 3h2l3 12h11l2-9H6M9 15l-1 3h11"/><circle cx="9" cy="21" r="1"/><circle cx="18" cy="21" r="1"/>
+{% elif model.object_name == 'User' or model.object_name == 'Group' %}
+<circle cx="10" cy="8" r="4"/><path d="M3 21v-2a7 7 0 0 1 14 0v2M19 5a4 4 0 0 1 0 7M22 21v-3a6 6 0 0 0-3-5"/>
+{% elif model.object_name == 'Category' or model.object_name == 'SubCategory' %}
+<rect x="3" y="3" width="7" height="7" rx="2"/><rect x="14" y="3" width="7" height="7" rx="2"/><rect x="3" y="14" width="7" height="7" rx="2"/><rect x="14" y="14" width="7" height="7" rx="2"/>
+{% elif model.object_name == 'Deal' or model.object_name == 'DealProduct' %}
+<path d="M3 3h8l10 10-8 8L3 11Z"/><circle cx="7.5" cy="7.5" r="1"/>
+{% elif model.object_name == 'Product' %}
+<path d="m12 3 9 5-9 5-9-5 9-5ZM3 8v9l9 5 9-5V8M12 13v9"/>
+{% else %}
+<rect x="5" y="4" width="14" height="18" rx="2"/><path d="M9 4V2h6v2M9 10h6M9 14h6M9 18h4"/>
+{% endif %}
+</svg>

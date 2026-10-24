@@ -1,0 +1,53 @@
+<div class="rs-cart-summary">
+    <div><span>Different products</span><strong>{{ rows|length }}</strong></div>
+    <div><span>Total quantity</span><strong>{{ units }}</strong></div>
+    <div>
+        <span>{% if missing_products %}Known products subtotal{% else %}Product subtotal{% endif %}</span>
+        <strong>BDT {{ subtotal|floatformat:"2g" }}</strong>
+    </div>
+</div>
+
+{% if rows %}
+<div class="rs-cart-table-scroll" tabindex="0" role="region" aria-label="Cart products">
+    <table class="rs-cart-table">
+        <caption class="sr-only">Saved cart products with current prices and availability</caption>
+        <thead>
+            <tr>
+                <th scope="col">Product</th>
+                <th scope="col">Product ID</th>
+                <th scope="col">Unit price</th>
+                <th scope="col">Quantity</th>
+                <th scope="col">Line total</th>
+                <th scope="col">Availability</th>
+            </tr>
+        </thead>
+        <tbody>
+            {% for row in rows %}
+            <tr>
+                <td>
+                    {% if row.product %}
+                    <a href="{{ row.url }}">{{ row.product.name }}</a>
+                    {% if row.product.sku %}<small>SKU: {{ row.product.sku }}</small>{% endif %}
+                    {% else %}
+                    <strong>Deleted product</strong>
+                    <small>This product is no longer in the catalog.</small>
+                    {% endif %}
+                </td>
+                <td>#{{ row.id }}</td>
+                <td>{% if row.product %}BDT {{ row.product.price|floatformat:"2g" }}{% else %}&mdash;{% endif %}</td>
+                <td>{{ row.quantity }}</td>
+                <td>{% if row.product %}BDT {{ row.line_total|floatformat:"2g" }}{% else %}&mdash;{% endif %}</td>
+                <td>
+                    <span class="rs-cart-availability{% if row.availability != 'Available' %} rs-cart-availability--warning{% endif %}">{{ row.availability }}</span>
+                    {% if row.product %}<small>{{ row.product.stock_quantity }} in stock</small>{% endif %}
+                </td>
+            </tr>
+            {% endfor %}
+        </tbody>
+    </table>
+</div>
+{% else %}
+<p>This cart is empty.</p>
+{% endif %}
+
+<p class="rs-cart-note">Prices and availability reflect the current catalog. Delivery is excluded. A cart does not reserve stock or confirm an order.{% if missing_products %} Deleted products are excluded from the subtotal.{% endif %}</p>

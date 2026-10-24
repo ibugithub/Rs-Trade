@@ -1,4 +1,11 @@
 from types import MethodType
+from cloudinary.models import CloudinaryField
+from django import forms
+from django.contrib.admin import ShowFacets
+from django.urls import path, reverse
+from .admin_details import enable_record_details
+from notifications.views import feed, mark_read
+from users.widgets import RecordFileInput
 
 
 ACCOUNT_APP_LABELS = {'auth', 'users', 'userProfile', 'userprofile'}
@@ -8,18 +15,63 @@ ACCOUNT_MODEL_ORDER = {
     'Group': 3,
 }
 APP_ORDER = {
-    'accounts': 1,
-    'catalog': 2,
+    'catalog': 1,
+    'orders': 2,
+    'accounts': 3,
 }
 
 
+def configure_model_admin(model_admin):
+    """Shared presentation and list limits for existing and future models."""
+    model_admin.change_list_template = 'admin/modern_change_list.html'
+    if not model_admin.search_help_text:
+        model_admin.search_help_text = f'Search {model_admin.model._meta.verbose_name_plural.lower()}'
+    model_admin.list_per_page = 25
+    model_admin.list_max_show_all = 25
+    model_admin.show_full_result_count = False
+    model_admin.show_facets = ShowFacets.NEVER
+    if not getattr(model_admin, '_rs_file_widget_enabled', False):
+        original_formfield = model_admin.formfield_for_dbfield
+
+        def formfield_for_dbfield(db_field, request, **kwargs):
+            field = original_formfield(db_field, request, **kwargs)
+            if isinstance(db_field, CloudinaryField) and field is not None and isinstance(field.widget, forms.ClearableFileInput):
+                field.widget = RecordFileInput(attrs=dict(field.widget.attrs))
+                field.label = str(field.label).replace('_', ' ')
+            return field
+
+        model_admin.formfield_for_dbfield = formfield_for_dbfield
+        model_admin._rs_file_widget_enabled = True
+    enable_record_details(model_admin)
+
+
 def configure_admin_site(site):
+    for model_admin in site._registry.values():
+        configure_model_admin(model_admin)
+
     if getattr(site, '_rs_trade_grouped_app_list', False):
         return
 
     original_get_app_list = site.get_app_list
+    original_get_urls = site.get_urls
+    original_register = site.register
+
+    def register(self, model_or_iterable, admin_class=None, **options):
+        existing_models = set(self._registry)
+        result = original_register(model_or_iterable, admin_class, **options)
+        for model in self._registry.keys() - existing_models:
+            configure_model_admin(self._registry[model])
+        return result
+
+    site.register = MethodType(register, site)
 
     def get_grouped_app_list(self, request, app_label=None):
+        if app_label == 'accounts':
+            return [
+                app for app in get_grouped_app_list(self, request)
+                if app['app_label'] == 'accounts'
+            ]
+
         app_list = original_get_app_list(request, app_label)
 
         if app_label is not None:
@@ -46,7 +98,7 @@ def configure_admin_site(site):
             grouped_apps.append({
                 'name': 'Accounts',
                 'app_label': 'accounts',
-                'app_url': '#',
+                'app_url': reverse(f'{self.name}:accounts'),
                 'has_module_perms': has_account_permissions,
                 'models': account_models,
             })
@@ -55,4 +107,17 @@ def configure_admin_site(site):
         return grouped_apps
 
     site.get_app_list = MethodType(get_grouped_app_list, site)
+
+    def accounts_view(request):
+        return site.app_index(request, 'accounts')
+
+    def get_urls(self):
+        return [
+            path('notifications/', self.admin_view(lambda request: feed(request, self)), name='notification-feed'),
+            path('notifications/read/', self.admin_view(lambda request: mark_read(request, self)), name='notification-read'),
+            path('accounts/', self.admin_view(accounts_view), name='accounts'),
+            *original_get_urls(),
+        ]
+
+    site.get_urls = MethodType(get_urls, site)
     site._rs_trade_grouped_app_list = True

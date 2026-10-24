@@ -1,9 +1,10 @@
-import Signin from "@/components/accounts/signin";
-import { Metadata } from "next";
+import Signin from '@/components/accounts/signin';
+import { Metadata } from 'next';
 
 export const metadata: Metadata = {
-  title: "Login Page - Solid SaaS Boilerplate",
-  description: "This is Login page for Startup Pro",
+  title: 'Sign In | RS Trade International',
+  description: 'Sign in to your RS Trade International account.',
+  robots: { index: false, follow: true },
 };
 
 const SigninPage = () => {

@@ -43,6 +43,9 @@ INSTALLED_APPS = [
     'cloudinary',
     'cloudinary_storage',
     'catalog',
+    'orders',
+    'notifications',
+    'service_requests',
     'users',
     'userProfile',
     'rest_framework',
@@ -69,6 +72,9 @@ TEMPLATES = [
         'DIRS': [BASE_DIR / 'templates'],
         'APP_DIRS': True,
         'OPTIONS': {
+            'libraries': {
+                'admin_controls': 'users.templatetags.admin_controls',
+            },
             'context_processors': [
                 'django.template.context_processors.debug',
                 'django.template.context_processors.request',
@@ -91,10 +97,17 @@ if DATABASE_URL:
     DATABASES = {
         'default': dj_database_url.parse(
             DATABASE_URL,
-            conn_max_age=600,
+            conn_max_age=0,
             ssl_require=True,
         )
     }
+    # Reuse a small number of PostgreSQL connections across request threads.
+    DATABASES['default']['OPTIONS']['pool'] = {
+        'min_size': 1,
+        'max_size': 4,
+        'timeout': 30,
+    }
+    DATABASES['default']['CONN_HEALTH_CHECKS'] = True
 else:
     DATABASES = {
         'default': {
@@ -178,6 +191,9 @@ CLOUDINARY_STORAGE = {
     'API_KEY': os.environ.get('CLOUDINARY_API_KEY'),
     'API_SECRET': os.environ.get('CLOUDINARY_API_SECRET')
 }
+
+# The SDK reads credentials from the environment; only set HTTPS delivery here.
+CLOUDINARY = {'secure': True}
 
 DEFAULT_FILE_STORAGE = 'cloudinary_storage.storage.MediaCloudinaryStorage'
 

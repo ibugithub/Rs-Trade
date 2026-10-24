@@ -1,0 +1,15 @@
+{% if model.object_name == 'Product' %}Manage product details, prices and available stock.
+{% elif model.object_name == 'Order' %}Review orders, call customers and update fulfilment status.
+{% elif model.object_name == 'Cart' %}View customer selections, quantities and current product totals.
+{% elif model.object_name == 'Category' %}Organize the main groups in your catalog.
+{% elif model.object_name == 'SubCategory' %}Organize products within each category.
+{% elif model.object_name == 'Deal' %}Manage promotions and their schedules.
+{% elif model.object_name == 'DealProduct' %}Choose products and prices for promotions.
+{% elif model.object_name == 'User' %}Manage customer and staff accounts.
+{% elif model.object_name == 'Profile' %}View and update account profile records.
+{% elif model.object_name == 'Group' %}Set staff roles and access permissions.
+{% elif model.object_name == 'RSSourcing' %}Review sourcing requirements, contact customers and track quotations.
+{% elif model.object_name == 'SupplierVerification' %}Manage supplier checks and customer follow-up.
+{% elif model.object_name == 'QualityAssurance' %}Review inspection requests and quality requirements.
+{% elif model.object_name == 'ShippingImport' %}Manage shipping, import and delivery inquiries.
+{% else %}View and maintain {{ model.name|lower }}.{% endif %}

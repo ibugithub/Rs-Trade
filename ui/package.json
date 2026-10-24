@@ -3,6 +3,8 @@
   "version": "0.1.0",
   "private": true,
   "scripts": {
+    "format": "prettier --write app components configs content lib types",
+    "format:check": "prettier --check app components configs content lib types",
     "dev": "next dev",
     "build": "next build",
     "start": "next start",
@@ -15,7 +17,6 @@
     "class-variance-authority": "^0.7.1",
     "clsx": "^2.1.1",
     "dayjs": "^1.11.13",
-    "framer-motion": "^12.3.1",
     "install": "^0.13.0",
     "js-cookie": "^3.0.5",
     "jwt-decode": "^4.0.0",
@@ -23,9 +24,9 @@
     "npm": "^11.1.0",
     "react": "^19.0.0",
     "react-dom": "^19.0.0",
-    "react-inner-image-zoom": "^4.0.1",
     "react-redux": "^9.2.0",
     "react-toastify": "^11.0.3",
+    "react-zoom-pan-pinch": "^4.2.0",
     "RsTrade": "file:",
     "tailwind-merge": "^3.0.2",
     "tailwindcss-animate": "^1.0.7"
@@ -40,6 +41,7 @@
     "eslint-config-next": "15.1.6",
     "next": "^15.3.1",
     "postcss": "^8",
+    "prettier": "^3.9.10",
     "tailwindcss": "^3.4.1",
     "typescript": "^5"
   }

@@ -1,21 +1,45 @@
 {% extends "admin/base.html" %}
 {% load static i18n %}
 
-{% block title %}{{ title }} | Rs Trade Admin{% endblock %}
+{% block title %}{{ title }} | RS Trade Admin{% endblock %}
 
-{% block extrastyle %}
+{# Keep the admin consistent with the website's light theme. #}
+{% block dark-mode-vars %}{% endblock %}
+
+{% block responsive %}
 {{ block.super }}
-<link rel="stylesheet" href="{% static 'admin/css/custom_admin.css' %}">
+{# Bump the version when this stylesheet changes so browsers fetch the new theme. #}
+<link rel="stylesheet" href="{% static 'admin/css/custom_admin.css' %}?v=20261020-3">
+{% if has_permission and not is_popup %}
+<link rel="stylesheet" href="{% static 'admin/css/notifications.css' %}?v=20261024-1">
+<script src="{% static 'admin/js/notifications.js' %}?v=20261024-1" defer></script>
+{% endif %}
 {% endblock %}
 
 {% block branding %}
 <a id="site-name" class="rs-admin-brand" href="{% url 'admin:index' %}">
     <span class="rs-admin-brand__mark">RS</span>
     <span class="rs-admin-brand__text">
-        <strong>Rs Trade</strong>
-        <small>Admin console</small>
+        <strong>Trade</strong>
+        <small>International</small>
     </span>
+    <span class="rs-admin-brand__label">Admin</span>
 </a>
+{% endblock %}
+
+{% block welcome-msg %}
+<span class="rs-admin-user">{% firstof user.get_short_name user.get_username %}</span>
+{% endblock %}
+
+{% block userlinks %}
+{% if has_permission and not is_popup %}{% include 'admin/includes/notifications.html' %}{% endif %}
+{% if user.has_usable_password %}
+<a href="{% url 'admin:password_change' %}">Change password</a>
+{% endif %}
+<form id="logout-form" method="post" action="{% url 'admin:logout' %}">
+    {% csrf_token %}
+    <button type="submit">Sign out</button>
+</form>
 {% endblock %}
 
 {% block nav-global %}{% endblock %}

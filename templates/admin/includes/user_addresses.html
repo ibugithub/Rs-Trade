@@ -1,0 +1,26 @@
+{% if section.records %}
+<p class="rs-detail-caption">{{ section.records|length }} saved address{{ section.records|length|pluralize }} &middot; Expand an address to view delivery details.</p>
+<div class="rs-user-addresses" role="region" aria-label="Saved addresses" tabindex="0">
+    {% for record in section.records %}
+    {% with address=record.original %}
+    <details class="rs-user-address"{% if address.is_default %} open{% endif %}>
+        <summary>
+            <span class="rs-user-address__title">{{ address.label }}{% if address.is_default %}<span class="rs-user-address__badge">Default</span>{% endif %}</span>
+            <span class="rs-user-address__recipient">{{ address.recipient }}</span>
+            <span class="rs-user-address__location">{{ address.city }}, {{ address.country }}</span>
+            <svg class="rs-user-address__chevron" width="18" height="18" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="1.7" aria-hidden="true"><path d="m6 9 6 6 6-6" /></svg>
+        </summary>
+        <div class="rs-user-address__body">
+            <dl>
+                <div><dt>Phone</dt><dd><a href="tel:{{ address.phone }}">{{ address.phone }}</a></dd></div>
+                <div><dt>Delivery address</dt><dd>{{ address.street }}<br>{{ address.city }}{% if address.postal_code %} {{ address.postal_code }}{% endif %}<br>{{ address.country }}</dd></div>
+            </dl>
+            <p class="rs-detail-caption">Updated {{ address.updated_at|date:'j M Y, H:i' }}</p>
+        </div>
+    </details>
+    {% endwith %}
+    {% endfor %}
+</div>
+{% else %}
+<p class="rs-detail-caption">{{ section.empty_message }}</p>
+{% endif %}

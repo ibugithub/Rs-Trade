@@ -1,0 +1,25 @@
+<form method="post" action="{{ request.get_full_path }}#order-followup" class="rs-followup-form" novalidate>
+    {% csrf_token %}
+    {% if follow_up_form.errors %}
+    <p class="errornote" role="alert">The update was not saved. Please check the highlighted fields.</p>
+    {{ follow_up_form.non_field_errors }}
+    {% endif %}
+    <div class="rs-detail-fields">
+        <div class="rs-followup-control">
+            <label for="{{ follow_up_form.status.id_for_label }}">Order status</label>
+            {{ follow_up_form.status }}
+            {{ follow_up_form.status.errors }}
+            <p class="rs-detail-caption">{{ follow_up_form.status.help_text }}</p>
+        </div>
+        <div class="rs-followup-control rs-detail-field--wide">
+            <label for="{{ follow_up_form.admin_notes.id_for_label }}">Admin notes</label>
+            {{ follow_up_form.admin_notes }}
+            {{ follow_up_form.admin_notes.errors }}
+            <p class="rs-detail-caption">{{ follow_up_form.admin_notes.help_text }}</p>
+        </div>
+    </div>
+    <div class="rs-followup-actions">
+        <button type="submit" name="_save" class="rs-button rs-button--primary">Save follow-up</button>
+        <p class="rs-detail-caption">Status and notes are saved together.</p>
+    </div>
+</form>

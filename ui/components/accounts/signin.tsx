@@ -1,17 +1,17 @@
-'use client';
+﻿'use client';
 
-import { motion } from "framer-motion";
-import Link from "next/link";
-import { useAppSelector, useAppDispatch } from "@/configs/redux/hooks";
-import { setUnVerified } from "@/configs/redux/auth/authSlice";
-import { useState } from "react";
-import { GoogleSignInButton } from "./googleSignIn";
-import { FacebookSignInButton } from "./facebookSignIn";
-import { MicrosoftSignInButton } from "./microsoftSignIn";
-import { useSaveTokens } from "./utils/useSaveTokens";
-import { toast } from "react-toastify";
-import axios from "axios";
-import { ResendVerification } from "./reSendVerification";
+import { ArrowLeft, ArrowRight, Eye, EyeOff, LoaderCircle } from 'lucide-react';
+import Link from 'next/link';
+import { useAppSelector, useAppDispatch } from '@/configs/redux/hooks';
+import { setUnVerified } from '@/configs/redux/auth/authSlice';
+import { useState } from 'react';
+import { GoogleSignInButton } from './googleSignIn';
+import { FacebookSignInButton } from './facebookSignIn';
+import { MicrosoftSignInButton } from './microsoftSignIn';
+import { useSaveTokens } from './utils/useSaveTokens';
+import { toast } from 'react-toastify';
+import axios from 'axios';
+import { ResendVerification } from './reSendVerification';
 
 export const Signin = () => {
   const dispatch = useAppDispatch();
@@ -23,7 +23,7 @@ export const Signin = () => {
     email: '',
     password: '',
   });
-  const [keepSignedIn, setKeepSignedIn] = useState(false);
+  const [showPassword, setShowPassword] = useState(false);
 
   const handleChange = (e: React.ChangeEvent<HTMLInputElement>) => {
     setFormData({
@@ -34,6 +34,7 @@ export const Signin = () => {
 
   const handleEmailSignIn = async (e: React.FormEvent) => {
     e.preventDefault();
+    if (loading) return;
     setLoading(true);
     setError(null);
     try {
@@ -44,7 +45,6 @@ export const Signin = () => {
       });
       saveTokensToLocal(Tokens.data);
     } catch (err) {
-      console.log('the error is', err);
       if (err instanceof Error) {
         if (axios.isAxiosError(err) && err.response) {
           if (err.response.status === 405) {
@@ -67,96 +67,195 @@ export const Signin = () => {
     return <ResendVerification emailProp={formData.email} />;
   }
 
+  const inputClass =
+    'min-h-12 w-full rounded-lg border border-gray-300 bg-white px-4 py-3 text-sm text-gray-900 placeholder:text-gray-400 focus:border-blue-600 focus:outline-none focus:ring-2 focus:ring-blue-100 disabled:bg-gray-50';
+  const socialClass =
+    '[&_span]:mr-0 flex min-h-12 w-full items-center justify-center rounded-lg border border-gray-200 bg-white px-4 py-3 text-sm font-medium text-gray-700 transition hover:border-blue-300 hover:bg-blue-50 focus-visible:outline focus-visible:outline-2 focus-visible:outline-offset-2 focus-visible:outline-blue-600';
+
   return (
-    <section className="min-h-screen flex items-center justify-center bg-gradient-to-r from-gray-900 to-black relative py-20 px-5">
-      <div className="absolute inset-0 bg-[url('/images/blockchain-bg.jpg')] bg-cover bg-center opacity-20"></div>
-
-      <motion.div
-        initial={{ opacity: 0, y: -20 }}
-        animate={{ opacity: 1, y: 0 }}
-        transition={{ duration: 1, delay: 0.1 }}
-        className="relative z-10 bg-black bg-opacity-70 backdrop-blur-lg rounded-2xl border border-blue-500 shadow-2xl p-10 max-w-lg w-full"
-      >
-        <h2 className="text-3xl font-bold text-white text-center mb-8">
-          Login to Your RsTrade Account
-        </h2>
-
-        {/* Social Sign-In Buttons */}
-        <div className="flex flex-col gap-4 mb-6 items-center">
-          <GoogleSignInButton type="SignIn" />
-          <FacebookSignInButton type="SignIn" />
-          <MicrosoftSignInButton type="SignIn" />
-        </div>
-
-        {/* Divider */}
-        <div className="flex items-center my-4">
-          <div className="flex-grow border-t border-blue-500"></div>
-          <span className="mx-4 text-white">Or, login with your email</span>
-          <div className="flex-grow border-t border-blue-500"></div>
-        </div>
-
-        {/* Email & Password Login */}
-        <form onSubmit={handleEmailSignIn}>
-          <div className="space-y-4">
-            <input
-              type="email"
-              placeholder="Email"
-              name="email"
-              value={formData.email}
-              onChange={handleChange}
-              required
-              className="w-full p-3 bg-transparent border border-blue-500 rounded-md text-white placeholder-blue-300 focus:outline-none focus:ring-2 focus:ring-blue-400"
-            />
-            <input
-              type="password"
-              placeholder="Password"
-              name="password"
-              value={formData.password}
-              onChange={handleChange}
-              required
-              className="w-full p-3 bg-transparent border border-blue-500 rounded-md text-white placeholder-blue-300 focus:outline-none focus:ring-2 focus:ring-blue-400"
-            />
-            {error && (
-              <p className="text-red-500 text-center text-sm">{error}</p>
-            )}
-          </div>
-
-          <div className="flex items-center justify-between mt-4">
-            <label className="flex items-center text-white">
-              <input
-                type="checkbox"
-                checked={keepSignedIn}
-                onChange={() => setKeepSignedIn(!keepSignedIn)}
-                className="form-checkbox h-4 w-4 text-blue-500 bg-transparent border-blue-500"
+    <main className="flex min-h-[calc(100svh_-_64px)] items-center justify-center bg-gray-50 px-4 py-8 text-gray-900 sm:py-12 lg:min-h-[calc(100svh_-_90px)]">
+      <div className="w-full max-w-md">
+        <section
+          aria-labelledby="signin-title"
+          className="overflow-hidden rounded-2xl border border-gray-200 bg-white shadow-[0_8px_40px_-16px_rgba(24,34,48,0.18)]"
+        >
+          <div className="h-1 bg-blue-600" />
+          <div className="p-6 sm:p-8">
+            <div className="text-center">
+              <span
+                className="inline-flex h-12 w-12 items-center justify-center rounded-full bg-yellow-300 text-lg font-bold text-blue-700"
+                aria-hidden="true"
+              >
+                RS
+              </span>
+              <h1
+                id="signin-title"
+                className="mt-5 text-2xl font-bold tracking-tight"
+              >
+                Welcome back
+              </h1>
+              <p className="mt-2 text-sm text-gray-500">Sign in to your RS Trade account.</p>
+            </div>
+            <form
+              onSubmit={handleEmailSignIn}
+              className="mt-7"
+              aria-busy={loading}
+            >
+              <div className="space-y-5">
+                <div>
+                  <label
+                    htmlFor="signin-email"
+                    className="mb-2 block text-sm font-semibold"
+                  >
+                    Email address
+                  </label>
+                  <input
+                    id="signin-email"
+                    type="email"
+                    name="email"
+                    autoComplete="username"
+                    placeholder="you@example.com"
+                    value={formData.email}
+                    onChange={handleChange}
+                    required
+                    disabled={loading}
+                    aria-describedby={error ? 'signin-error' : undefined}
+                    className={inputClass}
+                  />
+                </div>
+                <div>
+                  <div className="mb-2 flex flex-wrap items-center justify-between gap-2">
+                    <label
+                      htmlFor="signin-password"
+                      className="text-sm font-semibold"
+                    >
+                      Password
+                    </label>
+                    <Link
+                      href="/accounts/forgetPassword"
+                      className="text-sm font-medium text-blue-700 hover:underline focus-visible:outline-blue-600"
+                    >
+                      Forgot password?
+                    </Link>
+                  </div>
+                  <div className="relative">
+                    <input
+                      id="signin-password"
+                      type={showPassword ? 'text' : 'password'}
+                      name="password"
+                      autoComplete="current-password"
+                      placeholder="Enter your password"
+                      value={formData.password}
+                      onChange={handleChange}
+                      required
+                      disabled={loading}
+                      aria-describedby={error ? 'signin-error' : undefined}
+                      className={`${inputClass} pr-14`}
+                    />
+                    <button
+                      type="button"
+                      onClick={() => setShowPassword((value) => !value)}
+                      aria-label={showPassword ? 'Hide password' : 'Show password'}
+                      aria-controls="signin-password"
+                      aria-pressed={showPassword}
+                      className="absolute right-1 top-1 flex h-10 w-10 items-center justify-center rounded-md text-gray-500 hover:bg-gray-50 hover:text-blue-700 focus-visible:outline-blue-600"
+                    >
+                      {showPassword ? (
+                        <EyeOff
+                          size={19}
+                          aria-hidden="true"
+                        />
+                      ) : (
+                        <Eye
+                          size={19}
+                          aria-hidden="true"
+                        />
+                      )}
+                    </button>
+                  </div>
+                </div>
+                {error && (
+                  <p
+                    id="signin-error"
+                    role="alert"
+                    className="rounded-lg border border-red-200 bg-red-50 px-4 py-3 text-sm leading-6 text-red-700"
+                  >
+                    {error}
+                  </p>
+                )}
+              </div>
+              <button
+                type="submit"
+                disabled={loading}
+                className="mt-6 inline-flex min-h-12 w-full items-center justify-center gap-2 rounded-lg bg-yellow-300 px-5 py-3 text-sm font-bold text-gray-900 transition hover:bg-yellow-500 focus-visible:outline focus-visible:outline-2 focus-visible:outline-offset-2 focus-visible:outline-blue-600 disabled:cursor-wait disabled:opacity-60"
+              >
+                {loading ? (
+                  <>
+                    <LoaderCircle
+                      size={18}
+                      className="animate-spin"
+                      aria-hidden="true"
+                    />
+                    Signing in...
+                  </>
+                ) : (
+                  <>
+                    Sign In
+                    <ArrowRight
+                      size={18}
+                      aria-hidden="true"
+                    />
+                  </>
+                )}
+              </button>
+            </form>
+            <div className="my-6 flex items-center gap-3">
+              <span className="h-px flex-1 bg-gray-200" />
+              <span className="text-xs text-gray-500">Or continue with</span>
+              <span className="h-px flex-1 bg-gray-200" />
+            </div>
+            <div className="grid grid-cols-3 gap-3">
+              <GoogleSignInButton
+                type="Continue"
+                iconOnly
+                className={socialClass}
               />
-              <span className="ml-2">Keep me signed in</span>
-            </label>
-            <Link href="/accounts/forgetPassword" className="text-blue-400 hover:underline">
-              Forgot Password?
-            </Link>
+              <FacebookSignInButton
+                type="Continue"
+                iconOnly
+                className={socialClass}
+              />
+              <MicrosoftSignInButton
+                type="Continue"
+                iconOnly
+                className={socialClass}
+              />
+            </div>
+            <p className="mt-7 border-t border-gray-100 pt-5 text-center text-sm leading-6 text-gray-600">
+              New to RS Trade?{' '}
+              <Link
+                href="/accounts/signup"
+                className="font-semibold text-blue-700 hover:underline focus-visible:outline-blue-600"
+              >
+                Create an account
+              </Link>
+            </p>
           </div>
-
-          <button
-            type="submit"
-            disabled={loading}
-            className={`w-full mt-6 py-3 rounded-full font-bold text-black bg-gradient-to-r from-blue-500 to-green-500 hover:from-blue-600 hover:to-green-600 transition ${
-              loading ? "opacity-50 cursor-not-allowed" : ""
-            }`}
+        </section>
+        <div className="mt-5 text-center">
+          <Link
+            href="/"
+            className="inline-flex min-h-11 items-center gap-2 text-sm text-gray-500 hover:text-blue-700 focus-visible:outline-blue-600"
           >
-            {loading ? "Signing In..." : "Login"}
-          </button>
-        </form>
-
-        <div className="mt-6 text-center">
-          <p className="text-white">
-            Don&apos;t have an account?{" "}
-            <Link href="/accounts/signup" className="text-blue-400 hover:underline">
-              Sign Up
-            </Link>
-          </p>
+            <ArrowLeft
+              size={15}
+              aria-hidden="true"
+            />
+            Back to website
+          </Link>
         </div>
-      </motion.div>
-    </section>
+      </div>
+    </main>
   );
 };
 

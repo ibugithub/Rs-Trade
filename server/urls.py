@@ -20,6 +20,7 @@ from drf_yasg import openapi
 from drf_yasg.views import get_schema_view
 from rest_framework import permissions
 from .admin_site import configure_admin_site
+from catalog.cart_views import AccountCartView
 from .frontend import serve_next_frontend
 
 SchemaView = get_schema_view(
@@ -35,20 +36,22 @@ SchemaView = get_schema_view(
    permission_classes=[permissions.AllowAny],
 )
 
-admin.site.site_header = 'Rs Trade Admin'
-admin.site.site_title = 'Rs Trade Admin'
+admin.site.site_header = 'RS Trade International'
+admin.site.site_title = 'RS Trade Admin'
 admin.site.index_title = 'Operations Dashboard'
 configure_admin_site(admin.site)
 
 urlpatterns = [
     path('admin/', admin.site.urls),
+    path('api/catalog/', include('catalog.urls')),
+    path('api/cart/', AccountCartView.as_view(), name='account-cart'),
+    path('api/orders/', include('orders.urls')),
+    path('api/service-requests/', include('service_requests.urls')),
     path('api/users/', include('users.urls')),
     path('api/profile/', include('userProfile.urls')),
     # Swagger URLs
     path('swagger<format>/', SchemaView.without_ui(cache_timeout=0), name='schema-json'),
     path('swagger/', SchemaView.with_ui('swagger', cache_timeout=0), name='schema-swagger-ui'),
     path('redoc/', SchemaView.with_ui('redoc', cache_timeout=0), name='schema-redoc'),
-
-    # Catch-all route for Next.js frontend
     re_path(r'^(?P<path>.*)$', serve_next_frontend, name='next-frontend'),
 ]
