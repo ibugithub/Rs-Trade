@@ -15,7 +15,7 @@ class OrderAdminForm(forms.ModelForm):
 
     def __init__(self, *args, **kwargs):
         super().__init__(*args, **kwargs)
-        if self.instance.pk:
+        if self.instance.pk and 'status' in self.fields:
             allowed = ALLOWED_TRANSITIONS[self.instance.status] | {self.instance.status}
             self.fields['status'].choices = [choice for choice in Order.Status.choices if choice[0] in allowed]
             self.fields['status'].help_text = 'Stock is deducted only on confirmation. Cancelling before shipment restores deducted stock.'

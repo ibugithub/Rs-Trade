@@ -78,7 +78,7 @@ def record_details(
     sections = []
     images = []
     direct_section = getattr(model_admin, 'details_form_section', None)
-    follow_up_form = editor_context['adminform'].form if direct_section and editor_context else None
+    follow_up_form = editor_context['adminform'].form if direct_section and editor_context and model_admin.has_change_permission(request, obj) else None
     fieldsets = model_admin.get_fieldsets(request, obj)
     for title, options in fieldsets:
         names = flatten(options['fields'])

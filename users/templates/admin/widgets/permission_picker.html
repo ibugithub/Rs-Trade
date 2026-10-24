@@ -1,0 +1,20 @@
+<div class="rs-permissions" data-permission-picker>
+  <div class="rs-permissions__toolbar">
+    <input type="search" id="{{ widget.attrs.id }}" placeholder="Search features or permissions…" aria-label="Search permissions" data-permission-search>
+    <span data-permission-count aria-live="polite"></span>
+  </div>
+  <p class="rs-permissions__hint">Choose what this role can do. Edit means changing existing records.</p>
+  <div class="rs-permissions__list">
+    {% for feature in features %}
+    <fieldset class="rs-permissions__feature" data-permission-feature>
+      <legend>{{ feature.name|capfirst }} <small>{{ feature.app }}</small></legend>
+      <div class="rs-permissions__actions">
+        {% for option in feature.options %}
+        <label><input type="checkbox" name="{{ widget.name }}" value="{{ option.value }}"{% if option.selected %} checked{% endif %}{% if widget.attrs.disabled %} disabled{% endif %}> <span>{{ option.action }}</span></label>
+        {% endfor %}
+      </div>
+    </fieldset>
+    {% endfor %}
+    <p data-permission-empty hidden>No matching permissions.</p>
+  </div>
+</div>

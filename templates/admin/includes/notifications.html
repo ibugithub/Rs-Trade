@@ -1,4 +1,4 @@
-<div class="rs-notifications" data-notifications data-feed="{% url 'admin:notification-feed' %}" data-read="{% url 'admin:notification-read' %}">
+<div class="rs-notifications" data-notifications{% if not perms.notifications.view_notification %} hidden data-notifications-disabled{% endif %} data-feed="{% url 'admin:notification-feed' %}" data-read="{% url 'admin:notification-read' %}">
     <button type="button" class="rs-notifications__bell" aria-label="Notifications" aria-expanded="false" aria-controls="rs-notification-panel">
         <svg width="21" height="21" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="1.7" aria-hidden="true"><path d="M18 8a6 6 0 0 0-12 0c0 7-3 7-3 9h18c0-2-3-2-3-9M10 21h4" /></svg>
         <span class="rs-notifications__badge" hidden></span>

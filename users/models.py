@@ -1,4 +1,4 @@
-from django.contrib.auth.models import AbstractBaseUser, BaseUserManager
+from django.contrib.auth.models import AbstractBaseUser, BaseUserManager, PermissionsMixin
 from django.db import models
 
 class UserManager(BaseUserManager):
@@ -21,7 +21,7 @@ class UserManager(BaseUserManager):
     user.save(using=self._db)
     return user
 
-class User(AbstractBaseUser):
+class User(AbstractBaseUser, PermissionsMixin):
   SIGNUP_METHODS = [
     ('email', 'Email'),
     ('google', 'Google'),
@@ -43,12 +43,6 @@ class User(AbstractBaseUser):
 
   def __str__(self):
     return self.email
-
-  def has_perm(self, perm, obj=None):
-    return True
-
-  def has_module_perms(self, app_label):
-    return True
 
   @property
   def is_staff(self):

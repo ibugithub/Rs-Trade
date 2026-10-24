@@ -2,6 +2,7 @@
   position: relative;
   text-align: left;
 }
+.rs-notifications[hidden],
 .rs-notifications [hidden],
 .rs-notification-toast[hidden] {
   display: none !important;

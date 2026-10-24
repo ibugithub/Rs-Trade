@@ -1,6 +1,6 @@
 ﻿# RS Trade International: restructuring progress
 
-Last updated: 2026-10-22 (Asia/Dhaka).
+Last updated: 2026-10-24 (Asia/Dhaka).
 
 Source plan: [Website restructuring plan](restructuring-plan.md).
 
@@ -452,3 +452,23 @@ Renamed the service's admin/receipt label from Quality Assurance to Quality Insp
 
 ### 2026-10-22 - One service and reference image per inquiry
 Changed the quote form to required radio selection and enforced exactly one selected service in the API while retaining historical service links. Added an optional Cloudinary reference image with multipart submission, client preview/removal and invalid-image recovery. Backend uses Pillow to validate real JPG/PNG/WebP files, 5 MB and 25-megapixel limits; the admin's existing shared gallery shows the image. Image content participates in the submission hash, creation wins before upload, and retries reuse the same inquiry/file without a second upload. Upload failures roll back the inquiry and notification; deterministic Cloudinary IDs support retries. Added/installed Pillow 13.0.0 and generated service_requests/0003_servicerequest_image, pending owner application with python manage.py migrate. Essential in-memory checks passed for single-selection rejection, real multipart/type/size validation, optional image, upload-once retries, failure rollback and admin preview. Cloudinary was mocked for checks; no live image uploads or database writes. Changed-source lint, Django/migration checks and frontend build/type checks passed; export rebuilt. No test files; manual image-upload review pending.
+
+
+### 2026-10-24 - Functional groups and admin permissions
+Connected User to Django PermissionsMixin, adding groups and direct permissions while retaining existing staff/superuser fields. Removed the unconditional has_perm/has_module_perms bypass. User editing now includes group/permission selectors; Group editing includes a Members selector for assigning several users. Group members also display on saved details. Only superusers can modify access flags, group memberships/direct permissions or Group definitions; non-superusers with customer-edit permission cannot edit/delete staff accounts or change staff passwords. User-detail profile/address inline visibility follows parent user permissions.
+
+Read-only orders no longer assume an editable status field, and view-only order/service detail pages render read-only Follow-up instead of submit controls. Service-proxy permissions also apply to canonical request links and notification filtering, preventing staff restricted to one service from seeing another service's inquiries. Notification queries respect each permitted admin queryset. Permission assignments/revocation, group membership saves, view-only routes, forbidden posts, protected staff/password access, forged access fields and service notification scoping were checked against an isolated in-memory database; Django/migration checks passed. A read-only live check confirmed an existing superuser is available. No production records changed, no test files or frontend build needed.
+
+Migration users/0013_user_groups_user_user_permissions remains PENDING; owner should run python manage.py migrate users. Existing non-superuser staff must receive group/direct permissions before managing records; membership alone does not enable staff access. Manual role review pending.
+
+
+### 2026-10-24 - Clearer permission selection
+Replaced the dual-list permission selector on Groups and direct User permissions with searchable feature groups and View/Add/Edit/Delete checkboxes, a selected count and a bounded scrolling list. Labels use current model names, including Quality Inspection, while retaining every permission and its original ID. Member selection and access enforcement remain unchanged. Django checks, JavaScript syntax and isolated in-memory rendering/selected-value/save/clear/member checks passed. No live database writes, migrations or frontend build required; manual visual review pending.
+
+
+### 2026-10-24 - Remove irrelevant permission choices
+Audited service request relationships and permission enforcement. RequestedService is still used for submission, service filtering, receipts and permission scoping, so retained its data/model. Group and User permission choices now include only registered admin models and actions their admin supports, removing stale General Inquiry/internal Requested Services/Notification Read/session choices and blocked service/cart Add/Edit/Delete actions as appropriate. Renamed the broader ServiceRequest picker heading to All service requests. No permission records or customer data deleted and no migrations needed. Django checks and isolated in-memory stale-permission filtering, useful service choices, group save and matching direct-User choices passed.
+
+
+### 2026-10-24 - Explicit notification access permission
+Added the existing notifications.view_notification permission to both role/direct User pickers and enforced it on the custom feed and mark-read endpoints. Notification access still requires underlying feature visibility, including service-specific queryset scoping. The bell is hidden without permission; counts-only dashboard polling remains independent and returns no alert data. Non-dashboard pages without notification access do not poll. View permission includes marking only the staff member's own accessible alerts read. Superusers retain access. Isolated in-memory checks covered group inheritance, forbidden feed/read calls, hidden bell, permitted reads, feature restrictions, picker choices and independent dashboard totals; Django and JS syntax checks passed. No live data changes or new migrations. Existing regular staff need Notifications > View assigned to receive alerts.

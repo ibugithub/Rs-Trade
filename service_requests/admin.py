@@ -60,6 +60,33 @@ class ServiceRequestAdmin(admin.ModelAdmin):
 
 @admin.register(ServiceRequest)
 class AllServiceRequestsAdmin(ServiceRequestAdmin):
+    def permitted_services(self, request, change=False):
+        services = []
+        for model, code in (
+            (RSSourcing, Service.SOURCING), (SupplierVerification, Service.VERIFICATION),
+            (QualityAssurance, Service.QUALITY), (ShippingImport, Service.SHIPPING),
+        ):
+            model_admin = self.admin_site._registry[model]
+            allowed = model_admin.has_change_permission(request) if change else model_admin.has_view_permission(request)
+            if allowed:
+                services.append(code)
+        return services
+
+    def get_queryset(self, request):
+        queryset = super().get_queryset(request)
+        if super().has_view_permission(request):
+            return queryset
+        return queryset.filter(selected_services__service__in=self.permitted_services(request)).distinct()
+
+    def has_view_permission(self, request, obj=None):
+        return super().has_view_permission(request, obj) or bool(self.permitted_services(request))
+
+    def has_change_permission(self, request, obj=None):
+        if super().has_change_permission(request, obj):
+            return True
+        services = self.permitted_services(request, change=True)
+        return bool(services) if obj is None else obj.selected_services.filter(service__in=services).exists()
+
     def get_model_perms(self, request):
         # One canonical details URL for notifications; dashboard uses service cards.
         return {}

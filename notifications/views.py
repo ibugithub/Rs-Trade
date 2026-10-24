@@ -2,7 +2,7 @@ import json
 
 from django.contrib.auth import get_user_model
 from django.db import OperationalError, ProgrammingError, transaction
-from django.db.models import Exists, Max, OuterRef
+from django.db.models import Exists, Max, OuterRef, Q
 from django.http import JsonResponse
 from django.urls import reverse
 from django.utils import timezone
@@ -16,12 +16,15 @@ from .models import Notification, NotificationRead
 
 
 def permitted_notifications(site, request):
-    kinds = []
+    if not request.user.has_perm('notifications.view_notification'):
+        return Notification.objects.none()
+    allowed = Q(pk__in=[])
     for model, kind in ((Order, 'order'), (Cart, 'cart'), (ServiceRequest, 'service')):
         model_admin = site._registry.get(model)
         if model_admin and model_admin.has_view_permission(request):
-            kinds.append(kind)
-    return Notification.objects.filter(kind__in=kinds)
+            field = {'order': 'order_id', 'cart': 'cart_id', 'service': 'service_request_id'}[kind]
+            allowed |= Q(kind=kind, **{f'{field}__in': model_admin.get_queryset(request).values('pk')})
+    return Notification.objects.filter(allowed)
 
 
 def private_response(data, status=200):
@@ -44,6 +47,18 @@ def dashboard_counts(site, request):
 
 @require_GET
 def feed(request, site):
+    if not request.user.has_perm('notifications.view_notification'):
+        if request.GET.get('counts') != '1':
+            return private_response({'message': 'You do not have permission to view notifications.'}, 403)
+        # Dashboard totals are independent of permission to receive alerts.
+        try:
+            return private_response({
+                'items': [], 'unread': 0, 'orderUnread': 0, 'cartUnread': 0,
+                'serviceUnread': 0, 'latestOrderId': 0, 'latestServiceId': 0,
+                'counts': dashboard_counts(site, request),
+            })
+        except (OperationalError, ProgrammingError):
+            return private_response({'message': 'Dashboard counts are unavailable.'}, 503)
     try:
         as_of = timezone.now()
         reads = NotificationRead.objects.filter(
@@ -78,6 +93,8 @@ def feed(request, site):
 
 @require_POST
 def mark_read(request, site):
+    if not request.user.has_perm('notifications.view_notification'):
+        return private_response({'message': 'You do not have permission to read notifications.'}, 403)
     try:
         data = json.loads(request.body)
         if not isinstance(data, dict):

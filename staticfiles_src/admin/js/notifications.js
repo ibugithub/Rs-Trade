@@ -2,6 +2,7 @@
   "use strict";
   const root = document.querySelector("[data-notifications]");
   if (!root) return;
+  if (root.hasAttribute('data-notifications-disabled') && !document.querySelector('[data-dashboard-count]')) return;
   const bell = root.querySelector(".rs-notifications__bell");
   const badge = root.querySelector(".rs-notifications__badge");
   const panel = root.querySelector(".rs-notifications__panel");
