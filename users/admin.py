@@ -5,11 +5,10 @@ from django.utils.html import format_html
 from django import forms
 from django.contrib.auth.admin import GroupAdmin as BaseGroupAdmin
 from django.contrib.auth.models import Group
-from django.contrib.admin.widgets import FilteredSelectMultiple
 from django.db.models import Q
 from userProfile.models import Address, Profile
 from .models import User
-from .widgets import PermissionPicker
+from .widgets import MemberPicker, PermissionPicker
 
 
 def dashboard_permissions(queryset, request, site):
@@ -149,7 +148,7 @@ admin.site.register(User, UserAdmin)
 class GroupMembersForm(forms.ModelForm):
     members = forms.ModelMultipleChoiceField(
         queryset=User.objects.order_by('email'), required=False,
-        widget=FilteredSelectMultiple('members', is_stacked=False),
+        widget=MemberPicker(),
         help_text='Select the users who should inherit these permissions. Admin access also requires staff access on their User record.',
     )
 

@@ -1,12 +1,13 @@
 from django import forms
+from django.templatetags.static import static
 
 
 class PermissionPicker(forms.SelectMultiple):
     template_name = 'admin/widgets/permission_picker.html'
 
     class Media:
-        css = {'all': ('admin/css/permission_picker.css',)}
-        js = ('admin/js/permission_picker.js',)
+        css = {'all': (static('admin/css/permission_picker.css') + '?v=20261024-3',)}
+        js = (static('admin/js/permission_picker.js') + '?v=20261024-3',)
 
     def get_context(self, name, value, attrs):
         context = super().get_context(name, value, attrs)
@@ -32,4 +33,15 @@ class PermissionPicker(forms.SelectMultiple):
             feature['options'].sort(key=lambda option: {
                 'View': 0, 'Add': 1, 'Edit': 2, 'Delete': 3,
             }.get(option['action'], 4))
+            feature['cells'] = [
+                {'action': action, 'option': next((option for option in feature['options'] if option['action'] == action), None)}
+                for action in ('View', 'Add', 'Edit', 'Delete')
+            ]
         return context
+
+
+class MemberPicker(forms.SelectMultiple):
+    template_name = 'admin/widgets/member_picker.html'
+
+    class Media(PermissionPicker.Media):
+        pass

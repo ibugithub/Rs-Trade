@@ -472,3 +472,11 @@ Audited service request relationships and permission enforcement. RequestedServi
 
 ### 2026-10-24 - Explicit notification access permission
 Added the existing notifications.view_notification permission to both role/direct User pickers and enforced it on the custom feed and mark-read endpoints. Notification access still requires underlying feature visibility, including service-specific queryset scoping. The bell is hidden without permission; counts-only dashboard polling remains independent and returns no alert data. Non-dashboard pages without notification access do not poll. View permission includes marking only the staff member's own accessible alerts read. Superusers retain access. Isolated in-memory checks covered group inheritance, forbidden feed/read calls, hidden bell, permitted reads, feature restrictions, picker choices and independent dashboard totals; Django and JS syntax checks passed. No live data changes or new migrations. Existing regular staff need Notifications > View assigned to receive alerts.
+
+
+### 2026-10-24 - Compact role editor presentation
+Replaced repeated permission fieldset cards with a compact feature/action table, sticky View/Add/Edit/Delete headers, unavailable-action marks, selected-row highlighting, styled search and selected-only filtering. Replaced Group member dual-list arrows with searchable name/email cards, Staff/Customer labels, checked-state styling and selected-only filtering. Both lists have bounded scrolling; narrow screens can scroll the permission table and use single-column member cards. Preserved normal form submission, permission IDs, membership saves and clear-all behavior. Versioned widget assets. Django/JS syntax and in-memory rendering, initial selections, member/permission save and clear, User picker and media URL checks passed. No live database changes or migrations; manual visual review pending.
+
+
+### 2026-10-24 - Select all permissions
+Added a permission-only Select all button that toggles to Clear selection when every available checkbox in the visible rows is checked. Respects search/Selected only filters, leaves hidden selections unchanged and skips disabled inputs. Updates the selected count and disables itself when no choices match. Versioned picker assets; JavaScript syntax and diff checks passed. No database changes or migrations.
