@@ -1,8 +1,11 @@
 from types import MethodType
+from cloudinary.models import CloudinaryField
+from django import forms
 from django.contrib.admin import ShowFacets
 from django.urls import path, reverse
 from .admin_details import enable_record_details
 from notifications.views import feed, mark_read
+from users.widgets import RecordFileInput
 
 
 ACCOUNT_APP_LABELS = {'auth', 'users', 'userProfile', 'userprofile'}
@@ -27,6 +30,18 @@ def configure_model_admin(model_admin):
     model_admin.list_max_show_all = 25
     model_admin.show_full_result_count = False
     model_admin.show_facets = ShowFacets.NEVER
+    if not getattr(model_admin, '_rs_file_widget_enabled', False):
+        original_formfield = model_admin.formfield_for_dbfield
+
+        def formfield_for_dbfield(db_field, request, **kwargs):
+            field = original_formfield(db_field, request, **kwargs)
+            if isinstance(db_field, CloudinaryField) and field is not None and isinstance(field.widget, forms.ClearableFileInput):
+                field.widget = RecordFileInput(attrs=dict(field.widget.attrs))
+                field.label = str(field.label).replace('_', ' ')
+            return field
+
+        model_admin.formfield_for_dbfield = formfield_for_dbfield
+        model_admin._rs_file_widget_enabled = True
     enable_record_details(model_admin)
 
 

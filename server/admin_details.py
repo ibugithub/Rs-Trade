@@ -50,7 +50,7 @@ def detail_fields(model_admin, obj, names):
                 initials = ''.join(word[0] for word in str(obj).split()[:2]).upper()
                 images.append({
                     'url': url,
-                    'label': model_field.verbose_name,
+                    'label': str(model_field.verbose_name).replace('_', ' '),
                     'initials': initials or 'RS',
                 })
                 continue

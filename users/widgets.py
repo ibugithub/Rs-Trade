@@ -2,11 +2,15 @@ from django import forms
 from django.templatetags.static import static
 
 
+class RecordFileInput(forms.ClearableFileInput):
+    template_name = 'admin/widgets/record_file.html'
+
+
 class PermissionPicker(forms.SelectMultiple):
     template_name = 'admin/widgets/permission_picker.html'
 
     class Media:
-        css = {'all': (static('admin/css/permission_picker.css') + '?v=20261024-3',)}
+        css = {'all': (static('admin/css/permission_picker.css') + '?v=20261024-5',)}
         js = (static('admin/js/permission_picker.js') + '?v=20261024-3',)
 
     def get_context(self, name, value, attrs):

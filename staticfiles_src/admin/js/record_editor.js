@@ -20,7 +20,8 @@ document.addEventListener('DOMContentLoaded', () => {
       button.hidden = !editing;
     });
     page.querySelector('.rs-editor-message').hidden = !editing;
-    page.querySelector('.rs-detail-heading .rs-detail-caption').hidden = editing;
+    const description = page.querySelector('[data-record-description]');
+    if (description) description.hidden = editing;
     if (focus) {
       const target = editing
         ? form.querySelector('.errorlist + input, input:not([type="hidden"]):not([type="checkbox"]):not([type="submit"]), textarea, select')

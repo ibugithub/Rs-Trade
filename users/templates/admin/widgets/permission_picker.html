@@ -16,8 +16,8 @@
           {% for cell in feature.cells %}
           <td class="rs-permissions__cell">
             {% if cell.option %}
-            <label><input type="checkbox" name="{{ widget.name }}" value="{{ cell.option.value }}" aria-label="{{ cell.action }} {{ feature.name }}"{% if cell.option.selected %} checked{% endif %}{% if widget.attrs.disabled %} disabled{% endif %}><span class="rs-picker-sr">{{ cell.action }} {{ feature.name }}</span></label>
-            {% else %}<span class="rs-permissions__unavailable" aria-label="Not available">&mdash;</span>{% endif %}
+            <label><input type="checkbox" name="{{ widget.name }}" value="{{ cell.option.value }}" aria-label="{{ cell.action }} {{ feature.name }}"{% if cell.option.selected %} checked{% endif %}{% if widget.attrs.disabled %} disabled{% endif %}><span class="rs-permissions__action" aria-hidden="true">{{ cell.action }}</span></label>
+            {% else %}<span class="rs-permissions__unavailable" aria-label="{{ cell.action }} not available"><span class="rs-permissions__action" aria-hidden="true">{{ cell.action }}</span> &mdash;</span>{% endif %}
           </td>
           {% endfor %}
         </tr>

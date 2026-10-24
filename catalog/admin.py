@@ -99,6 +99,7 @@ class SubCategoryListFilter(admin.RelatedFieldListFilter):
 
 class SubCategoryInline(admin.TabularInline):
     model = SubCategory
+    classes = ('rs-subcategory-editor',)
     extra = 0
     fields = ('name', 'slug', 'is_active')
     prepopulated_fields = {'slug': ('name',)}
@@ -112,6 +113,12 @@ class CategoryAdmin(admin.ModelAdmin):
     prepopulated_fields = {'slug': ('name',)}
     readonly_fields = ('created_at', 'updated_at')
     inlines = [SubCategoryInline]
+    fieldsets = (
+        ('Category details', {'fields': ('name', 'slug', 'description')}),
+        ('Image', {'fields': ('image',)}),
+        ('Visibility', {'fields': ('is_active',)}),
+        ('Record activity', {'fields': ('created_at', 'updated_at'), 'classes': ('collapse',)}),
+    )
 
     def get_queryset(self, request):
         return super().get_queryset(request).annotate(
@@ -132,6 +139,12 @@ class SubCategoryAdmin(admin.ModelAdmin):
     prepopulated_fields = {'slug': ('name',)}
     autocomplete_fields = ('category',)
     readonly_fields = ('created_at', 'updated_at')
+    fieldsets = (
+        ('Subcategory details', {'fields': ('category', 'name', 'slug', 'description')}),
+        ('Image', {'fields': ('image',)}),
+        ('Visibility', {'fields': ('is_active',)}),
+        ('Record activity', {'fields': ('created_at', 'updated_at'), 'classes': ('collapse',)}),
+    )
 
     def get_queryset(self, request):
         # Also used by the autocomplete endpoint and selected form labels.

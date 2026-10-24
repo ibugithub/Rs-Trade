@@ -1,0 +1,36 @@
+/* One visual identity for the dashboard and record lists. */
+@font-face {
+  font-family: 'Manrope';
+  src: url('../fonts/manrope/Manrope-variable.ttf') format('truetype');
+  font-style: normal;
+  font-weight: 200 800;
+  font-display: swap;
+}
+body.rs-dashboard, body.rs-admin-list, body.rs-record-page {
+  --font-family-primary: 'Manrope', 'Segoe UI', sans-serif;
+  --rs-text: #12243b;
+  --rs-muted: #65748a;
+  --rs-surface: #fff;
+  --rs-border: #e0e6ef;
+  --rs-soft: #f4f7fc;
+  --rs-primary: #005bea;
+  --rs-primary-hover: #0049bf;
+  --rs-primary-soft: #edf4ff;
+  --rs-filter: #0b1d34;
+  --rs-accent: #ffd419;
+  --rs-accent-hover: #f5c400;
+  --rs-on-accent: #12243b;
+  --rs-nav: #0b1d34;
+  --rs-nav-control: #172b44;
+  --rs-nav-border: #34445a;
+  --rs-on-nav-muted: #9eafc4;
+  --rs-sort: #0b1d34;
+  --rs-sort-soft: #f4f7fc;
+  --rs-radius: 18px;
+  --primary: var(--rs-primary);
+  --link-fg: var(--rs-primary);
+  font-family: var(--font-family-primary);
+  background: #e8edf5;
+  color: var(--rs-text);
+}
+:is(.rs-dashboard, .rs-admin-list, .rs-record-page) :is(input, select, button, textarea) { font-family: var(--font-family-primary); }

@@ -1,4 +1,4 @@
-{% load static admin_modify %}
+{% load static admin_modify admin_urls %}
 
 <form method="post" id="rs-record-form" action="{{ request.get_full_path }}" {% if editor.has_file_field %}enctype="multipart/form-data"{% endif %} novalidate>
     {% csrf_token %}
@@ -15,10 +15,12 @@
         {% include inline_admin_formset.opts.template %}
     {% endfor %}
 
-    <div class="submit-row">
-        <input type="submit" name="_save" value="Save changes" class="default">
-        <button type="button" class="rs-button" data-record-cancel>Cancel</button>
-        {% if editor.has_delete_permission %}<a href="{{ delete_url }}" class="deletelink">Delete {{ opts.verbose_name }}</a>{% endif %}
+    <div class="rs-editor-footer">
+        <div class="rs-editor-footer__primary">
+            <button type="submit" name="_save" class="rs-button rs-button--primary">Save changes</button>
+            <button type="button" class="rs-button" data-record-cancel>Cancel</button>
+        </div>
+        {% if editor.has_delete_permission %}<div class="rs-editor-footer__danger"><a href="{% add_preserved_filters delete_url %}">Delete {{ opts.verbose_name }} <span aria-hidden="true">&rarr;</span></a></div>{% endif %}
     </div>
     {% prepopulated_fields_js %}
 </form>

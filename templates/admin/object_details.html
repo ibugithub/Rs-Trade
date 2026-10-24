@@ -7,7 +7,7 @@
 {% if editor %}
 <script src="{% url 'admin:jsi18n' %}"></script>
 {{ editor.media }}
-<script src="{% static 'admin/js/record_editor.js' %}?v=20261016-1" defer></script>
+<script src="{% static 'admin/js/record_editor.js' %}?v=20261024-1" defer></script>
 {% endif %}
 {% endblock %}
 {% block extrastyle %}
@@ -19,36 +19,33 @@
 {{ block.super }}
 <link rel="stylesheet" href="{% static 'admin/css/admin_forms.css' %}?v=20261020-2">
 <link rel="stylesheet" href="{% static 'admin/css/admin_details.css' %}?v=20261020-3">
+{% include 'admin/includes/record_assets.html' %}
 {% endblock %}
-{% block bodyclass %}{{ block.super }} rs-admin-form rs-record-details{% endblock %}
+{% block bodyclass %}{{ block.super }} rs-admin-form rs-record-details rs-record-page app-{{ opts.app_label }} model-{{ opts.model_name }}{% endblock %}
+{% block header %}{% include 'admin/includes/workspace_header.html' %}{% endblock %}
 {% block nav-sidebar %}{% endblock %}
 {% block content_title %}{% endblock %}
 {% block content_subtitle %}{% endblock %}
 
-{% block breadcrumbs %}
-<div class="breadcrumbs">
-    <a href="{% url 'admin:index' %}">Home</a> &rsaquo;
-    <a href="{% add_preserved_filters changelist_url %}">{{ opts.verbose_name_plural|capfirst }}</a>
-    &rsaquo; {{ original|truncatechars:70 }}
-</div>
-{% endblock %}
+{% block nav-breadcrumbs %}{% endblock %}
 
 {% block content %}
 <div id="content-main" data-record-page data-editing="{{ editing|yesno:'true,false' }}">
-    <a class="rs-detail-back" href="{% add_preserved_filters changelist_url %}">&larr; Back to {{ opts.verbose_name_plural|capfirst }}</a>
-    <header class="rs-detail-heading">
-        <div>
-            <p class="rs-detail-eyebrow">{{ opts.verbose_name|capfirst }} details &middot; #{{ original.pk }}</p>
-            <h1>{{ original }}</h1>
-            <p class="rs-detail-caption">{% if follow_up_form %}Review the order and update its status or notes in Follow-up below.{% elif can_edit %}Review this record. Choose Edit to make changes.{% else %}View the saved details for this record.{% endif %}</p>
-            <p class="rs-detail-caption rs-editor-message" role="status" hidden>Editing this record. Save your changes or cancel to return to the saved details.</p>
+    <nav class="rs-record-navigation" aria-label="Record navigation">
+        <a href="{% add_preserved_filters changelist_url %}"><span aria-hidden="true">&larr;</span>{{ opts.verbose_name_plural|capfirst }}</a>
+        <a class="rs-record-history-link" href="{% add_preserved_filters history_url %}"><svg viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="1.6" aria-hidden="true"><path d="M3 11a9 9 0 1 1 2.6 7M3 5v6h6M12 7v5l3 2"/></svg>History</a>
+    </nav>
+    <header class="rs-detail-heading rs-record-masthead" aria-labelledby="record-title">
+        <div class="rs-record-title">
+            <div class="rs-record-title-line"><h1 id="record-title">{{ original }}</h1><span class="rs-record-id">#{{ original.pk }}</span></div>
+            <span class="rs-editor-message rs-record-editing" role="status" hidden>Editing</span>
+            {% if follow_up_form %}<p class="rs-detail-caption" data-record-description>Update the status and notes in Follow-up below.</p>{% endif %}
         </div>
         <div class="rs-detail-actions">
-            <a class="rs-button" href="{{ history_url }}">History</a>
             {% if can_edit %}
-            <button type="button" class="rs-button rs-button--primary" data-record-edit aria-controls="rs-record-editor" aria-expanded="false">
+            <button type="button" class="rs-button rs-button--primary" data-record-edit aria-label="Edit {{ opts.verbose_name }}" aria-controls="rs-record-editor" aria-expanded="false">
                 <svg width="17" height="17" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="1.8" aria-hidden="true"><path d="m16 3 5 5-12 12-6 1 1-6L16 3Z M13 6l5 5" /></svg>
-                Edit {{ opts.verbose_name|capfirst }}
+                Edit
             </button>
             <button type="submit" form="rs-record-form" name="_save" class="rs-button rs-button--primary" data-editor-action hidden>Save changes</button>
             <button type="button" class="rs-button" data-record-cancel data-editor-action hidden>Cancel</button>
@@ -56,8 +53,9 @@
         </div>
     </header>
 
+    <div class="rs-detail-layout{% if images %} rs-detail-layout--with-media{% endif %}">
     {% if images %}
-    <section class="rs-detail-card" aria-label="Images">
+    <section class="rs-detail-card rs-detail-media" aria-label="Images">
         <h2>Images</h2>
         <div class="rs-detail-gallery">
             {% for image in images %}
@@ -67,6 +65,7 @@
     </section>
     {% endif %}
 
+    <div class="rs-detail-content">
     <div id="rs-record-readonly">
     {% for section in sections %}
     <section class="rs-detail-card"{% if section.follow_up %} id="order-followup"{% endif %}>
@@ -119,5 +118,7 @@
     </div>
     <noscript><style>#rs-record-editor[hidden] { display: block !important; } [data-record-edit] { display: none; }</style><p>JavaScript is disabled. The editing form is shown below the saved details.</p></noscript>
     {% endif %}
+    </div>
+    </div>
 </div>
 {% endblock %}
