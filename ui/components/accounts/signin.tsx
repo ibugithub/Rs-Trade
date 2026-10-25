@@ -12,6 +12,7 @@ import { useSaveTokens } from './utils/useSaveTokens';
 import { toast } from 'react-toastify';
 import axios from 'axios';
 import { ResendVerification } from './reSendVerification';
+import { signInError } from '@/lib/signInError';
 
 export const Signin = () => {
   const dispatch = useAppDispatch();
@@ -26,6 +27,7 @@ export const Signin = () => {
   const [showPassword, setShowPassword] = useState(false);
 
   const handleChange = (e: React.ChangeEvent<HTMLInputElement>) => {
+    setError(null);
     setFormData({
       ...formData,
       [e.target.name]: e.target.value,
@@ -38,25 +40,30 @@ export const Signin = () => {
     setLoading(true);
     setError(null);
     try {
-      const baseUrl = process.env.NEXT_PUBLIC_BACKEND_BASE_URL;
-      const Tokens = await axios.post(`${baseUrl}/api/users/signin/`, {
-        email: formData.email,
-        password: formData.password,
-      });
+      const baseUrl = (process.env.NEXT_PUBLIC_BACKEND_BASE_URL || '').replace(/\/$/, '');
+      const Tokens = await axios.post(
+        `${baseUrl}/api/users/signin/`,
+        {
+          email: formData.email.trim(),
+          password: formData.password,
+        },
+        { timeout: 30000 },
+      );
+      if (
+        typeof Tokens.data?.accessToken !== 'string' ||
+        !Tokens.data.accessToken ||
+        typeof Tokens.data?.refreshToken !== 'string' ||
+        !Tokens.data.refreshToken
+      ) {
+        throw new Error('Missing sign-in tokens');
+      }
       saveTokensToLocal(Tokens.data);
     } catch (err) {
-      if (err instanceof Error) {
-        if (axios.isAxiosError(err) && err.response) {
-          if (err.response.status === 405) {
-            dispatch(setUnVerified(true));
-          }
-          setError(err.response.data.error);
-          toast.error(err.response.data.error);
-        } else {
-          setError('An unexpected error occurred');
-        }
-      } else {
-        setError('An unexpected error occurred');
+      const message = signInError(err);
+      setError(message);
+      toast.error(message);
+      if (axios.isAxiosError(err) && err.response?.status === 405) {
+        dispatch(setUnVerified(true));
       }
     } finally {
       setLoading(false);
