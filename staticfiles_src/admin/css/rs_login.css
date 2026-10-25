@@ -62,3 +62,10 @@
 }
 
 @media (prefers-reduced-motion: reduce) { .rs-login #login-form input { transition: none; } }
+
+/* Google staff sign-in. */
+.rs-login #content .rs-login-google { display: flex; align-items: center; justify-content: center; gap: 12px; box-sizing: border-box; min-height: 48px; width: 100%; border: 1px solid #cbd5e1; border-radius: 10px; background: #fff; color: #182230; font-size: 14px; font-weight: 650; text-decoration: none; }
+.rs-login #content .rs-login-google:hover { background: #eff6ff; border-color: #005bea; }
+.rs-login-google span { color: #005bea; font-size: 20px; font-weight: 750; }
+.rs-login-google:focus-visible { outline: 2px solid #005bea; outline-offset: 3px; }
+.rs-login-divider { margin: 18px 0; color: #637087; font-size: 12px; text-align: center; }

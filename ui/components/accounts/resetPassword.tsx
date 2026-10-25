@@ -1,4 +1,5 @@
 ﻿'use client';
+import { apiErrorMessage } from '@/lib/apiError';
 import { useState } from 'react';
 import axios from 'axios';
 import { useRouter } from 'next/navigation';
@@ -38,7 +39,7 @@ const ResetPassword = ({ token }: { token: string }) => {
       }
     } catch (error) {
       console.error('An error occurred while resetting password at resetPassword.tsx', error);
-      toast.error('Failed to reset password. Please try again.');
+      setError(apiErrorMessage(error, 'Failed to reset password. Please try again.'));
     }
   };
 

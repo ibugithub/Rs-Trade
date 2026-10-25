@@ -67,7 +67,7 @@ class SignInSerializer(serializers.Serializer):
 class ListUserSerializer(serializers.ModelSerializer):
   class Meta:
     model = User
-    fields = ['id', 'email', 'name', 'is_admin']
+    fields = ['id', 'email', 'name', 'is_staff']
 
 class AccessTokenSerializer(serializers.Serializer):
   token = serializers.CharField()

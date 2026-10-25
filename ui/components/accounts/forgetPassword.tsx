@@ -1,4 +1,5 @@
 ﻿'use client';
+import { apiErrorMessage } from '@/lib/apiError';
 import { useState } from 'react';
 import axios from 'axios';
 import { toast } from 'react-toastify';
@@ -24,8 +25,11 @@ export const ForgotPassword = () => {
         });
         toast.success('Email sent successfully!');
       }
-    } catch {
-      setResult({ type: 'error', message: 'Could not send the reset link. Please try again.' });
+    } catch (error) {
+      setResult({
+        type: 'error',
+        message: apiErrorMessage(error, 'Could not send the reset link. Please try again.'),
+      });
       toast.error('Failed to send email. Please try again.');
     } finally {
       setLoading(false);

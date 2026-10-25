@@ -101,14 +101,14 @@ class UserAdmin(BaseUserAdmin):
             field.help_text = 'Selected permissions include group and individual access. Saving matches complete groups and puts remaining permissions into a Custom group.'
         return field
 
-    list_display = ('email', 'name', 'signUp_by', 'is_staff', 'is_admin', 'is_superuser', 'is_verified')
-    list_filter = ('is_staff', 'is_admin', 'groups')
+    list_display = ('email', 'name', 'signUp_by', 'is_staff', 'is_superuser', 'is_verified')
+    list_filter = ('is_staff', 'groups')
     readonly_fields = ('id', 'first_name', 'last_name', 'sign_in_method', 'last_login', 'order_history', 'groups')
     inlines = (UserProfileInline, UserAddressInline)
     fieldsets = (
         ('Account', {'fields': ('id', 'email', 'password', 'sign_in_method')}),
         ('Personal info', {'fields': ('name', 'first_name', 'last_name')}),
-        ('Permissions', {'fields': ('is_staff', 'is_admin', 'is_verified', 'is_superuser', 'groups', 'user_permissions')}),
+        ('Permissions', {'fields': ('is_staff', 'is_verified', 'is_superuser', 'groups', 'user_permissions')}),
         ('Account activity', {'fields': ('last_login', 'order_history')}),
     )
     add_fieldsets = (
@@ -124,16 +124,16 @@ class UserAdmin(BaseUserAdmin):
     def get_readonly_fields(self, request, obj=None):
         fields = super().get_readonly_fields(request, obj)
         if not request.user.is_superuser:
-            return (*fields, 'is_staff', 'is_admin', 'is_superuser', 'user_permissions')
+            return (*fields, 'is_staff', 'is_superuser', 'user_permissions')
         return fields
 
     def has_change_permission(self, request, obj=None):
-        if obj and not request.user.is_superuser and (obj.is_staff or obj.is_admin or obj.is_superuser):
+        if obj and not request.user.is_superuser and (obj.is_staff or obj.is_superuser):
             return False
         return super().has_change_permission(request, obj)
 
     def has_delete_permission(self, request, obj=None):
-        if obj and not request.user.is_superuser and (obj.is_staff or obj.is_admin or obj.is_superuser):
+        if obj and not request.user.is_superuser and (obj.is_staff or obj.is_superuser):
             return False
         return super().has_delete_permission(request, obj)
 

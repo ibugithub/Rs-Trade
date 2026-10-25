@@ -15,7 +15,6 @@ class UserManager(BaseUserManager):
 
   def create_superuser(self, email, name, password, **extra_fields):
     extra_fields.setdefault('is_staff', True)
-    extra_fields.setdefault('is_admin', True)
     extra_fields.setdefault('is_verified', True)
     extra_fields.setdefault('is_superuser', True)
     if extra_fields.get('is_staff') is not True:
@@ -37,7 +36,6 @@ class User(AbstractBaseUser, PermissionsMixin):
   last_name = models.CharField(max_length=255, blank=True, default='')
   signUp_by = models.CharField(max_length=20, choices=SIGNUP_METHODS, default='email')
   is_verified = models.BooleanField(default=False)
-  is_admin = models.BooleanField(default=False)
   is_staff = models.BooleanField(default=False, help_text='Allows this user to sign in to the admin dashboard. Groups and permissions control access to features.')
   is_superuser = models.BooleanField(default=False)
   objects = UserManager()

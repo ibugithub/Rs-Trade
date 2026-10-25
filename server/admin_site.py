@@ -6,6 +6,8 @@ from django.urls import path, reverse
 from .admin_details import enable_record_details
 from notifications.views import feed, mark_read
 from users.widgets import RecordFileInput
+from users.admin_google import google_admin_login
+from users.google import google_configured
 
 
 ACCOUNT_APP_LABELS = {'auth', 'users', 'userProfile', 'userprofile'}
@@ -55,6 +57,17 @@ def configure_admin_site(site):
     original_get_app_list = site.get_app_list
     original_get_urls = site.get_urls
     original_register = site.register
+    original_login = site.login
+
+    def login(self, request, extra_context=None):
+        context = {
+            'google_admin_enabled': google_configured(),
+            'google_admin_login_url': reverse(f'{self.name}:google-login'),
+            **(extra_context or {}),
+        }
+        return original_login(request, extra_context=context)
+
+    site.login = MethodType(login, site)
 
     def register(self, model_or_iterable, admin_class=None, **options):
         existing_models = set(self._registry)
@@ -113,6 +126,7 @@ def configure_admin_site(site):
 
     def get_urls(self):
         return [
+            path('google/login/', google_admin_login, name='google-login'),
             path('notifications/', self.admin_view(lambda request: feed(request, self)), name='notification-feed'),
             path('notifications/read/', self.admin_view(lambda request: mark_read(request, self)), name='notification-read'),
             path('accounts/', self.admin_view(accounts_view), name='accounts'),

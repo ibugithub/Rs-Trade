@@ -11,7 +11,7 @@
 
 {% block responsive %}
 {{ block.super }}
-<link rel="stylesheet" href="{% static 'admin/css/rs_login.css' %}?v=20261024-7">
+<link rel="stylesheet" href="{% static 'admin/css/rs_login.css' %}?v=20261025-google-1">
 {% endblock %}
 
 {% block bodyclass %}{{ block.super }} login rs-login{% endblock %}
@@ -34,6 +34,13 @@
         <h2 id="login-title">Enter operations</h2>
         <p>Use your staff account to continue.</p>
     </header>
+
+    {% if google_admin_enabled %}
+    <a class="rs-login-google" href="{{ google_admin_login_url }}?next={{ next|urlencode }}">
+        <span aria-hidden="true">G</span> Continue with Google
+    </a>
+    <p class="rs-login-divider">or use your staff password</p>
+    {% endif %}
 
     {% if form.errors and not form.non_field_errors %}
     <p class="errornote" role="alert">

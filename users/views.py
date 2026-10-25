@@ -6,7 +6,7 @@ from rest_framework_simplejwt.tokens import RefreshToken, AccessToken
 from rest_framework import generics, permissions
 from .models import User
 import requests
-from rest_framework.decorators import api_view
+from rest_framework.decorators import api_view, throttle_classes
 from rest_framework.response import Response
 from rest_framework import status
 import os
@@ -14,6 +14,12 @@ import random
 import string
 from users.utils.sendEmail import send_email;
 from userProfile.models import Profile
+from .google import google_configured, verified_google_identity
+from .throttles import (
+    LoginThrottle, SignupThrottle, PasswordResetThrottle, PasswordResetEmailThrottle,
+    VerificationResendThrottle, VerificationResendEmailThrottle,
+    PasswordResetConfirmThrottle, EmailVerifyThrottle,
+)
 
 
 
@@ -22,6 +28,7 @@ def create_profile(user):
   profile.save()
   
 class CreateUser(APIView):
+  throttle_classes = [SignupThrottle]
   def post(self, request):
     serializer = UserSerializer(data=request.data)
     if serializer.is_valid():
@@ -45,6 +52,7 @@ class CreateUser(APIView):
     return Response({"error": first_error}, status=status.HTTP_400_BAD_REQUEST)
 
 class SignInView(APIView):
+  throttle_classes = [LoginThrottle]
   def post(self, request):
     serializer = SignInSerializer(data=request.data)
     if serializer.is_valid():
@@ -109,57 +117,25 @@ def handleThrdProvUser(request, user):
   return Response(serializer.errors, status=status.HTTP_400_BAD_REQUEST)
 
 @api_view(['POST'])
+@throttle_classes([LoginThrottle])
 def GetGoogleUserInfo(request):
   code = request.data.get('code')
   if not code:
-    return Response({'error': 'Authorization code is required'}, status=status.HTTP_400_BAD_REQUEST)
+    return Response({'error': 'Authorization code is required'}, status=400)
+  if not google_configured():
+    return Response({'error': 'Google sign-in is not configured'}, status=503)
   try:
-    client_id = os.environ.get('GOOGLE_CLIENT_ID')
-    client_secret = os.environ.get('GOOGLE_CLIENT_SECRET')
-    redirect_uri = f"{os.environ.get('FRONTEND_BASE_URL')}/{os.environ.get('GOOGLE_REDIRECT_URI')}"
-    token_response = requests.post(
-      f"https://oauth2.googleapis.com/token",
-      data={
-      'client_id': client_id,
-      'client_secret': client_secret,
-      'code': code,
-      'grant_type': 'authorization_code',
-      'redirect_uri': redirect_uri,
-      },
-      headers={'Content-Type': 'application/x-www-form-urlencoded'}
-    )
-    
-    # Enhanced error logging
-    if token_response.status_code != 200:
-      error_data = token_response.json()
-      return Response({
-        'error': error_data.get('error_description', 'Authentication failed'),
-        'details': {
-          'redirect_uri': redirect_uri,
-          'error_code': error_data.get('error', 'unknown')
-        }
-      }, status=status.HTTP_400_BAD_REQUEST)
-    
-    token_response.raise_for_status()
-    access_token = token_response.json().get('access_token')
-
-    user_info_response = requests.get(
-      f"https://www.googleapis.com/oauth2/v3/userinfo",
-      headers={'Authorization': f'Bearer {access_token}'}
-    )
-    user_info_response.raise_for_status()
-    user_data = user_info_response.json()
-    user = {
-      'name': user_data['name'],
-      'email': user_data['email'],
-      'picture': user_data['picture'],
-      'signUp_by': 'google'
-    }
-    return handleThrdProvUser(request._request, user)
-  except requests.RequestException as e:
-    return Response({'error': str(e)}, status=status.HTTP_500_INTERNAL_SERVER_ERROR)
+    identity = verified_google_identity(code)
+    return handleThrdProvUser(request._request, {
+      'name': identity.get('name') or identity['email'],
+      'email': identity['email'],
+      'signUp_by': 'google',
+    })
+  except (requests.RequestException, ValueError, KeyError):
+    return Response({'error': 'Google sign-in could not be completed'}, status=400)
 
 @api_view(['POST'])
+@throttle_classes([LoginThrottle])
 def GetFBUserInfo(request):
   code = request.data.get('code')
   if not code:
@@ -188,6 +164,7 @@ def GetFBUserInfo(request):
     return Response({'error': str(e)}, status=status.HTTP_500_INTERNAL_SERVER_ERROR)
   
 @api_view(['POST'])
+@throttle_classes([LoginThrottle])
 def GetMsUserInfo(request):
   code = request.data.get('code')
   if not code:
@@ -263,6 +240,7 @@ def GetMsUserInfo(request):
     )
         
 @api_view(['POST'])
+@throttle_classes([EmailVerifyThrottle])
 def verifyEmail(request):
   token = request.data.get('token')
   if not token:
@@ -278,6 +256,7 @@ def verifyEmail(request):
     return Response({"error": str(e)}, status=status.HTTP_400_BAD_REQUEST)
   
 @api_view(['POST'])
+@throttle_classes([VerificationResendThrottle, VerificationResendEmailThrottle])
 def reSendVerificationEmail(request):
   email = request.data.get('email')
   if not email:
@@ -302,6 +281,7 @@ def reSendVerificationEmail(request):
     return Response({"error": str(e)}, status=status.HTTP_500_INTERNAL_SERVER_ERROR)
   
 @api_view(['POST'])
+@throttle_classes([PasswordResetThrottle, PasswordResetEmailThrottle])
 def forgetPassword(request):
   email = request.data.get('email')
   if not email:
@@ -323,6 +303,7 @@ def forgetPassword(request):
     return Response({"error": str(e)}, status=status.HTTP_500_INTERNAL_SERVER_ERROR)
   
 @api_view(['POST'])
+@throttle_classes([PasswordResetConfirmThrottle])
 def resetPassword(request):
   token = request.data.get('token')
   password = request.data.get('password')

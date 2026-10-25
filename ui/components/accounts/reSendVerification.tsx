@@ -1,4 +1,5 @@
-﻿import axios from 'axios';
+﻿import { apiErrorMessage } from '@/lib/apiError';
+import axios from 'axios';
 import { toast } from 'react-toastify';
 import { useState } from 'react';
 import { useAppDispatch } from '@/configs/redux/hooks';
@@ -20,7 +21,7 @@ export const ResendVerification = ({ emailProp }: { emailProp: string }) => {
         dispatch(setUnVerified(false));
       }
     } catch (err) {
-      toast.error('Failed to send verification');
+      toast.error(apiErrorMessage(err, 'Failed to send verification. Please try again.'));
       console.error(err);
     }
   };

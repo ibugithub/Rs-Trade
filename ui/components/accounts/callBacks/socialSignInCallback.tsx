@@ -1,5 +1,6 @@
 'use client';
 
+import { apiErrorMessage } from '@/lib/apiError';
 import axios from 'axios';
 import Link from 'next/link';
 import { useEffect, useRef, useState } from 'react';
@@ -59,10 +60,13 @@ export function SocialSignInCallback({ provider }: { provider: Provider }) {
           throw new Error('Missing sign-in tokens');
         }
         saveTokens(tokens);
-      } catch {
+      } catch (error) {
         if (!mounted.current) return;
         setError(
-          `We could not complete your ${provider} sign-in. Please return to Sign In and try again.`,
+          apiErrorMessage(
+            error,
+            `We could not complete your ${provider} sign-in. Please return to Sign In and try again.`,
+          ),
         );
       }
     };

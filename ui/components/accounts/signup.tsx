@@ -1,5 +1,6 @@
 'use client';
 
+import { apiErrorMessage } from '@/lib/apiError';
 import { ArrowLeft, ArrowRight, Eye, EyeOff, LoaderCircle } from 'lucide-react';
 import Link from 'next/link';
 import { useState } from 'react';
@@ -86,18 +87,7 @@ const Signup = () => {
       toast.success('A verification email has been sent to your email address');
       router.push('/accounts/signin');
     } catch (err) {
-      if (err instanceof Error) {
-        if (axios.isAxiosError(err) && err.response) {
-          setError(err.response.data.error);
-          console.error(err.response.data.error);
-        } else {
-          setError('An unexpected error occurred');
-          console.error(err);
-        }
-      } else {
-        setError('An unexpected error occurred');
-        console.error(err);
-      }
+      setError(apiErrorMessage(err, 'Could not create your account. Please try again.'));
     } finally {
       setLoading(false);
     }

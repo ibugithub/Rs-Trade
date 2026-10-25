@@ -86,6 +86,7 @@ TEMPLATES = [
 ]
 
 WSGI_APPLICATION = 'server.wsgi.application'
+FRONTEND_BASE_URL = os.environ.get('FRONTEND_BASE_URL', 'http://localhost:8000').rstrip('/')
 
 
 # Database
@@ -164,6 +165,31 @@ REST_FRAMEWORK = {
     'DEFAULT_AUTHENTICATION_CLASSES': (
         'rest_framework_simplejwt.authentication.JWTAuthentication',
     ),
+    'EXCEPTION_HANDLER': 'server.auth_errors.auth_exception_handler',
+    # Trust forwarded IP addresses only when the deployment's proxy count is set.
+    'NUM_PROXIES': int(os.environ.get('AUTH_TRUSTED_PROXY_COUNT', '0')),
+    'DEFAULT_THROTTLE_RATES': {
+        'auth_login': os.environ.get('AUTH_LOGIN_RATE', '10/min'),
+        'auth_signup': os.environ.get('AUTH_SIGNUP_RATE', '5/hour'),
+        'auth_password_reset': os.environ.get('AUTH_PASSWORD_RESET_RATE', '5/hour'),
+        'auth_password_reset_email': os.environ.get('AUTH_PASSWORD_RESET_EMAIL_RATE', '3/hour'),
+        'auth_verification_resend': os.environ.get('AUTH_VERIFICATION_RESEND_RATE', '5/hour'),
+        'auth_verification_resend_email': os.environ.get('AUTH_VERIFICATION_RESEND_EMAIL_RATE', '3/hour'),
+        'auth_reset_confirm': os.environ.get('AUTH_RESET_CONFIRM_RATE', '10/min'),
+        'auth_email_verify': os.environ.get('AUTH_EMAIL_VERIFY_RATE', '20/min'),
+    },
+}
+
+# Database storage shares authentication limits between Django worker processes.
+# Create this dedicated table with: python manage.py createcachetable auth_rate_limit_cache
+CACHES = {
+    'default': {'BACKEND': 'django.core.cache.backends.locmem.LocMemCache'},
+    'auth_throttles': {
+        'BACKEND': 'django.core.cache.backends.db.DatabaseCache',
+        'LOCATION': 'auth_rate_limit_cache',
+        'KEY_PREFIX': 'account-rates',
+        'OPTIONS': {'MAX_ENTRIES': 100000, 'CULL_FREQUENCY': 10},
+    },
 }
 
 
