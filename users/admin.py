@@ -7,7 +7,9 @@ from django.contrib.auth.admin import GroupAdmin as BaseGroupAdmin
 from django.contrib.auth.models import Group
 from django.db.models import Q
 from userProfile.models import Address, Profile
-from .models import User
+from .models import CustomPermissionGroup, User
+from .forms import EffectiveUserPermissionsForm
+from .permission_roles import synchronize_permission_groups
 from .widgets import MemberPicker, PermissionPicker
 
 
@@ -78,22 +80,35 @@ class UserAddressInline(UserDetailsPermissions, admin.StackedInline):
 
 
 class UserAdmin(BaseUserAdmin):
+    form = EffectiveUserPermissionsForm
+
+    def get_form(self, request, obj=None, **kwargs):
+        form = super().get_form(request, obj, **kwargs)
+        if 'user_permissions' in form.base_fields:
+            widget = form.base_fields['user_permissions'].widget
+            while hasattr(widget, 'widget'):
+                widget = widget.widget
+            widget.superuser_field = 'id_is_superuser'
+            widget.effective_superuser = bool(obj and obj.is_superuser)
+            widget.effective_editor = True
+        return form
+
     def formfield_for_manytomany(self, db_field, request, **kwargs):
         field = super().formfield_for_manytomany(db_field, request, **kwargs)
         if db_field.name == 'user_permissions' and field:
             field.queryset = dashboard_permissions(field.queryset, request, self.admin_site)
             field.widget = PermissionPicker(choices=field.choices)
-            field.help_text = 'Direct permissions apply in addition to permissions inherited from groups.'
+            field.help_text = 'Selected permissions include group and individual access. Saving matches complete groups and puts remaining permissions into a Custom group.'
         return field
 
-    list_display = ('email', 'name', 'signUp_by', 'is_superuser', 'is_verified', 'is_admin')
-    list_filter = ('is_admin', 'groups')
-    readonly_fields = ('id', 'first_name', 'last_name', 'sign_in_method', 'last_login', 'order_history')
+    list_display = ('email', 'name', 'signUp_by', 'is_staff', 'is_admin', 'is_superuser', 'is_verified')
+    list_filter = ('is_staff', 'is_admin', 'groups')
+    readonly_fields = ('id', 'first_name', 'last_name', 'sign_in_method', 'last_login', 'order_history', 'groups')
     inlines = (UserProfileInline, UserAddressInline)
     fieldsets = (
         ('Account', {'fields': ('id', 'email', 'password', 'sign_in_method')}),
         ('Personal info', {'fields': ('name', 'first_name', 'last_name')}),
-        ('Permissions', {'fields': ('is_admin', 'is_verified', 'is_superuser', 'groups', 'user_permissions')}),
+        ('Permissions', {'fields': ('is_staff', 'is_admin', 'is_verified', 'is_superuser', 'groups', 'user_permissions')}),
         ('Account activity', {'fields': ('last_login', 'order_history')}),
     )
     add_fieldsets = (
@@ -109,16 +124,16 @@ class UserAdmin(BaseUserAdmin):
     def get_readonly_fields(self, request, obj=None):
         fields = super().get_readonly_fields(request, obj)
         if not request.user.is_superuser:
-            return (*fields, 'is_admin', 'is_superuser', 'groups', 'user_permissions')
+            return (*fields, 'is_staff', 'is_admin', 'is_superuser', 'user_permissions')
         return fields
 
     def has_change_permission(self, request, obj=None):
-        if obj and not request.user.is_superuser and (obj.is_admin or obj.is_superuser):
+        if obj and not request.user.is_superuser and (obj.is_staff or obj.is_admin or obj.is_superuser):
             return False
         return super().has_change_permission(request, obj)
 
     def has_delete_permission(self, request, obj=None):
-        if obj and not request.user.is_superuser and (obj.is_admin or obj.is_superuser):
+        if obj and not request.user.is_superuser and (obj.is_staff or obj.is_admin or obj.is_superuser):
             return False
         return super().has_delete_permission(request, obj)
 
@@ -141,6 +156,13 @@ class UserAdmin(BaseUserAdmin):
             obj.last_name = parts[1] if len(parts) > 1 else ''
         super().save_model(request, obj, form, change)
 
+    def save_related(self, request, form, formsets, change):
+        super().save_related(request, form, formsets, change)
+        if request.user.is_superuser and 'user_permissions' in form.cleaned_data and not form.instance.is_superuser:
+            synchronize_permission_groups(
+                form.instance, {permission.pk for permission in form.cleaned_data['user_permissions']},
+            )
+
 # Register the new UserAdmin
 admin.site.register(User, UserAdmin)
 
@@ -158,8 +180,22 @@ class GroupMembersForm(forms.ModelForm):
 
     def __init__(self, *args, **kwargs):
         super().__init__(*args, **kwargs)
+        if self.instance.pk and 'permissions' in self.fields:
+            field = self.fields['permissions']
+            field.queryset = field.queryset.model.objects.filter(
+                Q(pk__in=field.queryset.values('pk'))
+                | Q(pk__in=self.instance.permissions.values('pk')),
+            ).distinct().select_related('content_type')
         if self.instance.pk and 'members' in self.fields:
             self.fields['members'].initial = self.instance.user_set.all()
+
+    def clean_members(self):
+        members = self.cleaned_data['members']
+        if self.instance.pk:
+            custom = CustomPermissionGroup.objects.filter(group=self.instance).first()
+            if custom and set(members.values_list('pk', flat=True)) != ({custom.owner_id} if custom.owner_id else set()):
+                raise forms.ValidationError('This Custom group belongs to one user. Change its permissions from that user’s Effective permissions section.')
+        return members
 
 
 class GroupAdmin(BaseGroupAdmin):

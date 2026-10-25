@@ -1,4 +1,10 @@
-<div class="rs-permissions" data-permission-picker>
+<div class="rs-permissions" data-permission-picker data-effective-editor="{% if effective_editor %}true{% else %}false{% endif %}"{% if superuser_field %} data-superuser-field="{{ superuser_field }}"{% endif %}>
+  {% if superuser_field %}
+  <div class="rs-permissions__access" data-superuser-notice role="status"{% if not effective_superuser %} hidden{% endif %}>
+    <strong>Superuser: all available permissions granted</strong>
+    <p>All available permissions are selected. Unchecking one turns off superuser access, so saving can remove that permission. Staff, Admin and Verified remain separate account settings.</p>
+  </div>
+  {% endif %}
   <div class="rs-permissions__toolbar">
     <input type="search" id="{{ widget.attrs.id }}" placeholder="Search features..." aria-label="Search permissions" data-permission-search>
     <button type="button" class="rs-permissions__filter" data-picker-select-all title="Select permissions in the currently visible rows">Select all</button>

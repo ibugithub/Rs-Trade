@@ -8,13 +8,19 @@ class RecordFileInput(forms.ClearableFileInput):
 
 class PermissionPicker(forms.SelectMultiple):
     template_name = 'admin/widgets/permission_picker.html'
+    superuser_field = None
+    effective_superuser = False
+    effective_editor = False
 
     class Media:
-        css = {'all': (static('admin/css/permission_picker.css') + '?v=20261024-5',)}
-        js = (static('admin/js/permission_picker.js') + '?v=20261024-3',)
+        css = {'all': (static('admin/css/permission_picker.css') + '?v=20261025-3',)}
+        js = (static('admin/js/permission_picker.js') + '?v=20261025-3',)
 
     def get_context(self, name, value, attrs):
         context = super().get_context(name, value, attrs)
+        context['superuser_field'] = self.superuser_field
+        context['effective_superuser'] = self.effective_superuser
+        context['effective_editor'] = self.effective_editor
         features = {}
         for _, options, _ in context['widget']['optgroups']:
             for option in options:

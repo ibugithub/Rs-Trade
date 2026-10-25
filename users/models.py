@@ -14,12 +14,15 @@ class UserManager(BaseUserManager):
     return user
 
   def create_superuser(self, email, name, password, **extra_fields):
-    user = self.create_user(email, name, password)
-    user.is_admin = True
-    user.is_verified = True
-    user.is_superuser = True
-    user.save(using=self._db)
-    return user
+    extra_fields.setdefault('is_staff', True)
+    extra_fields.setdefault('is_admin', True)
+    extra_fields.setdefault('is_verified', True)
+    extra_fields.setdefault('is_superuser', True)
+    if extra_fields.get('is_staff') is not True:
+        raise ValueError('Superusers must have is_staff=True.')
+    if extra_fields.get('is_superuser') is not True:
+        raise ValueError('Superusers must have is_superuser=True.')
+    return self.create_user(email, name, password, **extra_fields)
 
 class User(AbstractBaseUser, PermissionsMixin):
   SIGNUP_METHODS = [
@@ -35,6 +38,7 @@ class User(AbstractBaseUser, PermissionsMixin):
   signUp_by = models.CharField(max_length=20, choices=SIGNUP_METHODS, default='email')
   is_verified = models.BooleanField(default=False)
   is_admin = models.BooleanField(default=False)
+  is_staff = models.BooleanField(default=False, help_text='Allows this user to sign in to the admin dashboard. Groups and permissions control access to features.')
   is_superuser = models.BooleanField(default=False)
   objects = UserManager()
 
@@ -44,6 +48,12 @@ class User(AbstractBaseUser, PermissionsMixin):
   def __str__(self):
     return self.email
 
-  @property
-  def is_staff(self):
-    return self.is_admin
+
+class CustomPermissionGroup(models.Model):
+  owner = models.OneToOneField(
+    User, on_delete=models.SET_NULL, null=True, blank=True,
+    related_name='custom_permission_bundle',
+  )
+  group = models.OneToOneField(
+    'auth.Group', on_delete=models.CASCADE, related_name='custom_permission_bundle',
+  )

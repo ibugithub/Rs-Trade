@@ -7,6 +7,17 @@
       const features = [...picker.querySelectorAll('[data-permission-feature]')];
       const selectedFilter = picker.querySelector('[data-picker-selected]');
       const selectAll = picker.querySelector('[data-picker-select-all]');
+      const superuserField = picker.dataset.superuserField;
+      const effectiveEditor = picker.dataset.effectiveEditor === 'true';
+      const superuserInput = superuserField ? document.getElementById(superuserField) : null;
+      const superuserNotice = picker.querySelector('[data-superuser-notice]');
+      const updateAutomaticAccess = () => {
+        if (!superuserNotice) return;
+        const enabled = superuserInput ? superuserInput.checked : !superuserNotice.hidden;
+        superuserNotice.hidden = !enabled;
+        updateCount();
+        filterRows();
+      };
       const visibleChoices = () => features.filter((feature) => !feature.hidden)
         .flatMap((feature) => [...feature.querySelectorAll('input[type="checkbox"]:not(:disabled)')]);
       let selectedOnly = false;
@@ -29,10 +40,18 @@
           selectAll.title = `${allChecked ? 'Clear' : 'Select'} permissions in the currently visible rows`;
         }
       };
+      const reconcileSuperuser = () => {
+        if (effectiveEditor && superuserInput?.checked
+            && [...picker.querySelectorAll('input[type="checkbox"]')].some((input) => !input.checked)) {
+          superuserInput.checked = false;
+          superuserInput.dispatchEvent(new Event('change', { bubbles: true }));
+        }
+      };
       selectAll?.addEventListener('click', () => {
         const choices = visibleChoices();
         const checked = !choices.every((input) => input.checked);
         choices.forEach((input) => { input.checked = checked; });
+        reconcileSuperuser();
         updateCount();
         filterRows();
       });
@@ -42,7 +61,14 @@
         selectedFilter.setAttribute('aria-pressed', String(selectedOnly));
         filterRows();
       });
-      picker.addEventListener('change', () => { updateCount(); filterRows(); });
+      picker.addEventListener('change', () => { reconcileSuperuser(); updateCount(); filterRows(); });
+      superuserInput?.addEventListener('change', () => {
+        if (effectiveEditor && superuserInput.checked) {
+          picker.querySelectorAll('input[type="checkbox"]:not(:disabled)').forEach((input) => { input.checked = true; });
+        }
+        updateAutomaticAccess();
+      });
+      updateAutomaticAccess();
       updateCount();
       filterRows();
     });
