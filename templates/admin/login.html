@@ -30,16 +30,14 @@
 {% block content %}
 <div id="content-main">
     <header class="rs-login__intro">
-        <span class="rs-login__eyebrow">Authorized entry</span>
-        <h2 id="login-title">Enter operations</h2>
-        <p>Use your staff account to continue.</p>
+        <h2 id="login-title">Admin sign in</h2>
     </header>
 
     {% if google_admin_enabled %}
     <a class="rs-login-google" href="{{ google_admin_login_url }}?next={{ next|urlencode }}">
         <span aria-hidden="true">G</span> Continue with Google
     </a>
-    <p class="rs-login-divider">or use your staff password</p>
+    <p class="rs-login-divider">or</p>
     {% endif %}
 
     {% if form.errors and not form.non_field_errors %}
@@ -80,14 +78,10 @@
         </div>
         {% endif %}
         <div class="submit-row">
-            <input type="submit" value="Enter dashboard">
+            <input type="submit" value="Sign in">
             <span aria-hidden="true">&rarr;</span>
         </div>
     </form>
 
-    <p class="rs-login__note">
-        <svg viewBox="0 0 24 24" aria-hidden="true"><path d="M12 3 5 6v5c0 4.6 2.9 8.8 7 10 4.1-1.2 7-5.4 7-10V6l-7-3Z"/><path d="m9 12 2 2 4-4"/></svg>
-        Protected staff workspace
-    </p>
 </div>
 {% endblock %}
