@@ -1,11 +1,18 @@
 from rest_framework import serializers
+from django.urls import reverse
 from .models import Profile
 from users.models import User
 import os
 class UserSerializer(serializers.ModelSerializer):
+    admin_url = serializers.SerializerMethodField()
+
+    def get_admin_url(self, user):
+        return reverse('admin:index') if user.is_staff and user.is_active else None
+
     class Meta:
         model = User
-        fields = ['email', 'name', 'first_name', 'last_name', 'signUp_by']
+        fields = ['email', 'name', 'first_name', 'last_name', 'signUp_by', 'is_staff', 'admin_url']
+        read_only_fields = ['is_staff', 'admin_url']
 
 
 class UpdateNameSerializer(serializers.Serializer):

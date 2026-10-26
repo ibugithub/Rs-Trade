@@ -15,6 +15,7 @@ Including another URLconf
     2. Add a URL to urlpatterns:  path('blog/', include('blog.urls'))
 """
 from django.contrib import admin
+from django.conf import settings
 import re
 from urllib.parse import urlsplit
 from django.urls import include, path, re_path
@@ -46,7 +47,7 @@ admin.site.index_title = 'Operations Dashboard'
 configure_admin_site(admin.site)
 
 urlpatterns = [
-    path('admin/', admin.site.urls),
+    path(settings.ADMIN_URL, admin.site.urls),
     path('api/catalog/', include('catalog.urls')),
     path('api/cart/', AccountCartView.as_view(), name='account-cart'),
     path('api/orders/', include('orders.urls')),

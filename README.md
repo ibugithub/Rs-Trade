@@ -57,3 +57,7 @@ Tests use disposable SQLite and isolated email/cache backends:
 ```powershell
 python manage.py test server.test_admin_google server.test_user_permissions server.test_throttles server.test_auth_port --settings=server.test_settings --noinput
 ```
+
+## Admin address and navigation
+
+Set `ADMIN_URL=staff-portal/` in `.env` and restart Django to change the admin address. Keep only one `ADMIN_URL` entry. The staff-only Admin link in desktop and mobile navigation follows the backend value; changing this setting needs no frontend rebuild. Google and password admin login use the configured path. The default `/admin/` is no longer mounted when a custom path is selected. Backend permissions remain enforced.

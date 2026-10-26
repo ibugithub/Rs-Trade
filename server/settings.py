@@ -11,12 +11,18 @@ https://docs.djangoproject.com/en/5.1/ref/settings/
 """
 from datetime import timedelta
 import os
+import re
+from django.core.exceptions import ImproperlyConfigured
 from pathlib import Path
 import dj_database_url
 from dotenv import load_dotenv, dotenv_values
 BASE_DIR = Path(__file__).resolve().parent.parent
 load_dotenv()
 env_vars = dotenv_values('.env')
+
+ADMIN_URL = os.environ.get('ADMIN_URL', 'staff-portal/').strip().strip('/') + '/'
+if not re.fullmatch(r'[A-Za-z0-9_-]+/', ADMIN_URL) or ADMIN_URL.rstrip('/') in {'api', 'accounts', 'static', 'media', 'swagger', 'redoc'}:
+    raise ImproperlyConfigured('ADMIN_URL must be a non-reserved path such as staff-portal/.')
 
 
 # Quick-start development settings - unsuitable for production

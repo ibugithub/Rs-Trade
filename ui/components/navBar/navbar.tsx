@@ -6,6 +6,7 @@ import { usePathname } from 'next/navigation';
 import { ArrowUpRight, ChevronDown, Menu, X } from 'lucide-react';
 import { ProfileModal } from '@/components/accounts/profileModal';
 import { CartLink } from '@/components/cart/cartLink';
+import { useAppSelector } from '@/configs/redux/hooks';
 
 const services = [
   { label: 'China Product Sourcing', href: '/services/china-product-sourcing' },
@@ -24,6 +25,10 @@ const links = [
 
 export const NavBar = () => {
   const pathname = usePathname();
+  const { isAuthenticated, status, loogedInUser } = useAppSelector((state) => state.auth);
+  const user = loogedInUser.user ?? loogedInUser;
+  const adminUrl =
+    isAuthenticated && status === 'authenticated' && user.is_staff === true ? user.admin_url : null;
   const [mobileOpen, setMobileOpen] = useState(false);
   const [servicesOpen, setServicesOpen] = useState(false);
   const headerRef = useRef<HTMLElement>(null);
@@ -76,6 +81,16 @@ export const NavBar = () => {
       {item.label}
     </Link>
   );
+
+  const adminLink = adminUrl ? (
+    <a
+      href={adminUrl}
+      onClick={close}
+      className={linkStyle(adminUrl)}
+    >
+      Admin
+    </a>
+  ) : null;
 
   return (
     <header
@@ -147,6 +162,7 @@ export const NavBar = () => {
         </nav>
 
         <div className="flex items-center gap-2">
+          <div className="hidden lg:block">{adminLink}</div>
           <CartLink onNavigate={close} />
           <div className="hidden lg:block">
             <ProfileModal onNavigate={close} />
@@ -211,6 +227,7 @@ export const NavBar = () => {
               </div>
             )}
             {links.slice(1).map(renderLink)}
+            {adminLink}
             <div className="mt-2 flex flex-col border-t border-gray-200 pt-2">
               <ProfileModal
                 mobile

@@ -1,17 +1,23 @@
 from rest_framework import serializers
+from django.urls import reverse
 from .models import User
 from django.contrib.auth import authenticate
 from rest_framework_simplejwt.tokens import AccessToken
 import re
 
 class UserSerializer(serializers.ModelSerializer):
+  admin_url = serializers.SerializerMethodField()
+
+  def get_admin_url(self, user):
+    return reverse('admin:index') if user.is_staff and user.is_active else None
+
   password = serializers.CharField(write_only=True)
   password2 = serializers.CharField(write_only=True)
 
   class Meta:
     model = User
-    fields = ['email', 'name', 'first_name', 'last_name', 'password', 'password2']
-    read_only_fields = ['first_name', 'last_name']
+    fields = ['email', 'name', 'first_name', 'last_name', 'password', 'password2', 'is_staff', 'admin_url']
+    read_only_fields = ['first_name', 'last_name', 'is_staff', 'admin_url']
 
     def validate_email(self, value):
       if User.objects.filter(email=value).exists():
